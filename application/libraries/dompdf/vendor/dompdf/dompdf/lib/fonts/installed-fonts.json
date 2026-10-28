@@ -1,0 +1,18 @@
+{
+    "roboto": {
+        "normal": "\/var\/www\/html\/perfex_crm\/application\/libraries\/dompdf\/vendor\/dompdf\/dompdf\/lib\/fonts\/roboto_normal_88e568e5e7436b92d07decbc0ab4f63e",
+        "500": "roboto_500_da6b038937e17fadf4d32efa1472ab6f"
+    },
+    "glyphicons halflings": {
+        "normal": "glyphicons_halflings_normal_4cefd9e102ed70f143fb18ca02050f53"
+    },
+    "fontawesome": {
+        "normal": "fontawesome_normal_895d7da0f03c97e3e953937aacc4c3bf"
+    },
+    "metropolis regular": {
+        "normal": "metropolis_regular_normal_ee666f55afc02d1987782aa4e3269fc5"
+    },
+    "metropolis bold": {
+        "bold": "metropolis_bold_bold_f74528ad74f443fce52979a498f58ee1"
+    }
+}

@@ -1,0 +1,134 @@
+<style>
+    .onoffswitch-checkbox:checked + .red_btn{
+  background-color: red !important;
+  border-color: red !important;
+}
+.onoffswitch-checkbox:checked+.onoffswitch-label .red_btn, .onoffswitch-checkbox:checked+.onoffswitch-label.red_btn:before {
+  border-color: red !important;
+}
+</style>
+<?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+<?php if(isset($client)){ ?>
+<?php if ($choose) { ?>
+<h4 class="customer-profile-group-heading">Choose Contacts</h4>
+<?php   } else { ?>
+<h4 class="customer-profile-group-heading">
+    <?php echo is_empty_customer_company($client->userid) ? _l('contact') : _l('customer_contacts'); ?></h4>
+<?php   } ?>
+<?php if($this->session->flashdata('gdpr_delete_warning')){ ?>
+<div class="alert alert-warning">
+    [GDPR] The contact you removed has associated proposals using the email address of the contact and other personal
+    information. You may want to re-check all proposals related to this customer and remove any personal data from
+    proposals linked to this contact.
+</div>
+<?php } ?>
+<?php if((has_permission('customers','','create') || is_customer_admin($client->userid)) && $client->registration_confirmed == '1'){
+   $disable_new_contacts = false;
+   if(is_empty_customer_company($client->userid) && total_rows(db_prefix().'contacts',array('userid'=>$client->userid)) == 1){
+      $disable_new_contacts = true;
+   }
+   ?>
+<div class="inline-block new-contact-wrapper" data-title="<?php echo _l('customer_contact_person_only_one_allowed'); ?>"
+    <?php if($disable_new_contacts){ ?> data-toggle="tooltip" <?php } ?>>
+    <a href="#" onclick="contact(<?php echo $client->userid; ?>); return false;"
+        class="btn btn-info new-contact mbot25<?php if($disable_new_contacts){echo ' disabled';} ?>"><?php echo _l('new_contact'); ?></a>
+</div>
+
+
+<!-- <div class="inline-block new-contact-wrapper" data-title="<?php echo _l('customer_contact_person_only_one_allowed'); ?>"<?php if($disable_new_contacts){ ?> data-toggle="tooltip"<?php } ?>>
+   <a href="<?php echo base_url(); ?>admin/clients/import_view/<?php echo $client->userid; ?>" class="btn btn-info new-contact mbot25<?php if($disable_new_contacts){echo ' disabled';} ?>"><?php echo _l('Import'); ?></a>
+</div> -->
+
+
+<?php if (!$choose) { ?>
+<div class="inline-block new-contact-wrapper" data-title="<?php echo _l('customer_contact_person_only_one_allowed'); ?>"
+    <?php if($disable_new_contacts){ ?> data-toggle="tooltip" <?php } ?>>
+    <a href="<?php echo base_url(); ?>admin/clients/choose_contacts/<?php echo $client->userid; ?>"
+        class="btn btn-info new-contact mbot25"><?php echo _l('choose individual'); ?></a>
+</div>
+<?php   } ?>
+<?php } ?>
+<?php
+   $table_data = array(_l('clients_list_full_name'));
+   if(is_gdpr() && get_option('gdpr_enable_consent_for_contacts') == '1'){
+         array_push($table_data, array(
+            'name'=>_l('gdpr_consent') .' ('._l('gdpr_short').')',
+            'th_attrs'=>array('id'=>'th-consent', 'class'=>'not-export')
+         ));
+   }
+  $table_data = array_merge($table_data, array(_l('Primary Contact'),_l('date_birth'),_l('Age'),_l('client_email'),_l('client_phonenumber'),_l('Location'),_l('contact_active'),_l('Vulnerable client')));
+//    ,_l('contact_position') CAN ADD POSITION 
+//    ,_l('clients_list_last_login') CAN ADD LAST LOGIN 
+//    ,_l('Occupation Class') CAN ADD OCCUPATION CLASS
+// _l('Primary Contact'),
+   if ($choose) {
+      $custom_fields = get_custom_fields('choose-contacts',array('show_on_table'=>1));
+      foreach($custom_fields as $field){
+         array_push($table_data,$field['name']);
+      }
+      echo render_datatable($table_data,'choose-contacts'); 
+   } else {
+      $custom_fields = get_custom_fields('contacts',array('show_on_table'=>1));
+      foreach($custom_fields as $field){
+         array_push($table_data,$field['name']);
+      }
+      echo render_datatable($table_data,'contacts');
+   }
+   ?>
+<?php } ?>
+<div id="contact_data"></div>
+<div id="consent_data"></div>
+
+
+<script>
+  
+function myPrimaryContact(id) {
+
+var actionURL = "<?php echo base_url('admin/Clients/primaryContact')?>"
+var individeal = id;
+var checkBox = document.getElementById("P_" + individeal);
+
+if (checkBox.checked == true) {
+   var primary_checkVal = 1;
+} else {
+   var primary_checkVal = 0;
+}
+$.ajax({
+   type: 'POST',
+   url: actionURL,
+   data: {
+      primary_checkVal: primary_checkVal,
+      individeal: individeal
+   },
+   datatype: "json",
+   success: function(data) {
+      console.log(data);
+   }
+})
+}
+
+function myClientfunctions(id) {
+   var actionURL = "<?php echo base_url('admin/Clients/vulnerableCheckData_tbl')?>"
+   var individeal_id = id;
+   var checkBox = document.getElementById("d_" + individeal_id);
+ 
+   if (checkBox.checked == true) {
+      var vulnerable_checkValue = 1;
+   } else {
+      var vulnerable_checkValue = 0;
+   }
+   $.ajax({
+      type: 'POST',
+      url: actionURL,
+      data: {
+         vulnerable_checkValue: vulnerable_checkValue,
+         individeal_id: individeal_id,
+        
+      },
+      datatype: "json",
+      success: function(data) {
+         console.log(data);
+      }
+   })
+}
+</script>
