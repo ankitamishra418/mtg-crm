@@ -1,0 +1,3 @@
+﻿Userid,Firstname,Lastname,Email,Contact phonenumber,Home phone,Title,Password,Gender,Vulnerable client,Client Type,Occupation,Custom occupation ,Smoker,Residential address,Residential City, Residential State, Residential Zip Code, Residential Country,Postal Address, Postal City,Postal State,Postal Zip Code,Postal Country,Additional Notes,DOB
+14584,Rupert,Gough,rupert@example.com,0,0,0,0,1,.,0,.,2,0,.,.,.,.,157,.,.,.,.,157,0,01/01/1980
+14584,Joe,Bloggs,joe@example.com,0,0,0,0,2,0,0,.,2,0,.,.,.,.,158,.,.,.,.,158,0,02/02/1980

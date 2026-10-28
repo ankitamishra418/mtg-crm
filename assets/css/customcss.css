@@ -1,0 +1,154 @@
+/* body {font-family: Arial;} */
+
+/* Style the tab */
+/* .tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #566de2;
+  color:#fff;
+} */
+
+/* Style the buttons inside the tab */
+/* .tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+} */
+
+/* Change background color of buttons on hover */
+/* .tab button:hover {
+  background-color: #ddd;
+} */
+
+/* Create an active/current tablink class */
+/* .tab button.active {
+  background-color:rgba(200, 200, 200, 0.2);
+} */
+.customer-email-tab option {
+  display: none;
+}
+.customer-email-tab_owner option {
+  display: none;
+}
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  /* padding: 6px 12px; */
+  /* border: 1px solid #ccc; */
+  margin-top: 2px;
+  border-top: none;
+}
+.custom-display{
+  margin-top: 9px;
+  display: block;
+}
+.custom-hide{
+  display: none;
+}
+
+.addMargin {
+  margin-top: 10px;
+  margin-bottom: 10px !important;
+}
+.addMarginTop {
+  margin-top: 16px !important;
+}
+.addPaddingTop {
+  padding-top: 13px;
+}
+.addStyle {
+  border: 1px solid #919191 !important;
+  border-radius: 8px;
+  padding: 10px;
+}
+.marginAuto{
+  margin: 5px;
+}
+.addfontSize{
+  font-size:31px;
+}
+
+.addColor{
+  color: #ffffff;
+}
+.addMarginleft{
+  margin-left: 1px;
+}
+.addRowMarginleft{
+  margin-left: 0px !important;
+}
+.setMargin{
+  margin-right: 22px;
+}
+.setcolor{
+  color:#3ac529;
+}
+.tableclass{
+
+    border-collapse: collapse;
+    width: 100%;
+}
+.addPageColor{
+background: #566de2 !important;
+height: 53px!important;
+color:#ffffff !important;
+}
+.setbutton
+{
+  margin-bottom:5px !important;
+  width: 75px;
+}
+.setFontSize{
+ font-size:15px;
+}
+.iconFontSize{
+  font-size: 18px !important;;
+ }
+ .optionbutton{
+  margin-left: 8px !important;
+  border-radius:20px !important;
+ }
+ .addMarginRight{
+  margin-right: 13px !important;
+ }
+ #contentmodal{
+  width:90rem;
+ }
+ #centerMpdel{
+  width:71rem !important;
+ }
+ .setorderdrop{
+  float:right;
+}
+#setmarging{
+  margin-top:-10px;
+}
+.required:after {
+  content:"*";
+  color: red;
+}
+.text_color{
+  color: white;
+}
+#hide{
+  display: none;
+}
+.radius {
+    width: 600px;
+    border-radius: 3% 3% 2% 2%;
+}
+
+.timesX {
+    border-radius: 50% 50% 50% 50%;
+}
+
+.proceed {
+    float: right;
+}
+
+

@@ -1,0 +1,29 @@
+[01-Oct-2021 10:26:13 UTC] PHP Fatal error:  Uncaught Error: Class 'AdminController' not found in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php on line 6
+[01-Oct-2021 10:26:54 UTC] PHP Parse error:  syntax error, unexpected '$this' (T_VARIABLE) in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php on line 36
+[01-Oct-2021 10:28:10 UTC] PHP Fatal error:  Uncaught Error: Class 'AdminController' not found in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php on line 6
+[01-Oct-2021 10:28:36 UTC] PHP Fatal error:  Uncaught Error: Class 'AdminController' not found in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php on line 6
+[01-Oct-2021 10:30:31 UTC] PHP Fatal error:  Uncaught Error: Class 'AdminController' not found in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php on line 6
+[01-Oct-2021 10:31:25 UTC] PHP Fatal error:  Uncaught Error: Class 'AdminController' not found in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php on line 6
+[01-Oct-2021 10:32:05 UTC] PHP Fatal error:  Uncaught Error: Class 'AdminController' not found in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php on line 6
+[01-Oct-2021 10:33:08 UTC] PHP Fatal error:  Uncaught Error: Class 'CI_Controller' not found in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/dashcrm/public_html/crm/modules/file_manager/controllers/Cron_job.php on line 6
