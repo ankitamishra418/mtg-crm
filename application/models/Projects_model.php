@@ -48,38 +48,38 @@ class Projects_model extends App_Model
     {
         $statuses = hooks()->apply_filters('before_get_project_statuses', [
             [
-                'id'             => 1,
-                'color'          => '#989898',
-                'name'           => _l('project_status_1'),
-                'order'          => 1,
+                'id' => 1,
+                'color' => '#989898',
+                'name' => _l('project_status_1'),
+                'order' => 1,
                 'filter_default' => true,
             ],
             [
-                'id'             => 2,
-                'color'          => '#03a9f4',
-                'name'           => _l('project_status_2'),
-                'order'          => 2,
+                'id' => 2,
+                'color' => '#03a9f4',
+                'name' => _l('project_status_2'),
+                'order' => 2,
                 'filter_default' => true,
             ],
             [
-                'id'             => 3,
-                'color'          => '#ff6f00',
-                'name'           => _l('project_status_3'),
-                'order'          => 3,
+                'id' => 3,
+                'color' => '#ff6f00',
+                'name' => _l('project_status_3'),
+                'order' => 3,
                 'filter_default' => true,
             ],
             [
-                'id'             => 4,
-                'color'          => '#84c529',
-                'name'           => _l('project_status_4'),
-                'order'          => 100,
+                'id' => 4,
+                'color' => '#84c529',
+                'name' => _l('project_status_4'),
+                'order' => 100,
                 'filter_default' => false,
             ],
             [
-                'id'             => 5,
-                'color'          => '#989898',
-                'name'           => _l('project_status_5'),
-                'order'          => 4,
+                'id' => 5,
+                'color' => '#989898',
+                'name' => _l('project_status_5'),
+                'order' => 4,
                 'filter_default' => false,
             ],
         ]);
@@ -124,12 +124,14 @@ class Projects_model extends App_Model
 
     public function pin_action($id)
     {
-        if (total_rows(db_prefix() . 'pinned_projects', [
-            'staff_id' => get_staff_user_id(),
-            'project_id' => $id,
-        ]) == 0) {
+        if (
+            total_rows(db_prefix() . 'pinned_projects', [
+                'staff_id' => get_staff_user_id(),
+                'project_id' => $id,
+            ]) == 0
+        ) {
             $this->db->insert(db_prefix() . 'pinned_projects', [
-                'staff_id'   => get_staff_user_id(),
+                'staff_id' => get_staff_user_id(),
                 'project_id' => $id,
             ]);
 
@@ -176,12 +178,12 @@ class Projects_model extends App_Model
     {
         $total_project_tasks = total_rows(db_prefix() . 'tasks', [
             'rel_type' => 'project',
-            'rel_id'   => $id,
+            'rel_id' => $id,
         ]);
         $total_finished_tasks = total_rows(db_prefix() . 'tasks', [
             'rel_type' => 'project',
-            'rel_id'   => $id,
-            'status'   => 5,
+            'rel_id' => $id,
+            'status' => 5,
         ]);
 
         $percent = 0;
@@ -222,18 +224,18 @@ class Projects_model extends App_Model
             $project = $this->db->get(db_prefix() . 'projects')->row();
             if ($project) {
                 $project->shared_vault_entries = $this->clients_model->get_vault_entries($project->clientid, ['share_in_projects' => 1]);
-                $settings                      = $this->get_project_settings($id);
+                $settings = $this->get_project_settings($id);
 
                 // SYNC NEW TABS
-                $tabs                        = get_project_tabs_admin();
-                $tabs_flatten                = [];
+                $tabs = get_project_tabs_admin();
+                $tabs_flatten = [];
                 $settings_available_features = [];
 
                 $available_features_index = false;
                 foreach ($settings as $key => $setting) {
                     if ($setting['name'] == 'available_features') {
                         $available_features_index = $key;
-                        $available_features       = unserialize($setting['value']);
+                        $available_features = unserialize($setting['value']);
                         if (is_array($available_features)) {
                             foreach ($available_features as $name => $avf) {
                                 $settings_available_features[] = $name;
@@ -255,8 +257,8 @@ class Projects_model extends App_Model
                         if (!in_array($tab, $settings_available_features)) {
                             if ($available_features_index) {
                                 $current_available_features_settings = $settings[$available_features_index];
-                                $tmp                                 = unserialize($current_available_features_settings['value']);
-                                $tmp[$tab]                           = 1;
+                                $tmp = unserialize($current_available_features_settings['value']);
+                                $tmp[$tab] = 1;
                                 $this->db->where('id', $current_available_features_settings['id']);
                                 $this->db->update(db_prefix() . 'project_settings', ['value' => serialize($tmp)]);
                             }
@@ -273,7 +275,7 @@ class Projects_model extends App_Model
                 $project->client_data = new StdClass();
                 $project->client_data = $this->clients_model->get($project->clientid);
 
-                $project            = hooks()->apply_filters('project_get', $project);
+                $project = hooks()->apply_filters('project_get', $project);
                 $GLOBALS['project'] = $project;
 
                 return $project;
@@ -291,20 +293,20 @@ class Projects_model extends App_Model
 
     public function calculate_total_by_project_hourly_rate($seconds, $hourly_rate)
     {
-        $hours       = seconds_to_time_format($seconds);
-        $decimal     = sec2qty($seconds);
+        $hours = seconds_to_time_format($seconds);
+        $decimal = sec2qty($seconds);
         $total_money = 0;
         $total_money += ($decimal * $hourly_rate);
 
         return [
-            'hours'       => $hours,
+            'hours' => $hours,
             'total_money' => $total_money,
         ];
     }
 
     public function calculate_total_by_task_hourly_rate($tasks)
     {
-        $total_money    = 0;
+        $total_money = 0;
         $_total_seconds = 0;
 
         foreach ($tasks as $task) {
@@ -314,14 +316,14 @@ class Projects_model extends App_Model
         }
 
         return [
-            'total_money'   => $total_money,
+            'total_money' => $total_money,
             'total_seconds' => $_total_seconds,
         ];
     }
 
     public function get_tasks($id, $where = [], $apply_restrictions = false, $count = false, $callback = null)
     {
-        $has_permission                    = has_permission('tasks', '', 'view');
+        $has_permission = has_permission('tasks', '', 'view');
         $show_all_tasks_for_project_member = get_option('show_all_tasks_for_project_member');
 
         $select = implode(', ', prefixed_table_fields_array(db_prefix() . 'tasks')) . ',' . db_prefix() . 'milestones.name as milestone_name,
@@ -387,8 +389,8 @@ class Projects_model extends App_Model
 
         $tasks = hooks()->apply_filters('get_projects_tasks', $tasks, [
             'project_id' => $id,
-            'where'      => $where,
-            'count'      => $count,
+            'where' => $where,
+            'count' => $count,
         ]);
 
         return $tasks;
@@ -402,11 +404,11 @@ class Projects_model extends App_Model
         $this->db->where('(cycles != total_cycles OR cycles=0)');
 
         $this->db->update(db_prefix() . 'tasks', [
-            'recurring_type'      => null,
-            'repeat_every'        => 0,
-            'cycles'              => 0,
-            'recurring'           => 0,
-            'custom_recurring'    => 0,
+            'recurring_type' => null,
+            'repeat_every' => 0,
+            'cycles' => 0,
+            'recurring' => 0,
+            'custom_recurring' => 0,
             'last_recurring_date' => null,
         ]);
     }
@@ -414,8 +416,8 @@ class Projects_model extends App_Model
     public function do_milestones_kanban_query($milestone_id, $project_id, $page = 1, $where = [], $count = false)
     {
         $where['milestone'] = $milestone_id;
-        $limit              = get_option('tasks_kanban_limit');
-        $tasks              = $this->get_tasks($project_id, $where, true, $count, function () use ($count, $page, $limit) {
+        $limit = get_option('tasks_kanban_limit');
+        $tasks = $this->get_tasks($project_id, $where, true, $count, function () use ($count, $page, $limit) {
             if ($count == false) {
                 if ($page > 1) {
                     $position = (($page - 1) * $limit);
@@ -487,12 +489,12 @@ class Projects_model extends App_Model
         $file = $this->db->get(db_prefix() . 'project_files')->row();
         if ($file) {
             if (empty($file->external)) {
-                $path     = get_upload_path_by_type('project') . $file->project_id . '/';
+                $path = get_upload_path_by_type('project') . $file->project_id . '/';
                 $fullPath = $path . $file->file_name;
                 if (file_exists($fullPath)) {
                     unlink($fullPath);
-                    $fname     = pathinfo($fullPath, PATHINFO_FILENAME);
-                    $fext      = pathinfo($fullPath, PATHINFO_EXTENSION);
+                    $fname = pathinfo($fullPath, PATHINFO_FILENAME);
+                    $fext = pathinfo($fullPath, PATHINFO_EXTENSION);
                     $thumbPath = $path . $fname . '_thumb.' . $fext;
 
                     if (file_exists($thumbPath)) {
@@ -559,7 +561,7 @@ class Projects_model extends App_Model
         $this->db->order_by('milestone_order', 'ASC');
         $this->db->where($where);
         $milestones = $this->db->get(db_prefix() . 'milestones')->result_array();
-        $i          = 0;
+        $i = 0;
         foreach ($milestones as $milestone) {
             $milestones[$i]['total_logged_time'] = $this->calc_milestone_logged_time($project_id, $milestone['id']);
             $i++;
@@ -571,19 +573,19 @@ class Projects_model extends App_Model
 
     public function add_milestone($data)
     {
-        $data['due_date']                         = to_sql_date($data['due_date']);
-        $data['start_date']                       = to_sql_date($data['start_date']);
-        $data['datecreated']                     = date('Y-m-d');
-        $data['description']                     = nl2br($data['description']);
+        $data['due_date'] = to_sql_date($data['due_date']);
+        $data['start_date'] = to_sql_date($data['start_date']);
+        $data['datecreated'] = date('Y-m-d');
+        $data['description'] = nl2br($data['description']);
         $data['description_visible_to_customer'] = isset($data['description_visible_to_customer']) ? 1 : 0;
-        $data['hide_from_customer']              = isset($data['hide_from_customer']) ? 1 : 0;
+        $data['hide_from_customer'] = isset($data['hide_from_customer']) ? 1 : 0;
 
         $this->db->insert(db_prefix() . 'milestones', $data);
         $insert_id = $this->db->insert_id();
         if ($insert_id) {
             $this->db->where('id', $insert_id);
             $milestone = $this->db->get(db_prefix() . 'milestones')->row();
-            $project   = $this->get($milestone->project_id);
+            $project = $this->get($milestone->project_id);
             if ($project->settings->view_milestones == 1) {
                 $show_to_customer = 1;
             } else {
@@ -601,12 +603,12 @@ class Projects_model extends App_Model
     public function update_milestone($data, $id)
     {
         $this->db->where('id', $id);
-        $milestone                               = $this->db->get(db_prefix() . 'milestones')->row();
-        $data['due_date']                        = to_sql_date($data['due_date']);
-        $data['start_date']                      = to_sql_date($data['start_date']);
-        $data['description']                     = nl2br($data['description']);
+        $milestone = $this->db->get(db_prefix() . 'milestones')->row();
+        $data['due_date'] = to_sql_date($data['due_date']);
+        $data['start_date'] = to_sql_date($data['start_date']);
+        $data['description'] = nl2br($data['description']);
         $data['description_visible_to_customer'] = isset($data['description_visible_to_customer']) ? 1 : 0;
-        $data['hide_from_customer']              = isset($data['hide_from_customer']) ? 1 : 0;
+        $data['hide_from_customer'] = isset($data['hide_from_customer']) ? 1 : 0;
 
         $this->db->where('id', $id);
         $this->db->update(db_prefix() . 'milestones', $data);
@@ -721,7 +723,7 @@ class Projects_model extends App_Model
             }
         }
 
-        $data['project_cost']    = !empty($data['project_cost']) ? $data['project_cost'] : null;
+        $data['project_cost'] = !empty($data['project_cost']) ? $data['project_cost'] : null;
         $data['estimated_hours'] = !empty($data['estimated_hours']) ? $data['estimated_hours'] : null;
 
         $data['start_date'] = to_sql_date($data['start_date']);
@@ -743,7 +745,7 @@ class Projects_model extends App_Model
             $data['project_cost'] = 0;
         } else {
             $data['project_rate_per_hour'] = 0;
-            $data['project_cost']          = 0;
+            $data['project_cost'] = 0;
         }
 
         $data['addedfrom'] = get_staff_user_id();
@@ -752,8 +754,8 @@ class Projects_model extends App_Model
         $items_to_convert = false;
         if (isset($data['items'])) {
             $items_to_convert = $data['items'];
-            $estimate_id      = $data['estimate_id'];
-            $items_assignees  = $data['items_assignee'];
+            $estimate_id = $data['estimate_id'];
+            $items_assignees = $data['items_assignee'];
             unset($data['items'], $data['estimate_id'], $data['items_assignee']);
         }
 
@@ -782,7 +784,7 @@ class Projects_model extends App_Model
             $original_settings = $this->get_settings();
             if (isset($project_settings)) {
                 $_settings = [];
-                $_values   = [];
+                $_values = [];
                 foreach ($project_settings as $name => $val) {
                     array_push($_settings, $name);
                     $_values[$name] = $val;
@@ -795,7 +797,7 @@ class Projects_model extends App_Model
                             $value_setting = 0;
                         }
                     } else {
-                        $tabs         = get_project_tabs_admin();
+                        $tabs = get_project_tabs_admin();
                         $tab_settings = [];
                         foreach ($_values[$setting] as $tab) {
                             $tab_settings[$tab] = 1;
@@ -817,8 +819,8 @@ class Projects_model extends App_Model
                     }
                     $this->db->insert(db_prefix() . 'project_settings', [
                         'project_id' => $insert_id,
-                        'name'       => $setting,
-                        'value'      => $value_setting,
+                        'name' => $setting,
+                        'value' => $value_setting,
                     ]);
                 }
             } else {
@@ -826,8 +828,8 @@ class Projects_model extends App_Model
                     $value_setting = 0;
                     $this->db->insert(db_prefix() . 'project_settings', [
                         'project_id' => $insert_id,
-                        'name'       => $setting,
-                        'value'      => $value_setting,
+                        'name' => $setting,
+                        'value' => $value_setting,
                     ]);
                 }
             }
@@ -895,7 +897,7 @@ class Projects_model extends App_Model
             }
         } else {
             $_settings = [];
-            $_values   = [];
+            $_values = [];
 
             foreach ($data['settings'] as $name => $val) {
                 array_push($_settings, $name);
@@ -913,7 +915,7 @@ class Projects_model extends App_Model
                         $value_setting = 0;
                     }
                 } else {
-                    $tabs         = get_project_tabs_admin();
+                    $tabs = get_project_tabs_admin();
                     $tab_settings = [];
                     foreach ($_values[$setting['name']] as $tab) {
                         $tab_settings[$tab] = 1;
@@ -946,7 +948,7 @@ class Projects_model extends App_Model
             }
         }
 
-        $data['project_cost']    = !empty($data['project_cost']) ? $data['project_cost'] : null;
+        $data['project_cost'] = !empty($data['project_cost']) ? $data['project_cost'] : null;
         $data['estimated_hours'] = !empty($data['estimated_hours']) ? $data['estimated_hours'] : null;
 
         if ($old_status == 4 && $data['status'] != 4) {
@@ -989,7 +991,7 @@ class Projects_model extends App_Model
             $data['project_cost'] = 0;
         } else {
             $data['project_rate_per_hour'] = 0;
-            $data['project_cost']          = 0;
+            $data['project_cost'] = 0;
         }
         if (isset($data['project_members'])) {
             $project_members = $data['project_members'];
@@ -1056,7 +1058,7 @@ class Projects_model extends App_Model
 
             if ($original_project->status != $data['status']) {
                 hooks()->do_action('project_status_changed', [
-                    'status'     => $data['status'],
+                    'status' => $data['status'],
                     'project_id' => $id,
                 ]);
                 // Give space this log to be on top
@@ -1118,7 +1120,7 @@ class Projects_model extends App_Model
 
         if ($this->db->affected_rows() > 0) {
             hooks()->do_action('project_status_changed', [
-                'status'     => $data['status_id'],
+                'status' => $data['status_id'],
                 'project_id' => $data['project_id'],
             ]);
 
@@ -1137,7 +1139,7 @@ class Projects_model extends App_Model
             if ($data['notify_project_members_status_change'] == 1) {
                 $this->_notify_project_members_status_change($data['project_id'], $old_status, $data['status_id']);
             }
-            
+
             if ($data['have_complete_compliance'] == 1) {
                 $this->_notify_project_members_status_change($data['project_id'], $old_status, $data['status_id']);
             }
@@ -1166,15 +1168,15 @@ class Projects_model extends App_Model
 
     private function _notify_project_members_status_change($id, $old_status, $new_status)
     {
-        $members       = $this->get_project_members($id);
+        $members = $this->get_project_members($id);
         $notifiedUsers = [];
         foreach ($members as $member) {
             if ($member['staff_id'] != get_staff_user_id()) {
                 $notified = add_notification([
-                    'fromuserid'      => get_staff_user_id(),
-                    'description'     => 'not_project_status_updated',
-                    'link'            => 'projects/view/' . $id,
-                    'touserid'        => $member['staff_id'],
+                    'fromuserid' => get_staff_user_id(),
+                    'description' => 'not_project_status_updated',
+                    'link' => 'projects/view/' . $id,
+                    'touserid' => $member['staff_id'],
                     'additional_data' => serialize([
                         '<lang>project_status_' . $old_status . '</lang>',
                         '<lang>project_status_' . $new_status . '</lang>',
@@ -1193,7 +1195,7 @@ class Projects_model extends App_Model
         $this->db->where('rel_type', 'project');
         $this->db->where('rel_id', $id);
         $this->db->update(db_prefix() . 'tasks', [
-            'status'       => 5,
+            'status' => 5,
             'datefinished' => date('Y-m-d H:i:s'),
         ]);
         $tasks = $this->get_tasks($id);
@@ -1217,9 +1219,9 @@ class Projects_model extends App_Model
         $new_project_members_to_receive_email = [];
         $this->db->select('name,clientid');
         $this->db->where('id', $id);
-        $project      = $this->db->get(db_prefix() . 'projects')->row();
+        $project = $this->db->get(db_prefix() . 'projects')->row();
         $project_name = $project->name;
-        $client_id    = $project->clientid;
+        $client_id = $project->clientid;
 
         $project_members_in = $this->get_project_members($id);
         if (sizeof($project_members_in) > 0) {
@@ -1258,15 +1260,15 @@ class Projects_model extends App_Model
                         }
                         $this->db->insert(db_prefix() . 'project_members', [
                             'project_id' => $id,
-                            'staff_id'   => $staff_id,
+                            'staff_id' => $staff_id,
                         ]);
                         if ($this->db->affected_rows() > 0) {
                             if ($staff_id != get_staff_user_id()) {
                                 $notified = add_notification([
-                                    'fromuserid'      => get_staff_user_id(),
-                                    'description'     => 'not_staff_added_as_project_member',
-                                    'link'            => 'projects/view/' . $id,
-                                    'touserid'        => $staff_id,
+                                    'fromuserid' => get_staff_user_id(),
+                                    'description' => 'not_staff_added_as_project_member',
+                                    'link' => 'projects/view/' . $id,
+                                    'touserid' => $staff_id,
                                     'additional_data' => serialize([
                                         $project_name,
                                     ]),
@@ -1294,15 +1296,15 @@ class Projects_model extends App_Model
                     }
                     $this->db->insert(db_prefix() . 'project_members', [
                         'project_id' => $id,
-                        'staff_id'   => $staff_id,
+                        'staff_id' => $staff_id,
                     ]);
                     if ($this->db->affected_rows() > 0) {
                         if ($staff_id != get_staff_user_id()) {
                             $notified = add_notification([
-                                'fromuserid'      => get_staff_user_id(),
-                                'description'     => 'not_staff_added_as_project_member',
-                                'link'            => 'projects/view/' . $id,
-                                'touserid'        => $staff_id,
+                                'fromuserid' => get_staff_user_id(),
+                                'description' => 'not_staff_added_as_project_member',
+                                'link' => 'projects/view/' . $id,
+                                'touserid' => $staff_id,
                                 'additional_data' => serialize([
                                     $project_name,
                                 ]),
@@ -1341,7 +1343,7 @@ class Projects_model extends App_Model
             $staff_id = get_staff_user_id();
         }
         $member = total_rows(db_prefix() . 'project_members', [
-            'staff_id'   => $staff_id,
+            'staff_id' => $staff_id,
             'project_id' => $project_id,
         ]);
         if ($member > 0) {
@@ -1401,7 +1403,7 @@ class Projects_model extends App_Model
     public function get_timesheets($project_id, $tasks_ids = [])
     {
         if (count($tasks_ids) == 0) {
-            $tasks     = $this->get_tasks($project_id);
+            $tasks = $this->get_tasks($project_id);
             $tasks_ids = [];
             foreach ($tasks as $task) {
                 array_push($tasks_ids, $task['id']);
@@ -1410,10 +1412,10 @@ class Projects_model extends App_Model
         if (count($tasks_ids) > 0) {
             $this->db->where('task_id IN(' . implode(', ', $tasks_ids) . ')');
             $timesheets = $this->db->get(db_prefix() . 'taskstimers')->result_array();
-            $i          = 0;
+            $i = 0;
             foreach ($timesheets as $t) {
-                $task                         = $this->tasks_model->get($t['task_id']);
-                $timesheets[$i]['task_data']  = $task;
+                $task = $this->tasks_model->get($t['task_id']);
+                $timesheets[$i]['task_data'] = $task;
                 $timesheets[$i]['staff_name'] = get_staff_full_name($t['staff_id']);
                 if (!is_null($t['end_time'])) {
                     $timesheets[$i]['total_spent'] = $t['end_time'] - $t['start_time'];
@@ -1498,9 +1500,9 @@ class Projects_model extends App_Model
     {
         $this->db->where('discussion_id', $id);
         $this->db->where('discussion_type', $type);
-        $comments             = $this->db->get(db_prefix() . 'projectdiscussioncomments')->result_array();
-        $i                    = 0;
-        $allCommentsIDS       = [];
+        $comments = $this->db->get(db_prefix() . 'projectdiscussioncomments')->result_array();
+        $i = 0;
+        $allCommentsIDS = [];
         $allCommentsParentIDS = [];
         foreach ($comments as $comment) {
             $allCommentsIDS[] = $comment['id'];
@@ -1571,10 +1573,10 @@ class Projects_model extends App_Model
             $this->db->where('show_to_customer', 1);
         }
         $discussions = $this->db->get(db_prefix() . 'projectdiscussions')->result_array();
-        $i           = 0;
+        $i = 0;
         foreach ($discussions as $discussion) {
             $discussions[$i]['total_comments'] = total_rows(db_prefix() . 'projectdiscussioncomments', [
-                'discussion_id'   => $discussion['id'],
+                'discussion_id' => $discussion['id'],
                 'discussion_type' => 'regular',
             ]);
             $i++;
@@ -1585,8 +1587,8 @@ class Projects_model extends App_Model
 
     public function add_discussion_comment($data, $discussion_id, $type)
     {
-        $discussion               = $this->get_discussion($discussion_id);
-        $_data['discussion_id']   = $discussion_id;
+        $discussion = $this->get_discussion($discussion_id);
+        $_data['discussion_id'] = $discussion_id;
         $_data['discussion_type'] = $type;
         if (isset($data['content'])) {
             $_data['content'] = $data['content'];
@@ -1596,12 +1598,12 @@ class Projects_model extends App_Model
         }
         if (is_client_logged_in()) {
             $_data['contact_id'] = get_contact_user_id();
-            $_data['fullname']   = get_contact_full_name($_data['contact_id']);
-            $_data['staff_id']   = 0;
+            $_data['fullname'] = get_contact_full_name($_data['contact_id']);
+            $_data['staff_id'] = 0;
         } else {
             $_data['contact_id'] = 0;
-            $_data['staff_id']   = get_staff_user_id();
-            $_data['fullname']   = get_staff_full_name($_data['staff_id']);
+            $_data['staff_id'] = get_staff_user_id();
+            $_data['fullname'] = get_staff_full_name($_data['staff_id']);
         }
         $_data = handle_project_discussion_comment_attachments($discussion_id, $data, $_data);
 
@@ -1614,24 +1616,24 @@ class Projects_model extends App_Model
         if ($insert_id) {
             if ($type == 'regular') {
                 $discussion = $this->get_discussion($discussion_id);
-                $not_link   = 'projects/view/' . $discussion->project_id . '?group=project_discussions&discussion_id=' . $discussion_id;
+                $not_link = 'projects/view/' . $discussion->project_id . '?group=project_discussions&discussion_id=' . $discussion_id;
             } else {
-                $discussion                   = $this->get_file($discussion_id);
-                $not_link                     = 'projects/view/' . $discussion->project_id . '?group=project_files&file_id=' . $discussion_id;
+                $discussion = $this->get_file($discussion_id);
+                $not_link = 'projects/view/' . $discussion->project_id . '?group=project_files&file_id=' . $discussion_id;
                 $discussion->show_to_customer = $discussion->visible_to_customer;
             }
 
             $emailTemplateData = [
                 'staff' => [
-                    'discussion_id'         => $discussion_id,
+                    'discussion_id' => $discussion_id,
                     'discussion_comment_id' => $insert_id,
-                    'discussion_type'       => $type,
+                    'discussion_type' => $type,
                 ],
                 'customers' => [
-                    'customer_template'     => true,
-                    'discussion_id'         => $discussion_id,
+                    'customer_template' => true,
+                    'discussion_id' => $discussion_id,
                     'discussion_comment_id' => $insert_id,
-                    'discussion_type'       => $type,
+                    'discussion_type' => $type,
                 ],
             ];
 
@@ -1639,16 +1641,16 @@ class Projects_model extends App_Model
                 $emailTemplateData['attachments'] = [
                     [
                         'attachment' => PROJECT_DISCUSSION_ATTACHMENT_FOLDER . $discussion_id . '/' . $_data['file_name'],
-                        'filename'   => $_data['file_name'],
-                        'type'       => $_data['file_mime_type'],
-                        'read'       => true,
+                        'filename' => $_data['file_name'],
+                        'type' => $_data['file_mime_type'],
+                        'read' => true,
                     ],
                 ];
             }
 
             $notification_data = [
                 'description' => 'not_commented_on_project_discussion',
-                'link'        => $not_link,
+                'link' => $not_link,
             ];
 
             if (is_client_logged_in()) {
@@ -1708,7 +1710,7 @@ class Projects_model extends App_Model
         $this->db->where('id', $data['id']);
         $this->db->update(db_prefix() . 'projectdiscussioncomments', [
             'modified' => date('Y-m-d H:i:s'),
-            'content'  => $data['content'],
+            'content' => $data['content'],
         ]);
         if ($this->db->affected_rows() > 0) {
             $this->_update_discussion_last_activity($comment->discussion_id, $comment->discussion_type);
@@ -1728,11 +1730,11 @@ class Projects_model extends App_Model
                 $additional_data = '';
                 if ($comment->discussion_type == 'regular') {
                     $discussion = $this->get_discussion($comment->discussion_id);
-                    $not        = 'project_activity_deleted_discussion_comment';
+                    $not = 'project_activity_deleted_discussion_comment';
                     $additional_data .= $discussion->subject . '<br />' . $comment->content;
                 } else {
                     $discussion = $this->get_file($comment->discussion_id);
-                    $not        = 'project_activity_deleted_file_discussion_comment';
+                    $not = 'project_activity_deleted_file_discussion_comment';
                     $additional_data .= $discussion->subject . '<br />' . $comment->content;
                 }
 
@@ -1776,11 +1778,11 @@ class Projects_model extends App_Model
     public function add_discussion($data)
     {
         if (is_client_logged_in()) {
-            $data['contact_id']       = get_contact_user_id();
-            $data['staff_id']         = 0;
+            $data['contact_id'] = get_contact_user_id();
+            $data['staff_id'] = 0;
             $data['show_to_customer'] = 1;
         } else {
-            $data['staff_id']   = get_staff_user_id();
+            $data['staff_id'] = get_staff_user_id();
             $data['contact_id'] = 0;
             if (isset($data['show_to_customer'])) {
                 $data['show_to_customer'] = 1;
@@ -1793,10 +1795,10 @@ class Projects_model extends App_Model
         $this->db->insert(db_prefix() . 'projectdiscussions', $data);
         $insert_id = $this->db->insert_id();
         if ($insert_id) {
-            $members           = $this->get_project_members($data['project_id']);
+            $members = $this->get_project_members($data['project_id']);
             $notification_data = [
                 'description' => 'not_created_new_project_discussion',
-                'link'        => 'projects/view/' . $data['project_id'] . '?group=project_discussions&discussion_id=' . $insert_id,
+                'link' => 'projects/view/' . $data['project_id'] . '?group=project_discussions&discussion_id=' . $insert_id,
             ];
 
             if (is_client_logged_in()) {
@@ -1818,13 +1820,13 @@ class Projects_model extends App_Model
             pusher_trigger_notification($notifiedUsers);
             $this->send_project_email_template($data['project_id'], 'project_discussion_created_to_staff', 'project_discussion_created_to_customer', $data['show_to_customer'], [
                 'staff' => [
-                    'discussion_id'   => $insert_id,
+                    'discussion_id' => $insert_id,
                     'discussion_type' => 'regular',
                 ],
                 'customers' => [
                     'customer_template' => true,
-                    'discussion_id'     => $insert_id,
-                    'discussion_type'   => 'regular',
+                    'discussion_id' => $insert_id,
+                    'discussion_type' => 'regular',
                 ],
             ]);
             $this->log_activity($data['project_id'], 'project_activity_created_discussion', $data['subject'], $data['show_to_customer']);
@@ -1874,9 +1876,9 @@ class Projects_model extends App_Model
     public function copy($project_id, $data)
     {
         $_new_data = [];
-        $project   = $this->get($project_id);
-        $settings  = $this->get_project_settings($project_id);
-        $fields    = $this->db->list_fields(db_prefix() . 'projects');
+        $project = $this->get($project_id);
+        $settings = $this->get_project_settings($project_id);
+        $fields = $this->db->list_fields(db_prefix() . 'projects');
 
         foreach ($fields as $field) {
             if (isset($project->$field)) {
@@ -1906,18 +1908,18 @@ class Projects_model extends App_Model
         }
 
         $_new_data['project_created'] = date('Y-m-d H:i:s');
-        $_new_data['addedfrom']       = get_staff_user_id();
+        $_new_data['addedfrom'] = get_staff_user_id();
 
         $_new_data['date_finished'] = null;
 
         if ($project->contact_notification == 2) {
-            $contacts                     = $this->clients_model->get_contacts($_new_data['clientid'], ['active' => 1, 'project_emails' => 1]);
+            $contacts = $this->clients_model->get_contacts($_new_data['clientid'], ['active' => 1, 'project_emails' => 1]);
             $_new_data['notify_contacts'] = serialize(array_column($contacts, 'id'));
         }
-//15-10
+        //15-10
         // $_new_data  
         $_new_data['created_staff_id'] = get_staff_user_id();
-//15-10
+        //15-10
 
         $this->db->insert(db_prefix() . 'projects', $_new_data);
         $id = $this->db->insert_id();
@@ -1928,13 +1930,13 @@ class Projects_model extends App_Model
             foreach ($settings as $setting) {
                 $this->db->insert(db_prefix() . 'project_settings', [
                     'project_id' => $id,
-                    'name'       => $setting['name'],
-                    'value'      => $setting['value'],
+                    'name' => $setting['name'],
+                    'value' => $setting['value'],
                 ]);
             }
 
             $added_tasks = [];
-            $tasks       = $this->get_tasks($project_id);
+            $tasks = $this->get_tasks($project_id);
 
             if (isset($data['tasks'])) {
                 foreach ($tasks as $task) {
@@ -1959,27 +1961,27 @@ class Projects_model extends App_Model
                     // e.q. old project start date 2020-04-01, old task start date 2020-04-15 and due date 2020-04-30
                     // copy project and set start date 2020-06-01
                     // new task start date will be 2020-06-15 and below due date 2020-06-30
-                    $dStart    = new DateTime($project->start_date);
-                    $dEnd      = new DateTime($task['startdate']);
-                    $dDiff     = $dStart->diff($dEnd);
+                    $dStart = new DateTime($project->start_date);
+                    $dEnd = new DateTime($task['startdate']);
+                    $dDiff = $dStart->diff($dEnd);
                     $startDate = new DateTime($_new_data['start_date']);
                     $startDate->modify('+' . $dDiff->days . ' DAY');
                     $newTaskStartDate = $startDate->format('Y-m-d');
 
                     $merge = [
-                        'rel_id'              => $id,
-                        'rel_type'            => 'project',
+                        'rel_id' => $id,
+                        'rel_type' => 'project',
                         'last_recurring_date' => null,
-                        'startdate'           => $newTaskStartDate,
-                        'status'              => $data['copy_project_task_status'],
+                        'startdate' => $newTaskStartDate,
+                        'status' => $data['copy_project_task_status'],
                     ];
 
                     // Calculate the diff in days between the task start and due date
                     // then add these days to the new task start date to be used as this task due date
                     if ($task['duedate']) {
-                        $dStart  = new DateTime($task['startdate']);
-                        $dEnd    = new DateTime($task['duedate']);
-                        $dDiff   = $dStart->diff($dEnd);
+                        $dStart = new DateTime($task['startdate']);
+                        $dEnd = new DateTime($task['duedate']);
+                        $dDiff = $dStart->diff($dEnd);
                         $dueDate = new DateTime($newTaskStartDate);
                         $dueDate->modify('+' . $dDiff->days . ' DAY');
                         $merge['duedate'] = $dueDate->format('Y-m-d');
@@ -1994,40 +1996,40 @@ class Projects_model extends App_Model
             }
 
             if (isset($data['milestones'])) {
-                $milestones        = $this->get_milestones($project_id);
+                $milestones = $this->get_milestones($project_id);
                 $_added_milestones = [];
                 foreach ($milestones as $milestone) {
-                    $newProjectStartDate                                   = new DateTimeImmutable($_new_data['start_date']);
-                    $oldProjectStartDate                                   = new DateTime($project->start_date);
-                    $oldMilestoneStartDate                                 = new DateTime($milestone['start_date']); // assuming that the MySQL column added is start_date
+                    $newProjectStartDate = new DateTimeImmutable($_new_data['start_date']);
+                    $oldProjectStartDate = new DateTime($project->start_date);
+                    $oldMilestoneStartDate = new DateTime($milestone['start_date']); // assuming that the MySQL column added is start_date
                     $diffBetweenOldProjectStartDateAndOldMilesoneStartDate = $oldProjectStartDate->diff($oldMilestoneStartDate);
-                    $newMilestoneStartDate                                 = $newProjectStartDate->modify('+' . $diffBetweenOldProjectStartDateAndOldMilesoneStartDate->days . ' DAY');
+                    $newMilestoneStartDate = $newProjectStartDate->modify('+' . $diffBetweenOldProjectStartDateAndOldMilesoneStartDate->days . ' DAY');
 
-                    $oldMilestoneDueDate                                   = new DateTime($milestone['due_date']);
+                    $oldMilestoneDueDate = new DateTime($milestone['due_date']);
                     $diffBetweenOldMilestoneDueDateAndOldMilesoneStartDate = $oldMilestoneStartDate->diff($oldMilestoneDueDate);
-                    $newMilestoneDueDate                                   = $newMilestoneStartDate->modify('+' . $diffBetweenOldMilestoneDueDateAndOldMilesoneStartDate->days . ' DAY');
+                    $newMilestoneDueDate = $newMilestoneStartDate->modify('+' . $diffBetweenOldMilestoneDueDateAndOldMilesoneStartDate->days . ' DAY');
 
 
                     $this->db->insert(db_prefix() . 'milestones', [
-                        'name'                            => $milestone['name'],
-                        'project_id'                      => $id,
-                        'milestone_order'                 => $milestone['milestone_order'],
+                        'name' => $milestone['name'],
+                        'project_id' => $id,
+                        'milestone_order' => $milestone['milestone_order'],
                         'description_visible_to_customer' => $milestone['description_visible_to_customer'],
-                        'description'                     => $milestone['description'],
-                        'start_date'                      => $newMilestoneStartDate->format('Y-m-d'),
-                        'due_date'                        => $newMilestoneDueDate->format('Y-m-d'),
-                        'datecreated'                     => date('Y-m-d'),
-                        'color'                           => $milestone['color'],
-                        'hide_from_customer'              => $milestone['hide_from_customer'],
+                        'description' => $milestone['description'],
+                        'start_date' => $newMilestoneStartDate->format('Y-m-d'),
+                        'due_date' => $newMilestoneDueDate->format('Y-m-d'),
+                        'datecreated' => date('Y-m-d'),
+                        'color' => $milestone['color'],
+                        'hide_from_customer' => $milestone['hide_from_customer'],
                     ]);
 
                     $milestone_id = $this->db->insert_id();
 
                     if ($milestone_id) {
-                        $_added_milestone_data         = [];
-                        $_added_milestone_data['id']   = $milestone_id;
+                        $_added_milestone_data = [];
+                        $_added_milestone_data['id'] = $milestone_id;
                         $_added_milestone_data['name'] = $milestone['name'];
-                        $_added_milestones[]           = $_added_milestone_data;
+                        $_added_milestones[] = $_added_milestone_data;
                     }
                 }
 
@@ -2067,28 +2069,27 @@ class Projects_model extends App_Model
             }
 
             if (isset($data['members'])) {
-                $members  = $this->get_project_members($project_id);
-               
+                $members = $this->get_project_members($project_id);
+
                 $staff[] = get_staff_user_id();
-               
+
                 $_members = [];
-    
+
                 foreach ($members as $member) {
                     $datamember[] = ($member['staff_id']);
                 }
-    
-                $member = array_merge($datamember,$staff);
 
-                if($member==""){
+                $member = array_merge($datamember, $staff);
+
+                if ($member == "") {
                     $this->add_edit_members([
                         'project_members' => $staff,
                     ], $id);
+                } else {
+                    $this->add_edit_members([
+                        'project_members' => $member,
+                    ], $id);
                 }
-                else{
-                $this->add_edit_members([
-                    'project_members' => $member,
-                ], $id);
-            }
             }
 
             // if (isset($data['members'])) {
@@ -2108,10 +2109,10 @@ class Projects_model extends App_Model
                 $value = get_custom_field_value($project_id, $field['id'], 'projects', false);
                 if ($value != '') {
                     $this->db->insert(db_prefix() . 'customfieldsvalues', [
-                        'relid'   => $id,
+                        'relid' => $id,
                         'fieldid' => $field['id'],
                         'fieldto' => 'projects',
-                        'value'   => $value,
+                        'value' => $value,
                     ]);
                 }
             }
@@ -2121,7 +2122,7 @@ class Projects_model extends App_Model
             log_activity('Project Copied [ID: ' . $project_id . ', NewID: ' . $id . ']');
 
             hooks()->do_action('project_copied', [
-                'project_id'     => $project_id,
+                'project_id' => $project_id,
                 'new_project_id' => $id,
             ]);
 
@@ -2161,8 +2162,8 @@ class Projects_model extends App_Model
             return false;
         }
         $this->db->insert(db_prefix() . 'project_notes', [
-            'staff_id'   => get_staff_user_id(),
-            'content'    => $data['content'],
+            'staff_id' => get_staff_user_id(),
+            'content' => $data['content'],
             'project_id' => $project_id,
         ]);
         $insert_id = $this->db->insert_id();
@@ -2296,10 +2297,10 @@ class Projects_model extends App_Model
         }
         $this->db->order_by('dateadded', 'desc');
         $activities = $this->db->get(db_prefix() . 'project_activity')->result_array();
-        $i          = 0;
+        $i = 0;
         foreach ($activities as $activity) {
-            $seconds          = get_string_between($activity['additional_data'], '<seconds>', '</seconds>');
-            $other_lang_keys  = get_string_between($activity['additional_data'], '<lang>', '</lang>');
+            $seconds = get_string_between($activity['additional_data'], '<seconds>', '</seconds>');
+            $other_lang_keys = get_string_between($activity['additional_data'], '<lang>', '</lang>');
             $_additional_data = $activity['additional_data'];
 
             if ($seconds != '') {
@@ -2318,9 +2319,9 @@ class Projects_model extends App_Model
                 }
             }
 
-            $activities[$i]['description']     = _l($activities[$i]['description_key']);
+            $activities[$i]['description'] = _l($activities[$i]['description_key']);
             $activities[$i]['additional_data'] = $_additional_data;
-            $activities[$i]['project_name']    = get_project_name_by_id($activity['project_id']);
+            $activities[$i]['project_name'] = get_project_name_by_id($activity['project_id']);
             unset($activities[$i]['description_key']);
             $i++;
         }
@@ -2333,23 +2334,23 @@ class Projects_model extends App_Model
         if (!DEFINED('CRON')) {
             if (is_client_logged_in()) {
                 $data['contact_id'] = get_contact_user_id();
-                $data['staff_id']   = 0;
-                $data['fullname']   = get_contact_full_name(get_contact_user_id());
+                $data['staff_id'] = 0;
+                $data['fullname'] = get_contact_full_name(get_contact_user_id());
             } elseif (is_staff_logged_in()) {
                 $data['contact_id'] = 0;
-                $data['staff_id']   = get_staff_user_id();
-                $data['fullname']   = get_staff_full_name(get_staff_user_id());
+                $data['staff_id'] = get_staff_user_id();
+                $data['fullname'] = get_staff_full_name(get_staff_user_id());
             }
         } else {
             $data['contact_id'] = 0;
-            $data['staff_id']   = 0;
-            $data['fullname']   = '[CRON]';
+            $data['staff_id'] = 0;
+            $data['fullname'] = '[CRON]';
         }
-        $data['description_key']     = $description_key;
-        $data['additional_data']     = $additional_data;
+        $data['description_key'] = $description_key;
+        $data['additional_data'] = $additional_data;
         $data['visible_to_customer'] = $visible_to_customer;
-        $data['project_id']          = $project_id;
-        $data['dateadded']           = date('Y-m-d H:i:s');
+        $data['project_id'] = $project_id;
+        $data['dateadded'] = date('Y-m-d H:i:s');
 
         $data = hooks()->apply_filters('before_log_project_activity', $data);
 
@@ -2363,10 +2364,10 @@ class Projects_model extends App_Model
         $additional_data = $file->file_name;
         $this->log_activity($project_id, 'project_activity_uploaded_file', $additional_data, $file->visible_to_customer);
 
-        $members           = $this->get_project_members($project_id);
+        $members = $this->get_project_members($project_id);
         $notification_data = [
             'description' => 'not_project_file_uploaded',
-            'link'        => 'projects/view/' . $project_id . '?group=project_files&file_id=' . $file_id,
+            'link' => 'projects/view/' . $project_id . '?group=project_files&file_id=' . $file_id,
         ];
 
         if (is_client_logged_in()) {
@@ -2393,7 +2394,7 @@ class Projects_model extends App_Model
             'project_file_to_customer',
             $file->visible_to_customer,
             [
-                'staff'     => ['discussion_id' => $file_id, 'discussion_type' => 'file'],
+                'staff' => ['discussion_id' => $file_id, 'discussion_type' => 'file'],
                 'customers' => ['customer_template' => true, 'discussion_id' => $file_id, 'discussion_type' => 'file'],
             ]
         );
@@ -2401,15 +2402,15 @@ class Projects_model extends App_Model
 
     public function add_external_file($data)
     {
-        $insert['dateadded']           = date('Y-m-d H:i:s');
-        $insert['project_id']          = $data['project_id'];
-        $insert['external']            = $data['external'];
+        $insert['dateadded'] = date('Y-m-d H:i:s');
+        $insert['project_id'] = $data['project_id'];
+        $insert['external'] = $data['external'];
         $insert['visible_to_customer'] = $data['visible_to_customer'];
-        $insert['file_name']           = $data['files'][0]['name'];
-        $insert['subject']             = $data['files'][0]['name'];
-        $insert['external_link']       = $data['files'][0]['link'];
+        $insert['file_name'] = $data['files'][0]['name'];
+        $insert['subject'] = $data['files'][0]['name'];
+        $insert['external_link'] = $data['files'][0]['link'];
 
-        $path_parts         = pathinfo($data['files'][0]['name']);
+        $path_parts = pathinfo($data['files'][0]['name']);
         $insert['filetype'] = get_mime_by_extension('.' . $path_parts['extension']);
 
         if (isset($data['files'][0]['thumbnailLink'])) {
@@ -2437,7 +2438,7 @@ class Projects_model extends App_Model
     {
         if (count($additional_data) == 0) {
             $additional_data['customers'] = [];
-            $additional_data['staff']     = [];
+            $additional_data['staff'] = [];
         } elseif (count($additional_data) == 1) {
             if (!isset($additional_data['staff'])) {
                 $additional_data['staff'] = [];
@@ -2463,7 +2464,7 @@ class Projects_model extends App_Model
         }
 
         if ($action_visible_to_customer == 1) {
-           $contacts = $this->clients_model->get_contacts_for_project_notifications($project_id, 'project_emails');
+            $contacts = $this->clients_model->get_contacts_for_project_notifications($project_id, 'project_emails');
 
             foreach ($contacts as $contact) {
                 if (is_client_logged_in() && $contact['id'] == get_contact_user_id()) {
@@ -2491,10 +2492,10 @@ class Projects_model extends App_Model
     public function total_logged_time_by_billing_type($id, $conditions = [])
     {
         $project_data = $this->_get_project_billing_data($id);
-        $data         = [];
+        $data = [];
         if ($project_data->billing_type == 2) {
-            $seconds             = $this->total_logged_time($id);
-            $data                = $this->projects_model->calculate_total_by_project_hourly_rate($seconds, $project_data->project_rate_per_hour);
+            $seconds = $this->total_logged_time($id);
+            $data = $this->projects_model->calculate_total_by_project_hourly_rate($seconds, $project_data->project_rate_per_hour);
             $data['logged_time'] = $data['hours'];
         } elseif ($project_data->billing_type == 3) {
             $data = $this->_get_data_total_logged_time($id);
@@ -2514,7 +2515,7 @@ class Projects_model extends App_Model
     {
         return $this->_get_data_total_logged_time($id, [
             'billable' => 1,
-            'billed'   => 1,
+            'billed' => 1,
         ]);
     }
 
@@ -2522,7 +2523,7 @@ class Projects_model extends App_Model
     {
         return $this->_get_data_total_logged_time($id, [
             'billable' => 1,
-            'billed'   => 0,
+            'billed' => 0,
         ]);
     }
 
@@ -2542,17 +2543,17 @@ class Projects_model extends App_Model
     private function _get_data_total_logged_time($id, $conditions = [])
     {
         $project_data = $this->_get_project_billing_data($id);
-        $tasks        = $this->get_tasks($id, $conditions);
+        $tasks = $this->get_tasks($id, $conditions);
 
         if ($project_data->billing_type == 3) {
-            $data                = $this->calculate_total_by_task_hourly_rate($tasks);
+            $data = $this->calculate_total_by_task_hourly_rate($tasks);
             $data['logged_time'] = seconds_to_time_format($data['total_seconds']);
         } elseif ($project_data->billing_type == 2) {
             $seconds = 0;
             foreach ($tasks as $task) {
                 $seconds += $task['total_logged_time'];
             }
-            $data                = $this->calculate_total_by_project_hourly_rate($seconds, $project_data->project_rate_per_hour);
+            $data = $this->calculate_total_by_project_hourly_rate($seconds, $project_data->project_rate_per_hour);
             $data['logged_time'] = $data['hours'];
         }
 
@@ -2582,7 +2583,7 @@ class Projects_model extends App_Model
             if (is_staff_logged_in() && $staffId == get_staff_user_id()) {
                 continue;
             }
-            $member             = (array) $this->staff_model->get($staffId);
+            $member = (array) $this->staff_model->get($staffId);
             $member['staff_id'] = $member['staffid'];
 
             $mailTemplate = mail_template($staff_template, $project, $member, $additional_data['staff']);
@@ -2603,15 +2604,15 @@ class Projects_model extends App_Model
             $_item = $this->db->get(db_prefix() . 'itemable')->row();
 
             $data = [
-                'billable'            => 'on',
-                'name'                => $_item->description,
-                'description'         => $_item->long_description,
-                'startdate'           => _d($project_data['start_date']),
-                'duedate'             => '',
-                'rel_type'            => 'project',
-                'rel_id'              => $project_id,
-                'hourly_rate'         => $project_data['billing_type'] == 3 ? $_item->rate : 0,
-                'priority'            => get_option('default_task_priority'),
+                'billable' => 'on',
+                'name' => $_item->description,
+                'description' => $_item->long_description,
+                'startdate' => _d($project_data['start_date']),
+                'duedate' => '',
+                'rel_type' => 'project',
+                'rel_id' => $project_id,
+                'hourly_rate' => $project_data['billing_type'] == 3 ? $_item->rate : 0,
+                'priority' => get_option('default_task_priority'),
                 'withDefaultAssignee' => false,
             ];
 
@@ -2625,14 +2626,14 @@ class Projects_model extends App_Model
                 $staff_id = $assignees[$index];
 
                 $this->tasks_model->add_task_assignees([
-                    'taskid'   => $task_id,
+                    'taskid' => $task_id,
                     'assignee' => intval($staff_id),
                 ]);
 
                 if (!$this->is_member($project_id, $staff_id)) {
                     $this->db->insert(db_prefix() . 'project_members', [
                         'project_id' => $project_id,
-                        'staff_id'   => $staff_id,
+                        'staff_id' => $staff_id,
                     ]);
                 }
             }
@@ -2681,7 +2682,7 @@ class Projects_model extends App_Model
             ->excludeMilestonesFromCustomer(isset($type_where['hide_from_customer']) && $type_where['hide_from_customer'] == 1)
             ->get();
     }
-    
+
     public function fetch_providers()
     {
         $this->db->select('*');
@@ -2692,16 +2693,18 @@ class Projects_model extends App_Model
         return $query = $query->result_array();
     }
 
-    public function fetchpolicy($customer){
+    public function fetchpolicy($customer)
+    {
         $this->db->select('tblpolicy.policy_number,tblpolicy.id');
         $this->db->from('tblpolicy');
         $this->db->where('is_deleted', 0);
-        $this->db->where('customer',$customer);
+        $this->db->where('customer', $customer);
         $query = $this->db->get();
         return $query = $query->result_array();
     }
-    
-    public function fetch_provider($id){
+
+    public function fetch_provider($id)
+    {
         $this->db->select('*');
         $this->db->from('tblprojects');
         $this->db->join('tblproviders_details', 'tblproviders_details.id = tblprojects.provider');
@@ -2710,10 +2713,11 @@ class Projects_model extends App_Model
         return $query->result_array();
     }
 
-    public function policy_number($id){
+    public function policy_number($id)
+    {
         $this->db->select('*');
         $this->db->from('tblprojects');
-        $this->db->join('tblpolicy','tblpolicy.id=tblprojects.policy_number');
+        $this->db->join('tblpolicy', 'tblpolicy.id=tblprojects.policy_number');
         $this->db->where('tblprojects.id', $id);
         $query = $this->db->get();
         return $query->result_array();
@@ -2725,17 +2729,18 @@ class Projects_model extends App_Model
         $this->db->from('tblcustomer_adviser');
         $this->db->where('customer_id', $customer_id);
         $query = $this->db->get();
-        $query  = $query->result_array();
-        for($i=0; $i<count($query); $i++){
+        $query = $query->result_array();
+        for ($i = 0; $i < count($query); $i++) {
             $data[] = $this->getStafName($query[$i]['staff_id']);
         }
-        $data = implode(",",$data);
+        $data = implode(",", $data);
         // print_r($data);
         // exit;
         return $data;
     }
 
-    public function getStafName($id){
+    public function getStafName($id)
+    {
         $this->db->select('firstname,lastname,staffid');
         $this->db->from('tblstaff');
         $this->db->where('staffid', $id);
@@ -2755,7 +2760,8 @@ class Projects_model extends App_Model
         return $query = $query->result_array();
     }
 
-    public function save_projecttype($data){
+    public function save_projecttype($data)
+    {
         $result = $this->db->insert('tblprojecttype', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
@@ -2766,16 +2772,18 @@ class Projects_model extends App_Model
         $this->db->where('id', $id);
         return $this->db->update('tblprojecttype', $data);
     }
-    public function project_type($id){
+    public function project_type($id)
+    {
         $this->db->select('*');
         $this->db->from('tblprojects');
-        $this->db->join('tblprojecttype','tblprojecttype.id=tblprojects.projecttype');
+        $this->db->join('tblprojecttype', 'tblprojecttype.id=tblprojects.projecttype');
         $this->db->where('tblprojects.id', $id);
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    public function fetch_outcome(){
+    public function fetch_outcome()
+    {
         $this->db->select('*');
         $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_outcome');
@@ -2783,232 +2791,268 @@ class Projects_model extends App_Model
         return $query = $query->result_array();
     }
 
-    public function saveproject_outcome($data){
+    public function saveproject_outcome($data)
+    {
         $result = $this->db->insert('tblproject_outcome', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_projectOutcome($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_outcome',$data);
+    public function delete_projectOutcome($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_outcome', $data);
     }
 
-    public function fetch_reasonNoclaim(){
+    public function fetch_reasonNoclaim()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_reason_noclaim');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function saveclaimReason($data){
-        $result = $this->db->insert('tblproject_reason_noclaim' , $data);
+    public function saveclaimReason($data)
+    {
+        $result = $this->db->insert('tblproject_reason_noclaim', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_claimreason($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_reason_noclaim',$data);
+    public function delete_claimreason($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_reason_noclaim', $data);
     }
 
-    public function fetch_conditionalgroup(){
+    public function fetch_conditionalgroup()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_condition_qroups');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function saveconditionalGroup($data){
-        $result = $this->db->insert('tblproject_condition_qroups' , $data);
+    public function saveconditionalGroup($data)
+    {
+        $result = $this->db->insert('tblproject_condition_qroups', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_conditionalgroup($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_condition_qroups',$data);
+    public function delete_conditionalgroup($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_condition_qroups', $data);
     }
 
-    public function fetch_finalstatus(){
+    public function fetch_finalstatus()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_final_status');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function savefinalStatus($data){
-        $result = $this->db->insert('tblproject_final_status' , $data);
+    public function savefinalStatus($data)
+    {
+        $result = $this->db->insert('tblproject_final_status', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_finalstatus($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_final_status',$data);
+    public function delete_finalstatus($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_final_status', $data);
     }
 
-    public function fetch_DateIssue(){
+    public function fetch_DateIssue()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_date_request_Issue');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function saveDateissue($data){
-        $result = $this->db->insert('tblproject_date_request_Issue' , $data);
+    public function saveDateissue($data)
+    {
+        $result = $this->db->insert('tblproject_date_request_Issue', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_dateIssue($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_date_request_Issue',$data);
+    public function delete_dateIssue($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_date_request_Issue', $data);
     }
 
-    public function fetch_Notissuepolicy(){
+    public function fetch_Notissuepolicy()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_reason_not_issue_policy');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function saveNotissuePolicy($data){
-        $result = $this->db->insert('tblproject_reason_not_issue_policy' , $data);
+    public function saveNotissuePolicy($data)
+    {
+        $result = $this->db->insert('tblproject_reason_not_issue_policy', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_Notissuepolicy($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_reason_not_issue_policy',$data);
+    public function delete_Notissuepolicy($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_reason_not_issue_policy', $data);
     }
-    
-    public function fetch_commisionsplit(){
+
+    public function fetch_commisionsplit()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_commission_split');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function saveCommisionsplit($data){
-        $result = $this->db->insert('tblproject_commission_split' , $data);
+    public function saveCommisionsplit($data)
+    {
+        $result = $this->db->insert('tblproject_commission_split', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_Commisionsplit($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_commission_split',$data);
+    public function delete_Commisionsplit($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_commission_split', $data);
     }
 
-    public function fetch_source(){
+    public function fetch_source()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_source');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function saveSource($data){
-        $result = $this->db->insert('tblproject_source' , $data);
+    public function saveSource($data)
+    {
+        $result = $this->db->insert('tblproject_source', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_Source($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_source',$data);
+    public function delete_Source($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_source', $data);
     }
 
-    public function fetch_replacebusiness(){
+    public function fetch_replacebusiness()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_replacement_business');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function saveReplacebusines($data){
-        $result = $this->db->insert('tblproject_replacement_business' , $data);
+    public function saveReplacebusines($data)
+    {
+        $result = $this->db->insert('tblproject_replacement_business', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_replacebusiness($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_replacement_business',$data);
+    public function delete_replacebusiness($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_replacement_business', $data);
     }
 
-    public function fetch_replaceReason(){
+    public function fetch_replaceReason()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_replacement_reason');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function savereplaceReason($data){
-        $result = $this->db->insert('tblproject_replacement_reason' , $data);
+    public function savereplaceReason($data)
+    {
+        $result = $this->db->insert('tblproject_replacement_reason', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_replaceReason($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_replacement_reason',$data);
+    public function delete_replaceReason($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_replacement_reason', $data);
     }
 
-    public function fetch_cancellationOutcome(){
+    public function fetch_cancellationOutcome()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_cancellation_outcome');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function save_cancellationOutcome($data){
-        $result = $this->db->insert('tblproject_cancellation_outcome' , $data);
+    public function save_cancellationOutcome($data)
+    {
+        $result = $this->db->insert('tblproject_cancellation_outcome', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_cancellationOutcome($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_cancellation_outcome',$data);
+    public function delete_cancellationOutcome($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_cancellation_outcome', $data);
     }
 
-    public function fetch_newPolicyCommission(){
+    public function fetch_newPolicyCommission()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_new_policy_commission');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function save_newPolicyCommission($data){
-        $result = $this->db->insert('tblproject_new_policy_commission' , $data);
+    public function save_newPolicyCommission($data)
+    {
+        $result = $this->db->insert('tblproject_new_policy_commission', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_newPolicyCommission($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_new_policy_commission',$data);
+    public function delete_newPolicyCommission($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_new_policy_commission', $data);
     }
 
-    public function fetch_ReasonforCancellation(){
+    public function fetch_ReasonforCancellation()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_reason_for_cancelletion');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
 
@@ -3016,58 +3060,60 @@ class Projects_model extends App_Model
     // custom for claim_identified crud
 
     public function fetch_ClaimIdentified()
-{
-    $this->db->select('*');
-    $this->db->where('is_deleted', 0);
-    $this->db->from('tblproject_claim_identified');
-    $query = $this->db->get();
+    {
+        $this->db->select('*');
+        $this->db->where('is_deleted', 0);
+        $this->db->from('tblproject_claim_identified');
+        $query = $this->db->get();
 
-    return $query->result_array();
-}
+        return $query->result_array();
+    }
 
-public function saveClaimIdentified($data)
-{
-    $result = $this->db->insert('tblproject_claim_identified', $data);
-    return $this->db->insert_id();
-}
-
-
-public function updateClaimIdentified($data, $id)
-{
-    $this->db->where('id', $id);
-    return $this->db->update('tblproject_claim_identified', $data);
-}
+    public function saveClaimIdentified($data)
+    {
+        $result = $this->db->insert('tblproject_claim_identified', $data);
+        return $this->db->insert_id();
+    }
 
 
-
-public function delete_ClaimIdentified($data, $id)
-{
-    $this->db->where('id', $id);
-    return $this->db->update('tblproject_claim_identified', $data);
-}
-
- // custom for claim_identified crud
+    public function updateClaimIdentified($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_claim_identified', $data);
+    }
 
 
 
+    public function delete_ClaimIdentified($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_claim_identified', $data);
+    }
+
+    // custom for claim_identified crud
 
 
-    public function savereasonforCancellation($data){
-        $result = $this->db->insert('tblproject_reason_for_cancelletion' , $data);
+
+
+
+    public function savereasonforCancellation($data)
+    {
+        $result = $this->db->insert('tblproject_reason_for_cancelletion', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_ReasonforCancellation($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_reason_for_cancelletion',$data);
+    public function delete_ReasonforCancellation($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_reason_for_cancelletion', $data);
     }
-    
+
     public function getContact($client_id)
     {
         $this->db->select('firstname,lastname,id');
         $this->db->from('contacts');
-        $this->db->where('userid',$client_id);
+        $this->db->where('userid', $client_id);
         $this->db->group_by('email');
         $query = $this->db->get();
         return $query = $query->result_array();
@@ -3076,20 +3122,22 @@ public function delete_ClaimIdentified($data, $id)
     {
         $this->db->select('*');
         $this->db->from('tblpolicy_benefits_field');
-        $this->db->where('is_deleted',0);
+        $this->db->where('is_deleted', 0);
         $query = $this->db->get();
         return $query = $query->result_array();
     }
 
-    public function fetchsave_Arrears($projectId){
+    public function fetchsave_Arrears($projectId)
+    {
         $this->db->select('*');
-        $this->db->where('project_id' , $projectId);
+        $this->db->where('project_id', $projectId);
         $this->db->from('tblproject_arrears');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function save_Arrears($data) {
+    public function save_Arrears($data)
+    {
         $result = $this->db->insert('tblproject_arrears', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
@@ -3101,18 +3149,20 @@ public function delete_ClaimIdentified($data, $id)
         return $this->db->update('tblproject_arrears', $data);
     }
 
-    public function save_cancellations($data) {
+    public function save_cancellations($data)
+    {
         $result = $this->db->insert('tblproject_policycancellations', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function fetchCancellations($projectId){
+    public function fetchCancellations($projectId)
+    {
         $this->db->select('*');
-        $this->db->where('project_id' , $projectId);
+        $this->db->where('project_id', $projectId);
         $this->db->from('tblproject_policycancellations');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
     public function update_cancellations($data, $id)
@@ -3120,14 +3170,15 @@ public function delete_ClaimIdentified($data, $id)
         $this->db->where('id', $id);
         return $this->db->update('tblproject_policycancellations', $data);
     }
-    
+
     // public function save_underwriting($data) {
     //     $result = $this->db->insert('tblproject_underwriting', $data);
     //     $lastid = $this->db->insert_id();
     //     return $lastid;
     // }
 
-    public function save_underwriting($data,$yesdata) {
+    public function save_underwriting($data, $yesdata)
+    {
         $result = $this->db->insert('tblproject_underwriting', $data);
         $lastid = $this->db->insert_id();
         $result1 = $this->db->insert('tblReplacementBusiness', $yesdata);
@@ -3135,41 +3186,46 @@ public function delete_ClaimIdentified($data, $id)
         return $lalastidstid1;
     }
 
-    public function fetchUnderwriting($projectId){
+    public function fetchUnderwriting($projectId)
+    {
         $this->db->select('*');
-        $this->db->where('project_id' , $projectId);
+        $this->db->where('project_id', $projectId);
         $this->db->from('tblproject_underwriting');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function fetchProviders(){
+    public function fetchProviders()
+    {
         $this->db->select('id , providername');
         $this->db->from('tblproviders_details');
-        $this->db->where('is_deleted',0);
-        $this->db->order_by('providername','asc');
+        $this->db->where('is_deleted', 0);
+        $this->db->order_by('providername', 'asc');
         $query = $this->db->get();
         $result = $query->result_array();
         return $result;
     }
-    public function fetchBenefits() {
+    public function fetchBenefits()
+    {
         $this->db->select('id ,form_title');
         $this->db->from('tblpolicy_benefits_field');
-        $this->db->where('is_deleted',0);
-        $this->db->order_by('sort_order','asc');
+        $this->db->where('is_deleted', 0);
+        $this->db->order_by('sort_order', 'asc');
         $query = $this->db->get();
         $result = $query->result_array();
         return $result;
     }
-    public function fetchBenefitBeingReplace($id) {
+    public function fetchBenefitBeingReplace($id)
+    {
         $this->db->select('*');
         $this->db->from('tblReplacementBusiness');
-        $this->db->where('project_id',$id);
+        $this->db->where('project_id', $id);
         $query = $this->db->get();
         $result = $query->result_array();
         return $result;
     }
-    public function fetchCustomer($id) {
+    public function fetchCustomer($id)
+    {
         $this->db->select('clientid');
         $this->db->from('tblprojects');
         $this->db->where('id', $id);
@@ -3200,65 +3256,74 @@ public function delete_ClaimIdentified($data, $id)
     //     return $this->db->update('tblproject_underwriting', $data);
     // }
 
-    public function addClaim($data) {
+    public function addClaim($data)
+    {
         $result = $this->db->insert('tblproject_claims', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
-    
-    public function claimStaffId($projectId){
+
+    public function claimStaffId($projectId)
+    {
         $this->db->select('staff_id');
         $this->db->from('tblproject_claims');
-        $this->db->where('project_id' , $projectId);
+        $this->db->where('project_id', $projectId);
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function cancellationStaffId($projectId){
+    public function cancellationStaffId($projectId)
+    {
         $this->db->select('staff_id');
         $this->db->from('tblproject_policycancellations');
-        $this->db->where('project_id' , $projectId);
+        $this->db->where('project_id', $projectId);
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function underwrittingStaffId($projectId){
+    public function underwrittingStaffId($projectId)
+    {
         $this->db->select('staff_id');
         $this->db->from('tblproject_underwriting');
-        $this->db->where('project_id' , $projectId);
+        $this->db->where('project_id', $projectId);
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function fetch_claim_saprately($projectId){
+    public function fetch_claim_saprately($projectId)
+    {
         $this->db->select('*');
         $this->db->from('tblproject_claims');
-        $this->db->where('project_id' , $projectId);
+        $this->db->where('project_id', $projectId);
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function fetch_claim_payment($projectId){
+    public function fetch_claim_payment($projectId)
+    {
         $this->db->select('*');
         $this->db->from('tblproject_new_claim_payment');
-        $this->db->where('project_id' , $projectId);
+        $this->db->where('project_id', $projectId);
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function update_Claim($data, $id){
+    public function update_Claim($data, $id)
+    {
         $this->db->where('id', $id);
         return $this->db->update('tblproject_claims', $data);
     }
 
-    public function addpaymetClaim($data) {
+    public function addpaymetClaim($data)
+    {
         $result = $this->db->insert('tblproject_new_claim_payment', $data);
         $claim_lastid = $this->db->insert_id();
         return $claim_lastid;
     }
 
-    public function deleteClaimPayment($id){
-        $this->db->where('claim_id' , $id);
+    public function deleteClaimPayment($id)
+    {
+        $this->db->where('claim_id', $id);
         $this->db->delete('tblproject_new_claim_payment');
         return true;
     }
@@ -3269,49 +3334,56 @@ public function delete_ClaimIdentified($data, $id)
         return $this->db->update('tblproject_new_claim_payment', $data);
     }
 
-    public function fetchCategory(){
+    public function fetchCategory()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_category');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-     public function fetchComplianceCategory($stageId){
+    public function fetchComplianceCategory($stageId)
+    {
         $this->db->select('id,compliance');
-        $this->db->where('is_deleted' , 0);
-        $this->db->where('stage' ,$stageId);
+        $this->db->where('is_deleted', 0);
+        $this->db->where('stage', $stageId);
         $this->db->from('tblproject_compliance');
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    public function save_Category($data){
-        $result = $this->db->insert('tblproject_category' , $data);
+    public function save_Category($data)
+    {
+        $result = $this->db->insert('tblproject_category', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_Category($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_category',$data);
+    public function delete_Category($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_category', $data);
     }
 
-    public function fetchBenefitCategory(){
+    public function fetchBenefitCategory()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblbenefit_category');
         $query = $this->db->get();
         return $query->result_array();
     }
-    public function save_Benefit_Category($data){
-        $result = $this->db->insert('tblbenefit_category' , $data);
+    public function save_Benefit_Category($data)
+    {
+        $result = $this->db->insert('tblbenefit_category', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
-    public function delete_Benefit_Category($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblbenefit_category',$data);
+    public function delete_Benefit_Category($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblbenefit_category', $data);
     }
 
     public function save_projecttemplate($data)
@@ -3335,75 +3407,85 @@ public function delete_ClaimIdentified($data, $id)
         return $this->db->update('tblproject_template', $data);
     }
 
-    public function fetchComplience(){
+    public function fetchComplience()
+    {
         $this->db->select('*');
         $this->db->from('tblproject_compliance');
         $this->db->where('is_deleted', 0);
         $query = $this->db->get();
         $result = $query->result_array();
-       
-       foreach($result as $results){
-        $data[] = [
-            'id' => $results['id'],
-            'compliance' => $results['compliance'],
-            'stage' => $this->projects_model->fetch_Stages($results['stage']),
-            'is_deleted' => $results['is_deleted'],
-        ];
-       }
-       return $data;
+
+        foreach ($result as $results) {
+            $data[] = [
+                'id' => $results['id'],
+                'compliance' => $results['compliance'],
+                'stage' => $this->projects_model->fetch_Stages($results['stage']),
+                'is_deleted' => $results['is_deleted'],
+            ];
+        }
+        return $data;
     }
 
-    public function save_compliance($data){
-        $this->db->insert('tblproject_compliance' , $data);
+    public function save_compliance($data)
+    {
+        $this->db->insert('tblproject_compliance', $data);
         $last_id = $this->db->insert_id();
         return $last_id;
     }
-    
-    public function deleteComplianceData($data, $id){
-        $this->db->where('id' , $id);
-        $result = $this->db->update('tblproject_compliance' , $data);
+
+    public function deleteComplianceData($data, $id)
+    {
+        $this->db->where('id', $id);
+        $result = $this->db->update('tblproject_compliance', $data);
         return $result;
     }
 
-    public function fetch_reasonForArreas(){
+    public function fetch_reasonForArreas()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_reason_for_arreas');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function savereasonFor_arreas($data){
-        $result = $this->db->insert('tblproject_reason_for_arreas' , $data);
+    public function savereasonFor_arreas($data)
+    {
+        $result = $this->db->insert('tblproject_reason_for_arreas', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_reasonForArreas($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_reason_for_arreas',$data);
+    public function delete_reasonForArreas($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_reason_for_arreas', $data);
     }
 
-    public function fetch_arreasStatus(){
+    public function fetch_arreasStatus()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_arrears_status');
         $query = $this->db->get();
-        return $query->result_array(); 
+        return $query->result_array();
     }
 
-    public function saveArreasStatus($data){
-        $result = $this->db->insert('tblproject_arrears_status' , $data);
+    public function saveArreasStatus($data)
+    {
+        $result = $this->db->insert('tblproject_arrears_status', $data);
         $lastid = $this->db->insert_id();
         return $lastid;
     }
 
-    public function delete_ArreasStatus($data,$id){
-        $this->db->where('id' , $id);
-        return $this->db->update('tblproject_arrears_status',$data);
+    public function delete_ArreasStatus($data, $id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_arrears_status', $data);
     }
 
-    public function fetchunderwrittingStatus(){
+    public function fetchunderwrittingStatus()
+    {
         $this->db->select('*');
         $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_underwriting_status');
@@ -3411,238 +3493,268 @@ public function delete_ClaimIdentified($data, $id)
         return $result->result_array();
     }
 
-    public function save_UnderwrittingStatus($data){
-        $this->db->insert('tblproject_underwriting_status' , $data);
+    public function save_UnderwrittingStatus($data)
+    {
+        $this->db->insert('tblproject_underwriting_status', $data);
         return $this->db->insert_id();
     }
-   
 
-    public function daleteunderwrittingStatus($id , $data){
-        $this->db->where('id',$id);
-        return $this->db->update('tblproject_underwriting_status',$data);
+
+    public function daleteunderwrittingStatus($id, $data)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_underwriting_status', $data);
     }
 
-    public function fetchCancellationStatus(){
+    public function fetchCancellationStatus()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_cancel_status');
         $result = $this->db->get();
         return $result->result_array();
     }
 
-    public function save_Cancellation_status($data){
-        $this->db->insert('tblproject_cancel_status' , $data);
+    public function save_Cancellation_status($data)
+    {
+        $this->db->insert('tblproject_cancel_status', $data);
         return $this->db->insert_id();
     }
 
-    public function dalete_CancellationStatus($id , $data){
-        $this->db->where('id',$id);
-        return $this->db->update('tblproject_cancel_status' ,$data);
+    public function dalete_CancellationStatus($id, $data)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('tblproject_cancel_status', $data);
     }
 
-    public function save_benefitsBeingChange($id, $data){
-        if(!$id){
-            $this->db->insert('tblproject_benefit_being_change' , $data);
+    public function save_benefitsBeingChange($id, $data)
+    {
+
+        if (!$id) {
+            if (empty($data)) {
+                return false;
+            }
+            $this->db->insert('tblproject_benefit_being_change', $data);
             return $this->db->insert_id();
         }
-        if($id){
-            $this->db->where('id',$id);
-            $result = $this->db->update('tblproject_benefit_being_change' ,$data);
-            if($result){
-                return yes ;
+        if ($id) {
+            if (empty($data)) {
+                return 'yes';
             }
-            else{
-                return no;
+            $this->db->where('id', $id);
+            $result = $this->db->update('tblproject_benefit_being_change', $data);
+            if ($result) {
+                return 'yes';
+            } else {
+                return 'no';
             }
         }
     }
 
-    public function fetchBenefitChange(){
+    public function fetchBenefitChange()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_benefit_being_change');
         $result = $this->db->get();
         return $result->result_array();
     }
 
-    public function save_stage($id, $data){
-        if(!$id){
-            $this->db->insert('tblproject_stage' , $data);
+    public function save_stage($id, $data)
+    {
+        if (!$id) {
+            if (empty($data)) {
+                return false;
+            }
+            $this->db->insert('tblproject_stage', $data);
             return $this->db->insert_id();
         }
-        if($id){
-            $this->db->where('id',$id);
-            $result = $this->db->update('tblproject_stage' ,$data);
-            if($result){
-                return yes ;
+        if ($id) {
+            if (empty($data)) {
+                return 'yes';
             }
-            else{
-                return no;
+            $this->db->where('id', $id);
+            $result = $this->db->update('tblproject_stage', $data);
+            if ($result) {
+                return 'yes';
+            } else {
+                return 'no';
             }
         }
     }
 
-    public function fetchstage(){
+
+    public function fetchstage()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_stage');
         $result = $this->db->get();
         return $result->result_array();
     }
-    public function fetch_stage(){
+    public function fetch_stage()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_stage');
         $result = $this->db->get();
         return $result->result_array();
     }
 
-    public function fetch_Stages($id = ""){
+    public function fetch_Stages($id = "")
+    {
         $this->db->select('stage');
-        $this->db->where('id' , $id);
+        $this->db->where('id', $id);
         $this->db->from('tblproject_stage');
         $result = $this->db->get();
         return $result->result_array();
     }
 
-    public function stages(){
+    public function stages()
+    {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_stage');
         $result = $this->db->get();
         return $result->result_array();
     }
 
-    public function projects_stages($id){
+    public function projects_stages($id)
+    {
         $this->db->select('stage_id');
         $this->db->where('stage_id is NOT NULL', NULL, FALSE);
-        $this->db->where('project_id' , $id);
+        $this->db->where('project_id', $id);
         $this->db->group_by('stage_id');
         $this->db->from('tblproject_files');
         $result = $this->db->get();
         $stages = $result->result_array();
-        foreach($stages as $str_data){
-            $data[] =  [
-                'stage_id'         => $str_data['stage_id'],
-                'stage_name'   => $this->projects_model->fetchGroup_Stage($str_data['stage_id']),
+        foreach ($stages as $str_data) {
+            $data[] = [
+                'stage_id' => $str_data['stage_id'],
+                'stage_name' => $this->projects_model->fetchGroup_Stage($str_data['stage_id']),
             ];
         }
-     return $data;
+        return $data;
     }
     // projects_stages
 
-    public function fetchFiles($id,$stageId){
+    public function fetchFiles($id, $stageId)
+    {
         $this->db->select('*');
-        $this->db->where('stage_id' , $stageId);
-        $this->db->where('project_id' , $id);
+        $this->db->where('stage_id', $stageId);
+        $this->db->where('project_id', $id);
         $this->db->from('tblproject_files');
         $result = $this->db->get();
         $resultdata = $result->result_array();
-        foreach($resultdata as $resultdatas){
+        foreach ($resultdata as $resultdatas) {
             $data[] = [
-            'id'                    => $resultdatas['id'],
-            'original_file_name'    => $resultdatas['original_file_name'],
-            'description'           => $resultdatas['description'],
-            'filetype'              => $resultdatas['filetype'],
-            'dateadded'             => $resultdatas['dateadded'],
-            'project_id'            => $resultdatas['project_id'],
-            'visible_to_customer'   => $resultdatas['visible_to_customer'],
-            'staff_name'            => $this->projects_model->get_staff($resultdatas['staffid']),
-            'contact_id'            => $resultdatas['contact_id'],
-            'category'              => $this->projects_model->getcategoryName($resultdatas['category_id']),
-            'compliance_id'         => $resultdatas['compliance_id'],
-            'stagename'             => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
-            'category_id'           => $resultdatas['category_id'],
-            'stage_id'              => $resultdatas['stage_id'],
-            'stageName'              => $this->projects_model->getstage_s($resultdatas['stage_id']),
+                'id' => $resultdatas['id'],
+                'original_file_name' => $resultdatas['original_file_name'],
+                'description' => $resultdatas['description'],
+                'filetype' => $resultdatas['filetype'],
+                'dateadded' => $resultdatas['dateadded'],
+                'project_id' => $resultdatas['project_id'],
+                'visible_to_customer' => $resultdatas['visible_to_customer'],
+                'staff_name' => $this->projects_model->get_staff($resultdatas['staffid']),
+                'contact_id' => $resultdatas['contact_id'],
+                'category' => $this->projects_model->getcategoryName($resultdatas['category_id']),
+                'compliance_id' => $resultdatas['compliance_id'],
+                'stagename' => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
+                'category_id' => $resultdatas['category_id'],
+                'stage_id' => $resultdatas['stage_id'],
+                'stageName' => $this->projects_model->getstage_s($resultdatas['stage_id']),
             ];
-            
+
         }
         return $data;
-    
+
     }
 
-    public function fetchFilesBasedOnStageCategory($id, $stageId, $categoryId){
-        
+    public function fetchFilesBasedOnStageCategory($id, $stageId, $categoryId)
+    {
+
         $this->db->select('*');
-        $this->db->where('project_id' , $id);
-        $this->db->where('stage_id' , $stageId);
+        $this->db->where('project_id', $id);
+        $this->db->where('stage_id', $stageId);
         //$this->db->where('category_id' , $categoryId);
-        $this->db->where('compliance_id' , $categoryId);
+        $this->db->where('compliance_id', $categoryId);
         $this->db->from('tblproject_files');
         $result = $this->db->get();
         $resultdata = $result->result_array();
         $data = [];
-        foreach($resultdata as $resultdatas){
+        foreach ($resultdata as $resultdatas) {
             $data[] = [
-            'id'                    => $resultdatas['id'],
-            'original_file_name'    => $resultdatas['original_file_name'],
-            'file_name'             => $resultdatas['file_name'],
-            'description'           => $resultdatas['description'],
-            'filetype'              => $resultdatas['filetype'],
-            'dateadded'             => $resultdatas['dateadded'],
-            'project_id'            => $resultdatas['project_id'],
-            'visible_to_customer'   => $resultdatas['visible_to_customer'],
-            'staff_name'            => $this->projects_model->get_staff($resultdatas['staffid']),
-            'contact_id'            => $resultdatas['contact_id'],
-            'category'              => $this->projects_model->getcategoryName($resultdatas['category_id']),
-            'compliance_id'         => $resultdatas['compliance_id'],
-            'stagename'             => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
-            'category_id'           => $resultdatas['category_id'],
-            'stage_id'              => $resultdatas['stage_id'],
-            'stageName'              => $this->projects_model->getstage_s($resultdatas['stage_id']),
+                'id' => $resultdatas['id'],
+                'original_file_name' => $resultdatas['original_file_name'],
+                'file_name' => $resultdatas['file_name'],
+                'description' => $resultdatas['description'],
+                'filetype' => $resultdatas['filetype'],
+                'dateadded' => $resultdatas['dateadded'],
+                'project_id' => $resultdatas['project_id'],
+                'visible_to_customer' => $resultdatas['visible_to_customer'],
+                'staff_name' => $this->projects_model->get_staff($resultdatas['staffid']),
+                'contact_id' => $resultdatas['contact_id'],
+                'category' => $this->projects_model->getcategoryName($resultdatas['category_id']),
+                'compliance_id' => $resultdatas['compliance_id'],
+                'stagename' => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
+                'category_id' => $resultdatas['category_id'],
+                'stage_id' => $resultdatas['stage_id'],
+                'stageName' => $this->projects_model->getstage_s($resultdatas['stage_id']),
             ];
         }
-       return $data;
-    
+        return $data;
+
     }
 
 
-    public function feachfiles($id){
-        
+    public function feachfiles($id)
+    {
+
         $this->db->select('*');
-        $this->db->where('project_id' , $id);
+        $this->db->where('project_id', $id);
         $this->db->from('tblproject_files');
         $result = $this->db->get();
         $resultdata = $result->result_array();
-        foreach($resultdata as $resultdatas){
+        foreach ($resultdata as $resultdatas) {
             $data[] = [
-            'Workflow'                 => $resultdatas['id'],
-            'original_file_name'    => $resultdatas['original_file_name'],
-            'description'           => $resultdatas['description'],
-            'filetype'              => $resultdatas['filetype'],
-            'dateadded'             => $resultdatas['dateadded'],
-            'project_id'            => $resultdatas['project_id'],
-            'visible_to_customer'   => $resultdatas['visible_to_customer'],
-            'staff_name'            => $this->projects_model->get_staff($resultdatas['staffid']),
-            'contact_id'            => $resultdatas['contact_id'],
-            'category'              => $this->projects_model->getcategoryName($resultdatas['category_id']),
-            'compliance_id'         => $resultdatas['compliance_id'],
-            'stagename'             => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
-            'category_id'           => $resultdatas['category_id'],
-            'stage_id'              => $resultdatas['stage_id'],
-            'stageName'              => $this->projects_model->getstage_s($resultdatas['stage_id']),
+                'Workflow' => $resultdatas['id'],
+                'original_file_name' => $resultdatas['original_file_name'],
+                'description' => $resultdatas['description'],
+                'filetype' => $resultdatas['filetype'],
+                'dateadded' => $resultdatas['dateadded'],
+                'project_id' => $resultdatas['project_id'],
+                'visible_to_customer' => $resultdatas['visible_to_customer'],
+                'staff_name' => $this->projects_model->get_staff($resultdatas['staffid']),
+                'contact_id' => $resultdatas['contact_id'],
+                'category' => $this->projects_model->getcategoryName($resultdatas['category_id']),
+                'compliance_id' => $resultdatas['compliance_id'],
+                'stagename' => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
+                'category_id' => $resultdatas['category_id'],
+                'stage_id' => $resultdatas['stage_id'],
+                'stageName' => $this->projects_model->getstage_s($resultdatas['stage_id']),
             ];
-            
+
         }
         return $data;
     }
 
-    public function get_staff($id){
+    public function get_staff($id)
+    {
         $this->db->select('firstname,lastname');
-        $this->db->where('staffid' , $id);
+        $this->db->where('staffid', $id);
         $this->db->from('tblstaff');
         $query = $this->db->get();
         $result = $query->row();
-        return $result->firstname.' '.$result->lastname;
+        return $result->firstname . ' ' . $result->lastname;
     }
 
-    public function getcategoryName($categoryId){
+    public function getcategoryName($categoryId)
+    {
         $this->db->select('category');
-        
+
         $this->db->from('tblproject_category');
-        $this->db->where('is_deleted' , 0);
-        $this->db->where('id' , $categoryId);
+        $this->db->where('is_deleted', 0);
+        $this->db->where('id', $categoryId);
 
         $query = $this->db->get();
         $result = $query->row();
@@ -3650,208 +3762,223 @@ public function delete_ClaimIdentified($data, $id)
         return $result->category;
     }
 
-    public function getstage_s($stage_s_Id){
+    public function getstage_s($stage_s_Id)
+    {
         $this->db->select('stage');
-        $this->db->where('id' , $stage_s_Id);
+        $this->db->where('id', $stage_s_Id);
         $this->db->from('tblproject_stage');
         $result = $this->db->get();
         $groupcategory = $result->row();
         return $groupcategory->stage;
     }
 
-    public function getstaff($id){
+    public function getstaff($id)
+    {
         $this->db->select('firstname,lastname');
-        $this->db->where('staffid' , $id);
+        $this->db->where('staffid', $id);
         $this->db->from('tblstaff');
         $result = $this->db->get();
         return $groupcategory = $result->result_array();
-        
+
     }
 
-    public function fetchFilesStages($id){
+    public function fetchFilesStages($id)
+    {
         $this->db->select('stage_id');
-        $this->db->where('project_id' , $id);
+        $this->db->where('project_id', $id);
         $this->db->from('tblproject_files');
         $result = $this->db->get();
         return $resultdata = $result->result_array();
     }
 
-    public function fetchFilesCategories($id, $stageId){
+    public function fetchFilesCategories($id, $stageId)
+    {
         $this->db->select('category_id');
-        $this->db->where('project_id' , $id);
-        $this->db->where('stage_id' , $stageId);
+        $this->db->where('project_id', $id);
+        $this->db->where('stage_id', $stageId);
         $this->db->from('tblproject_files');
         $result = $this->db->get();
         return $resultdata = $result->result_array();
     }
 
-    public function fetchFilesData($id, $catId){
+    public function fetchFilesData($id, $catId)
+    {
         $this->db->select('*');
-        $this->db->where('stage_id' , $id);
-        $this->db->where('category_id' , $catId);
+        $this->db->where('stage_id', $id);
+        $this->db->where('category_id', $catId);
         $this->db->from('tblproject_files');
         // $this->db->group_by('stage_id');
         // $this->db->order_by('stage_id', 'desc');  # or desc
         $result = $this->db->get();
         $resultdata = $result->result_array();
-        foreach($resultdata as $resultdatas){
+        foreach ($resultdata as $resultdatas) {
             $data[] = [
-            'id'                    => $resultdatas['id'],
-            'original_file_name'    => $resultdatas['original_file_name'],
-            'description'           => $resultdatas['description'],
-            'filetype'              => $resultdatas['filetype'],
-            'dateadded'             => $resultdatas['dateadded'],
-            'project_id'            => $resultdatas['project_id'],
-            'visible_to_customer'   => $resultdatas['visible_to_customer'],
-            'staff_name'            => $this->projects_model->getstaff($resultdatas['staffid']),
-            'contact_id'            => $resultdatas['contact_id'],
-            'category'              => $this->projects_model->getcategoryName($resultdatas['category_id']),
-            'compliance_id'         => $resultdatas['compliance_id'],
-            // 'stagename'             => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
-            'category_id'           => $resultdatas['category_id'],
-            'stage_id'              => $resultdatas['stage_id'],
-            'stageName'              => $this->projects_model->getstage_s($resultdatas['stage_id']),
+                'id' => $resultdatas['id'],
+                'original_file_name' => $resultdatas['original_file_name'],
+                'description' => $resultdatas['description'],
+                'filetype' => $resultdatas['filetype'],
+                'dateadded' => $resultdatas['dateadded'],
+                'project_id' => $resultdatas['project_id'],
+                'visible_to_customer' => $resultdatas['visible_to_customer'],
+                'staff_name' => $this->projects_model->getstaff($resultdatas['staffid']),
+                'contact_id' => $resultdatas['contact_id'],
+                'category' => $this->projects_model->getcategoryName($resultdatas['category_id']),
+                'compliance_id' => $resultdatas['compliance_id'],
+                // 'stagename'             => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
+                'category_id' => $resultdatas['category_id'],
+                'stage_id' => $resultdatas['stage_id'],
+                'stageName' => $this->projects_model->getstage_s($resultdatas['stage_id']),
             ];
         }
         return $data;
-      
+
     }
 
 
-    public function fetch_Group_Stage($Idstage_id){
+    public function fetch_Group_Stage($Idstage_id)
+    {
 
         $this->db->select('*');
-        $this->db->where('stage_id' , $Idstage_id);
+        $this->db->where('stage_id', $Idstage_id);
         $this->db->from('tblproject_files');
-        $this->db->group_by('category_id'); 
+        $this->db->group_by('category_id');
         $this->db->order_by('category_id', 'asc');  # or desc
         $result = $this->db->get();
         $resultdata = $result->result_array();
-        foreach($resultdata as $resultdatas){
+        foreach ($resultdata as $resultdatas) {
             $datacate[] = [
-            'category'              => $this->projects_model->getcategoryName($resultdatas['category_id']),
-            // 'stagename'             => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
-            'category_id'           => $resultdatas['category_id'],
-            'description'           => $resultdatas['description'],
-            'filetype'              => $resultdatas['filetype'],
-            'dateadded'             => $resultdatas['dateadded'],
-            'project_id'            => $resultdatas['project_id'],
-           
+                'category' => $this->projects_model->getcategoryName($resultdatas['category_id']),
+                // 'stagename'             => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
+                'category_id' => $resultdatas['category_id'],
+                'description' => $resultdatas['description'],
+                'filetype' => $resultdatas['filetype'],
+                'dateadded' => $resultdatas['dateadded'],
+                'project_id' => $resultdatas['project_id'],
+
             ];
         }
         return $datacate;
 
     }
-    
+
 
     // ,category_id,tblproject_files.stage_id
-    public function fetchCategory_group($stagId){
+    public function fetchCategory_group($stagId)
+    {
         $this->db->select('tblproject_category.category,category_id');
         $this->db->from('tblproject_files');
         $this->db->join('tblproject_category', 'tblproject_category.id = tblproject_files.category_id');
-        $this->db->where('tblproject_files.stage_id' , $stagId);
+        $this->db->where('tblproject_files.stage_id', $stagId);
         $result = $this->db->get();
         return $result->result_array();
     }
 
-    public function fetchCategory_groupAllData($categoryIds,$projectId){
+    public function fetchCategory_groupAllData($categoryIds, $projectId)
+    {
         $this->db->select('*');
-        $this->db->where('category_id' , $categoryIds);
-        $this->db->where('project_id' , $projectId);
+        $this->db->where('category_id', $categoryIds);
+        $this->db->where('project_id', $projectId);
         $this->db->from('tblproject_files');
         $result = $this->db->get();
         $resultdata = $result->result_array();
-        foreach($resultdata as $resultdatas){
+        foreach ($resultdata as $resultdatas) {
             $data[] = [
-            'id'                    => $resultdatas['id'],
-            'original_file_name'    => $resultdatas['original_file_name'],
-            'description'           => $resultdatas['description'],
-            'filetype'              => $resultdatas['filetype'],
-            'dateadded'             => $resultdatas['dateadded'],
-            'project_id'            => $resultdatas['project_id'],
-            'visible_to_customer'   => $resultdatas['visible_to_customer'],
-            'staff_name'            => $this->projects_model->getstaff($resultdatas['staffid']),
-            'contact_id'            => $resultdatas['contact_id'],
-            'category'              => $this->projects_model->getcategoryName($resultdatas['category_id']),
-            'compliance_id'         => $resultdatas['compliance_id'],
-            // 'stagename'             => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
-            'category_id'           => $resultdatas['category_id'],
-            'stage_id'              => $resultdatas['stage_id'],
-            'stage_name'              => $this->projects_model->fetchGroup_Stage($resultdatas['stage_id']),
+                'id' => $resultdatas['id'],
+                'original_file_name' => $resultdatas['original_file_name'],
+                'description' => $resultdatas['description'],
+                'filetype' => $resultdatas['filetype'],
+                'dateadded' => $resultdatas['dateadded'],
+                'project_id' => $resultdatas['project_id'],
+                'visible_to_customer' => $resultdatas['visible_to_customer'],
+                'staff_name' => $this->projects_model->getstaff($resultdatas['staffid']),
+                'contact_id' => $resultdatas['contact_id'],
+                'category' => $this->projects_model->getcategoryName($resultdatas['category_id']),
+                'compliance_id' => $resultdatas['compliance_id'],
+                // 'stagename'             => $this->projects_model->fetchGroupStage($resultdatas['compliance_id']),
+                'category_id' => $resultdatas['category_id'],
+                'stage_id' => $resultdatas['stage_id'],
+                'stage_name' => $this->projects_model->fetchGroup_Stage($resultdatas['stage_id']),
             ];
         }
         return $data;
     }
 
-    public function fetchGroup_Stage($allStageId){
+    public function fetchGroup_Stage($allStageId)
+    {
         $this->db->select('stage');
-        $this->db->where('id' , $allStageId);
+        $this->db->where('id', $allStageId);
         $this->db->from('tblproject_stage');
         $result = $this->db->get();
         $groupcategory = $result->row();
         return $groupcategory->stage;
     }
 
-    public function fetchGroupStage($id){
+    public function fetchGroupStage($id)
+    {
         $this->db->select('tblproject_stage.stage,tblproject_stage.id');
         $this->db->from('tblproject_compliance');
         $this->db->join('tblproject_stage', 'tblproject_stage.id = tblproject_compliance.stage');
-        $this->db->where('tblproject_compliance.id' , $id);
-        $this->db->where('tblproject_compliance.is_deleted' , 0);
-        $this->db->where('tblproject_stage.is_deleted' , 0);
+        $this->db->where('tblproject_compliance.id', $id);
+        $this->db->where('tblproject_compliance.is_deleted', 0);
+        $this->db->where('tblproject_stage.is_deleted', 0);
         $result = $this->db->get();
         return $result->result_array();
     }
 
-    public function fetchcate_for_stage($id){
+    public function fetchcate_for_stage($id)
+    {
         $this->db->select('category_id');
-        $this->db->where('compliance_id' , $id);
+        $this->db->where('compliance_id', $id);
         $this->db->from('tblproject_files');
         $result = $this->db->get();
         $groupcategory = $result->result_array();
         return $singleCategory = array_merge(...$groupcategory);
     }
-    
-    public function fetchCompliance_group($StageId){
+
+    public function fetchCompliance_group($StageId)
+    {
         $this->db->select('*');
-        $this->db->where('stage' , $StageId);
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('stage', $StageId);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_compliance');
         $result = $this->db->get();
-        return  $result->result_array();
+        return $result->result_array();
     }
 
-    public function fetchGroupcategory($compliance_id){
+    public function fetchGroupcategory($compliance_id)
+    {
         $this->db->select('category_id,stage_id');
-        $this->db->where('compliance_id' , $compliance_id);
+        $this->db->where('compliance_id', $compliance_id);
         // $this->db->where('is_deleted' , 0);
         $this->db->from('tblproject_files');
         $result = $this->db->get();
         $resultcat = $result->result_array();
-        foreach($resultcat as $resultcats){
+        foreach ($resultcat as $resultcats) {
             $resultcatData[] = [
                 'category_id' => $resultcats['category_id'],
-                'category_name' => $this->projects_model->fetchGroupcategoryname($resultcats['category_id']), 
-                'stage_id'              => $resultcats['stage_id'],
+                'category_name' => $this->projects_model->fetchGroupcategoryname($resultcats['category_id']),
+                'stage_id' => $resultcats['stage_id'],
             ];
             return $resultcatData;
         }
     }
 
-    public function fetchGroupcategoryname($category_id){
+    public function fetchGroupcategoryname($category_id)
+    {
         $this->db->select('	category');
-        $this->db->where('id' , $category_id);
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('id', $category_id);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblproject_category');
         $result = $this->db->get();
         $groupcategory = $result->result_array();
         return $singleCategory = array_merge(...$groupcategory);
     }
 
-    public function feachcompliance_id($project_id){
+    public function feachcompliance_id($project_id)
+    {
 
         $this->db->select('compliance_id');
-        $this->db->where('project_id' ,$project_id);
+        $this->db->where('project_id', $project_id);
         $this->db->from('tblproject_files');
         $result = $this->db->get();
         $feachcompliance_id = $result->result_array();
@@ -3862,7 +3989,7 @@ public function delete_ClaimIdentified($data, $id)
         $this->db->select('*');
         $this->db->from('tblprojects');
         $this->db->where('tblprojects.id', $id);
-        $this->db->join('tblpolicy','tblpolicy.id=tblprojects.policy_number');
+        $this->db->join('tblpolicy', 'tblpolicy.id=tblprojects.policy_number');
         $query = $this->db->get();
         $query = $query->result_array();
         foreach ($query as $val) {
@@ -3874,30 +4001,30 @@ public function delete_ClaimIdentified($data, $id)
                 $this->db->select('firstname,lastname,id');
                 $this->db->from('contacts');
                 $this->db->where('id', $contatctid);
-                $query              = $this->db->get();
-                $ret                = $query->row();
-                $firstname          = $ret->firstname;
-                $lastname           = $ret->lastname;
-                $name               = $firstname . " " . $lastname;
-                $life_assured[$i]   = $name;
+                $query = $this->db->get();
+                $ret = $query->row();
+                $firstname = $ret->firstname;
+                $lastname = $ret->lastname;
+                $name = $firstname . " " . $lastname;
+                $life_assured[$i] = $name;
                 $i++;
             }
             foreach ($policyOwnerid as $policyOwners) {
                 $this->db->select('firstname,lastname,id');
                 $this->db->from('contacts');
                 $this->db->where('id', $policyOwners);
-                $query      = $this->db->get();
-                $ret        = $query->row();
-                $firstname  = $ret->firstname;
-                $lastname   = $ret->lastname;
-                $name       = $firstname . " " . $lastname;
+                $query = $this->db->get();
+                $ret = $query->row();
+                $firstname = $ret->firstname;
+                $lastname = $ret->lastname;
+                $name = $firstname . " " . $lastname;
                 $policyOwner[$j] = $name;
                 $j++;
             }
 
             $demolifeassured = implode(",", $life_assured);
             $demopolicyOwner = implode(",", $policyOwner);
-            
+
             $data[] = [
                 'id' => $val['id'],
                 'policy_number' => $val['policy_number'],
@@ -3914,18 +4041,20 @@ public function delete_ClaimIdentified($data, $id)
         return $data;
     }
 
-    public function staffName(){
- 	$staff_id = get_staff_user_id();
- 	
+    public function staffName()
+    {
+        $staff_id = get_staff_user_id();
+
         $this->db->select('firstname,lastname');
-        $this->db->where('staffid' , $staff_id);
+        $this->db->where('staffid', $staff_id);
         $this->db->from('tblstaff');
         $result = $this->db->get();
         return $groupcategory = $result->result_array();
-        
+
     }
 
-    public function getCategory_Name($categoryId){
+    public function getCategory_Name($categoryId)
+    {
         $this->db->select('category');
         $this->db->where('id', $categoryId);
         $this->db->from('tblproject_category');
@@ -3933,13 +4062,15 @@ public function delete_ClaimIdentified($data, $id)
         $categoryData = $result->row();
         return $categoryData->category;
     }
-    
-    public function saveupdatecat($data,$file_id){
-        $this->db->where('id',$file_id);
-        $this->db->update('tblproject_files',$data);
+
+    public function saveupdatecat($data, $file_id)
+    {
+        $this->db->where('id', $file_id);
+        $this->db->update('tblproject_files', $data);
     }
 
-    public function compliance_name($complianId){
+    public function compliance_name($complianId)
+    {
         $this->db->select('compliance');
         $this->db->where('id', $complianId);
         $this->db->from('tblproject_compliance');
@@ -3947,62 +4078,69 @@ public function delete_ClaimIdentified($data, $id)
         $complianceData = $result->row();
         return $complianceData->compliance;
     }
-      
-    public function getstageId($complianId){
+
+    public function getstageId($complianId)
+    {
         $this->db->select('stage');
-        $this->db->where('is_deleted' , 0);
-        $this->db->where('id' , $complianId);
+        $this->db->where('is_deleted', 0);
+        $this->db->where('id', $complianId);
         $this->db->from('tblproject_compliance');
         $query = $this->db->get();
         return $query->result_array();
     }
-       
-    public function updateCompliancez($data, $file_id){
-        $this->db->where('id',$file_id);
-        $this->db->update('tblproject_files' , $data);
+
+    public function updateCompliancez($data, $file_id)
+    {
+        $this->db->where('id', $file_id);
+        $this->db->update('tblproject_files', $data);
     }
-      
-    public function policy_data($id){
+
+    public function policy_data($id)
+    {
         $this->db->select('*');
         $this->db->from('tblpolicy');
         $this->db->where('tblpolicy.id', $id);
-        $query    = $this->db->get();
+        $query = $this->db->get();
         $policyNo = $query->row();
         return $policyNo->policy_number;
     }
-    public function provider_data($id){
+    public function provider_data($id)
+    {
         $this->db->select('*');
         $this->db->from('tblproviders_details');
         $this->db->where('tblproviders_details.id', $id);
-        $query    = $this->db->get();
+        $query = $this->db->get();
         $providername = $query->row();
         return $providername->providername;
     }
-    public function client_name($client_id){
+    public function client_name($client_id)
+    {
         $this->db->select('*');
         $this->db->from('tblclients');
         $this->db->where('userid', $client_id);
-        $query     = $this->db->get();
+        $query = $this->db->get();
         $companyNo = $query->row();
         return $companyNo->company;
     }
-    public function arrears_status($project_id){
+    public function arrears_status($project_id)
+    {
         $this->db->select('*');
         $this->db->from('tblproject_arrears');
         $this->db->join('tblproject_arrears_status', 'tblproject_arrears_status.id = tblproject_arrears.arrears_status'); // , 'inner'
         $this->db->where('tblproject_arrears.project_id', $project_id);
-        $query             = $this->db->get ();
-        $arrears_statusId  = $query->row();
+        $query = $this->db->get();
+        $arrears_statusId = $query->row();
         $arrears_status_Id = $arrears_statusId->arrears_status;
         // echo $arrears_status_Id;
         // exit;
         return $arrears_status_Id;
     }
-    public function lapsed_api($lapsed_api_projectId){
+    public function lapsed_api($lapsed_api_projectId)
+    {
         $this->db->select('tblproject_arrears.apibeinglapsed');
         $this->db->from('tblproject_arrears');
         $this->db->where('tblproject_arrears.project_id', $lapsed_api_projectId);
-        $query     = $this->db->get();
+        $query = $this->db->get();
         $companyNo = $query->row();
         return $companyNo->apibeinglapsed;
     }
@@ -4011,128 +4149,133 @@ public function delete_ClaimIdentified($data, $id)
         $this->db->select('tblcustomer_adviser.staff_id');
         $this->db->from('tblcustomer_adviser');
         $this->db->where('tblcustomer_adviser.customer_id', $customer_id);
-        $query  = $this->db->get();
-        $query  = $query->result_array();
-        for($i=0; $i<count($query); $i++){
+        $query = $this->db->get();
+        $query = $query->result_array();
+        for ($i = 0; $i < count($query); $i++) {
             $data[] = $this->getStaf_Name($query[$i]['staff_id']);
         }
-        $data = implode(",",$data);
+        $data = implode(",", $data);
         return $data;
     }
-    public function getStaf_Name($id){
+    public function getStaf_Name($id)
+    {
         $this->db->select('tblstaff.firstname,tblstaff.lastname,tblstaff.staffid');
         $this->db->from('tblstaff');
         $this->db->where('tblstaff.staffid', $id);
-        $query       = $this->db->get();
-        $ret         = $query->row();
-        $firstname   = $ret->firstname;
-        $lastname    = $ret->lastname;
+        $query = $this->db->get();
+        $ret = $query->row();
+        $firstname = $ret->firstname;
+        $lastname = $ret->lastname;
         return $name = $firstname . " " . $lastname;
     }
-    public function projectType($projectType_id=""){
+    public function projectType($projectType_id = "")
+    {
         $this->db->select('project_type');
         $this->db->from('tblprojecttype');
         $this->db->where('id', $projectType_id);
-        $query      = $this->db->get();
-        $companyNo  = $query->row();
+        $query = $this->db->get();
+        $companyNo = $query->row();
         return $companyNo->project_type;
     }
-    public function project_type_data($projectType_id=""){
+    public function project_type_data($projectType_id = "")
+    {
         $this->db->select('*');
         $this->db->from('tblprojecttype');
         $this->db->where('is_deleted', 0);
-        $query      = $this->db->get();
-        $companyNo  = $query->result_array();
+        $query = $this->db->get();
+        $companyNo = $query->result_array();
         return $companyNo;
     }
 
-        public function get_project_arrears_data(){
-            $staff_id = get_staff_user_id();
-            //NEW ADDED
-            $this->db->select("customer_id");
-            // $this->db->from("tblcustomer_adviser");
-            $this->db->from("tblcustomer_admins");
-            $this->db->where("tblcustomer_admins.staff_id",$staff_id);
-            $this->db->get();
-            $query1 = $this->db->last_query();
+    public function get_project_arrears_data()
+    {
+        $staff_id = get_staff_user_id();
+        //NEW ADDED
+        $this->db->select("customer_id");
+        // $this->db->from("tblcustomer_adviser");
+        $this->db->from("tblcustomer_admins");
+        $this->db->where("tblcustomer_admins.staff_id", $staff_id);
+        $this->db->get();
+        $query1 = $this->db->last_query();
 
-            $this->db->select("clientid");
-            $this->db->from("tblprojects");
-            $this->db->where("tblprojects.created_staff_id",$staff_id);
-            $this->db->get();
-            $query2 = $this->db->last_query();
+        $this->db->select("clientid");
+        $this->db->from("tblprojects");
+        $this->db->where("tblprojects.created_staff_id", $staff_id);
+        $this->db->get();
+        $query2 = $this->db->last_query();
 
-            $querycustomer = $this->db->query($query1." UNION ".$query2);
-            $customerdetails = $querycustomer->result_array();
-            // neW eNDED
-            foreach ($customerdetails as $customerdetail) {
-                $cids[] = $customerdetail['customer_id'];
-                $cids[] = $customerdetail['clientid'];
-            }
-            $cids = array_unique($cids);
-            
-            foreach($cids as $cid){
-                $this->db->select('*');
-                $this->db->from('tblprojects');
-                $this->db->where('tblprojects.clientid',$cid);
-                $this->db->join('tblproject_arrears', 'tblproject_arrears.project_id=tblprojects.id');
-                $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
-                $this->db->where('tblprojects.projecttype', 6);
-                $result = $this->db->get();
-                $group_project[] =  $result->result_array();
-            }
+        $querycustomer = $this->db->query($query1 . " UNION " . $query2);
+        $customerdetails = $querycustomer->result_array();
+        // neW eNDED
+        foreach ($customerdetails as $customerdetail) {
+            $cids[] = $customerdetail['customer_id'];
+            $cids[] = $customerdetail['clientid'];
+        }
+        $cids = array_unique($cids);
 
-            $data = [];
-            $i=0;
-            foreach($group_project as $group_project_data){
-            
-            foreach($group_project_data as $group_project_datas){
+        foreach ($cids as $cid) {
+            $this->db->select('*');
+            $this->db->from('tblprojects');
+            $this->db->where('tblprojects.clientid', $cid);
+            $this->db->join('tblproject_arrears', 'tblproject_arrears.project_id=tblprojects.id');
+            $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
+            $this->db->where('tblprojects.projecttype', 6);
+            $result = $this->db->get();
+            $group_project[] = $result->result_array();
+        }
+
+        $data = [];
+        $i = 0;
+        foreach ($group_project as $group_project_data) {
+
+            foreach ($group_project_data as $group_project_datas) {
 
                 $startTimeStamp = strtotime($group_project_datas['project_created']);
-                $endTimeStamp   = strtotime(date("Y/m/d"));
-                $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                $numberDays     = intval($numberDays);
+                $endTimeStamp = strtotime(date("Y/m/d"));
+                $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                $numberDays = intval($numberDays);
                 $status = $group_project_datas['status'];
-                if($status==1){
+                if ($status == 1) {
                     $project_status = _l('project_status_1');
                 }
-                if($status==2){
+                if ($status == 2) {
                     $project_status = _l('project_status_2');
                 }
-                if($status==3){
+                if ($status == 3) {
                     $project_status = _l('project_status_3');
                 }
-                if($status==4){
+                if ($status == 4) {
                     $project_status = _l('project_status_4');
                 }
-                if($status==5){
+                if ($status == 5) {
                     $project_status = _l('project_status_5');
                 }
                 $data[$i] = [
-                    'id'              => $group_project_datas['project_id'],
-                    'name'            => $group_project_datas['name'],
-                    'projecttype'     => $this->projects_model->projectType($group_project_datas['projecttype']),
-                    'status'          => $project_status,
-                    'client_group'    => $this->projects_model->client_name($group_project_datas['clientid']),
-                    'advisor'         => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                    'member'          => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
-                    'policy_number'   => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                    'provider'        => $this->projects_model->provider_data($group_project_datas['provider']),
+                    'id' => $group_project_datas['project_id'],
+                    'name' => $group_project_datas['name'],
+                    'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                    'status' => $project_status,
+                    'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                    'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                    'member' => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
+                    'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                    'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
                     'project_created' => $group_project_datas['project_created'],
-                    'days_elapsed'    => $numberDays .' '.'days',
-                    'arrears_status'  => $this->projects_model->arrears_status($group_project_datas['project_id']),
-                    'lapsed_api'      => $this->projects_model->lapsed_api($group_project_datas['project_id']),
+                    'days_elapsed' => $numberDays . ' ' . 'days',
+                    'arrears_status' => $this->projects_model->arrears_status($group_project_datas['project_id']),
+                    'lapsed_api' => $this->projects_model->lapsed_api($group_project_datas['project_id']),
                 ];
                 $i++;
             }
-        }  
+        }
         return $data;
     }
 
 
 
-    public function get_project_data(){
+    public function get_project_data()
+    {
         $this->db->select('*');
         $this->db->from('tblprojects');
         $this->db->join('tblproject_arrears', 'tblproject_arrears.project_id=tblprojects.id');
@@ -4140,45 +4283,45 @@ public function delete_ClaimIdentified($data, $id)
         $this->db->where('tblprojects.projecttype', 6);
         $result = $this->db->get();
         $group_project_data = $result->result_array();
-       
+
         $data = [];
-        $i=0;
-        foreach($group_project_data as $group_project_datas){
+        $i = 0;
+        foreach ($group_project_data as $group_project_datas) {
             $startTimeStamp = strtotime($group_project_datas['project_created']);
-            $endTimeStamp   = strtotime(date("Y/m/d"));
-            $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-            $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-            $numberDays     = intval($numberDays);
+            $endTimeStamp = strtotime(date("Y/m/d"));
+            $timeDiff = abs($endTimeStamp - $startTimeStamp);
+            $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+            $numberDays = intval($numberDays);
             $status = $group_project_datas['status'];
-            if($status==1){
+            if ($status == 1) {
                 $project_status = _l('project_status_1');
             }
-            if($status==2){
+            if ($status == 2) {
                 $project_status = _l('project_status_2');
             }
-            if($status==3){
+            if ($status == 3) {
                 $project_status = _l('project_status_3');
             }
-            if($status==4){
+            if ($status == 4) {
                 $project_status = _l('project_status_4');
             }
-            if($status==5){
+            if ($status == 5) {
                 $project_status = _l('project_status_5');
             }
             $data[$i] = [
-                'id'              => $group_project_datas['project_id'],
-                'name'            => $group_project_datas['name'],
-                'projecttype'     => $this->projects_model->projectType($group_project_datas['projecttype']),
-                'status'          => $project_status,
-                'client_group'    => $this->projects_model->client_name($group_project_datas['clientid']),
-                'advisor'         => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                'member'          => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
-                'policy_number'   => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                'provider'        => $this->projects_model->provider_data($group_project_datas['provider']),
+                'id' => $group_project_datas['project_id'],
+                'name' => $group_project_datas['name'],
+                'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                'status' => $project_status,
+                'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                'member' => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
+                'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
                 'project_created' => $group_project_datas['project_created'],
-                'days_elapsed'    => $numberDays .' '.'days',
-                'arrears_status'  => $this->projects_model->arrears_status($group_project_datas['project_id']),
-                'lapsed_api'      => $this->projects_model->lapsed_api($group_project_datas['project_id']),
+                'days_elapsed' => $numberDays . ' ' . 'days',
+                'arrears_status' => $this->projects_model->arrears_status($group_project_datas['project_id']),
+                'lapsed_api' => $this->projects_model->lapsed_api($group_project_datas['project_id']),
             ];
             $i++;
         }
@@ -4191,54 +4334,56 @@ public function delete_ClaimIdentified($data, $id)
         $this->db->join(db_prefix() . 'staff', db_prefix() . 'staff.staffid=' . db_prefix() . 'project_members.staff_id');
         $this->db->where('project_id', $id);
         $member_data = $this->db->get(db_prefix() . 'project_members')->result_array();
-        for($i=0; $i<count($member_data); $i++){
-            $data[] = $member_data[$i]['firstname'].' '.$member_data[$i]['lastname'];
+        for ($i = 0; $i < count($member_data); $i++) {
+            $data[] = $member_data[$i]['firstname'] . ' ' . $member_data[$i]['lastname'];
         }
         $memberData = implode(",", $data);
         return $memberData;
     }
 
-    public function fetchadvisordata(){
+    public function fetchadvisordata()
+    {
         $this->db->select('staffid, firstname, lastname');
-        $this->db->order_by("firstname","asc");
+        $this->db->order_by("firstname", "asc");
         $this->db->from('tblstaff');
         $query = $this->db->get();
         return $query = $query->result_array();
     }
 
-    public function get_filtered_project_data($filter, $cleck_is_admin){
-        if($cleck_is_admin == 0){
+    public function get_filtered_project_data($filter, $cleck_is_admin)
+    {
+        if ($cleck_is_admin == 0) {
             $staff_id = get_staff_user_id();
             //NEW ADDED
             $this->db->select("customer_id");
             // $this->db->from("tblcustomer_adviser");
             $this->db->from("tblcustomer_admins");
-            $this->db->where("staff_id",$staff_id);
+            $this->db->where("staff_id", $staff_id);
             $this->db->get();
             $query1 = $this->db->last_query();
 
             $this->db->select("clientid");
             $this->db->from("tblprojects");
-            $this->db->where("created_staff_id",$staff_id);
+            $this->db->where("created_staff_id", $staff_id);
             $this->db->get();
             $query2 = $this->db->last_query();
 
-            $querycustomer = $this->db->query($query1." UNION ".$query2);
+            $querycustomer = $this->db->query($query1 . " UNION " . $query2);
             $customerdetails = $querycustomer->result_array();
-           
+
             // neW eNDED
             foreach ($customerdetails as $customerdetail) {
                 $cids[] = $customerdetail['customer_id'];
                 $cids[] = $customerdetail['clientid'];
             }
-           
+
             $cids = array_unique($cids);
-           
+
             $statick = 0;
-            foreach($cids as $cid){
+            foreach ($cids as $cid) {
                 $this->db->select('*');
                 $this->db->from('tblprojects');
-                $this->db->where('tblprojects.clientid',$cid);
+                $this->db->where('tblprojects.clientid', $cid);
                 // $this->db->where("tblprojects.created_staff_id",$staff_id);
                 $this->db->join('tblproject_arrears', 'tblproject_arrears.project_id=tblprojects.id');
                 $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
@@ -4248,78 +4393,78 @@ public function delete_ClaimIdentified($data, $id)
                 // echo $this->db->last_query();
                 // $group_project[] = $result->result_array();
 
-                if($filter['provider'] != ''){
-                    $this->db->where('provider',$filter['provider']);
+                if ($filter['provider'] != '') {
+                    $this->db->where('provider', $filter['provider']);
                 }
 
-                if($filter['status'] != ''){
-                    $this->db->where('status',$filter['status']);
+                if ($filter['status'] != '') {
+                    $this->db->where('status', $filter['status']);
                 }
 
-                if($filter['adviser'] != ''){
+                if ($filter['adviser'] != '') {
                     $this->db->join('tblcustomer_adviser', 'tblcustomer_adviser.customer_id=tblprojects.clientid');
-                    $this->db->where('tblcustomer_adviser.staff_id',$filter['adviser']);
+                    $this->db->where('tblcustomer_adviser.staff_id', $filter['adviser']);
                 }
-        
-                if($filter['arrears_status'] != ''){
-                    $this->db->where('tblproject_arrears.arrears_status',$filter['arrears_status']);
+
+                if ($filter['arrears_status'] != '') {
+                    $this->db->where('tblproject_arrears.arrears_status', $filter['arrears_status']);
                 }
-               
-                if($filter['member'] != ''){
+
+                if ($filter['member'] != '') {
                     $member_data = $filter['member'];
-                    $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id' , 'inner');
-                    $this->db->where('tblproject_members.staff_id',$member_data);
+                    $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id', 'inner');
+                    $this->db->where('tblproject_members.staff_id', $member_data);
                 }
                 $query = $this->db->get();
-        
-                if($query !== FALSE && $query->num_rows() > 0){
+
+                if ($query !== FALSE && $query->num_rows() > 0) {
                     foreach ($query->result_array() as $row) {
                         $group_project[][$statick] = $row;
                     }
                 }
                 $statick++;
             }
-           
-            $data = [];
-            $i=0;
-            foreach($group_project as $group_project_data){
 
-                foreach($group_project_data as $group_project_datas){
+            $data = [];
+            $i = 0;
+            foreach ($group_project as $group_project_data) {
+
+                foreach ($group_project_data as $group_project_datas) {
                     $startTimeStamp = strtotime($group_project_datas['project_created']);
-                    $endTimeStamp   = strtotime(date("Y/m/d"));
-                    $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                    $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                    $numberDays     = intval($numberDays);
+                    $endTimeStamp = strtotime(date("Y/m/d"));
+                    $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                    $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                    $numberDays = intval($numberDays);
                     $status = $group_project_datas['status'];
-                    if($status==1){
+                    if ($status == 1) {
                         $project_status = _l('project_status_1');
                     }
-                    if($status==2){
+                    if ($status == 2) {
                         $project_status = _l('project_status_2');
                     }
-                    if($status==3){
+                    if ($status == 3) {
                         $project_status = _l('project_status_3');
                     }
-                    if($status==4){
+                    if ($status == 4) {
                         $project_status = _l('project_status_4');
                     }
-                    if($status==5){
+                    if ($status == 5) {
                         $project_status = _l('project_status_5');
                     }
                     $data[$i] = [
-                       'id'              => $group_project_datas['project_id'],
-                       'name'            => $group_project_datas['name'],
-                       'projecttype'     => $this->projects_model->projectType($group_project_datas['projecttype']),
-                       'status'          => $project_status,
-                       'client_group'    => $this->projects_model->client_name($group_project_datas['clientid']),
-                       'advisor'         => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                       'member'          => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
-                       'policy_number'   => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                       'provider'        => $this->projects_model->provider_data($group_project_datas['provider']),
-                       'project_created' => $group_project_datas['project_created'],
-                       'days_elapsed'    => $numberDays .' '.'days',
-                       'arrears_status'  => $this->projects_model->arrears_status($group_project_datas['project_id']),
-                       'lapsed_api'      => $this->projects_model->lapsed_api($group_project_datas['project_id']),
+                        'id' => $group_project_datas['project_id'],
+                        'name' => $group_project_datas['name'],
+                        'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                        'status' => $project_status,
+                        'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                        'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                        'member' => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
+                        'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                        'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
+                        'project_created' => $group_project_datas['project_created'],
+                        'days_elapsed' => $numberDays . ' ' . 'days',
+                        'arrears_status' => $this->projects_model->arrears_status($group_project_datas['project_id']),
+                        'lapsed_api' => $this->projects_model->lapsed_api($group_project_datas['project_id']),
                     ];
                     $i++;
                 }
@@ -4327,111 +4472,114 @@ public function delete_ClaimIdentified($data, $id)
             return $data;
         }
 
-        if($cleck_is_admin == 1){
+        if ($cleck_is_admin == 1) {
             $this->db->select('*');
             $this->db->from('tblprojects');
             $this->db->join('tblproject_arrears', 'tblproject_arrears.project_id=tblprojects.id');
             $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
             $this->db->where('tblprojects.projecttype', 6);
-            if($filter['provider'] != ''){
-                $this->db->where('provider',$filter['provider']);
+            if ($filter['provider'] != '') {
+                $this->db->where('provider', $filter['provider']);
             }
 
-            if($filter['status'] != ''){
-                $this->db->where('status',$filter['status']);
+            if ($filter['status'] != '') {
+                $this->db->where('status', $filter['status']);
             }
 
-            if($filter['adviser'] != ''){
+            if ($filter['adviser'] != '') {
                 $this->db->join('tblcustomer_adviser', 'tblcustomer_adviser.customer_id=tblprojects.clientid');
-                $this->db->where('tblcustomer_adviser.staff_id',$filter['adviser']);
+                $this->db->where('tblcustomer_adviser.staff_id', $filter['adviser']);
             }
 
-            if($filter['arrears_status'] != ''){
-                $this->db->where('tblproject_arrears.arrears_status',$filter['arrears_status']);
+            if ($filter['arrears_status'] != '') {
+                $this->db->where('tblproject_arrears.arrears_status', $filter['arrears_status']);
             }
-        
-            if($filter['member'] != ''){
+
+            if ($filter['member'] != '') {
                 $member_data = $filter['member'];
-                $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id' , 'inner');
-                $this->db->where('tblproject_members.staff_id',$member_data);
+                $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id', 'inner');
+                $this->db->where('tblproject_members.staff_id', $member_data);
             }
 
             $query = $this->db->get();
             $group_project_data = array();
 
-            if($query !== FALSE && $query->num_rows() > 0){
+            if ($query !== FALSE && $query->num_rows() > 0) {
                 foreach ($query->result_array() as $row) {
                     $group_project_data[] = $row;
                 }
             }
 
             $data = [];
-            $i=0;
-            foreach($group_project_data as $group_project_datas){
+            $i = 0;
+            foreach ($group_project_data as $group_project_datas) {
                 $startTimeStamp = strtotime($group_project_datas['project_created']);
-                $endTimeStamp   = strtotime(date("Y/m/d"));
-                $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                $numberDays     = intval($numberDays);
+                $endTimeStamp = strtotime(date("Y/m/d"));
+                $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                $numberDays = intval($numberDays);
                 $status = $group_project_datas['status'];
-                if($status==1){
+                if ($status == 1) {
                     $project_status = _l('project_status_1');
                 }
-                if($status==2){
+                if ($status == 2) {
                     $project_status = _l('project_status_2');
                 }
-                if($status==3){
+                if ($status == 3) {
                     $project_status = _l('project_status_3');
                 }
-                if($status==4){
+                if ($status == 4) {
                     $project_status = _l('project_status_4');
                 }
-                if($status==5){
+                if ($status == 5) {
                     $project_status = _l('project_status_5');
                 }
                 $data[$i] = [
-                'id'              => $group_project_datas['project_id'],
-                'name'            => $group_project_datas['name'],
-                'projecttype'     => $this->projects_model->projectType($group_project_datas['projecttype']),
-                'status'          => $project_status,
-                'client_group'    => $this->projects_model->client_name($group_project_datas['clientid']),
-                'advisor'         => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                'member'          => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
-                'policy_number'   => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                'provider'        => $this->projects_model->provider_data($group_project_datas['provider']),
-                'project_created' => $group_project_datas['project_created'],
-                'days_elapsed'    => $numberDays .' '.'days',
-                'arrears_status'  => $this->projects_model->arrears_status($group_project_datas['project_id']),
-                'lapsed_api'      => $this->projects_model->lapsed_api($group_project_datas['project_id']),
+                    'id' => $group_project_datas['project_id'],
+                    'name' => $group_project_datas['name'],
+                    'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                    'status' => $project_status,
+                    'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                    'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                    'member' => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
+                    'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                    'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
+                    'project_created' => $group_project_datas['project_created'],
+                    'days_elapsed' => $numberDays . ' ' . 'days',
+                    'arrears_status' => $this->projects_model->arrears_status($group_project_datas['project_id']),
+                    'lapsed_api' => $this->projects_model->lapsed_api($group_project_datas['project_id']),
                 ];
                 $i++;
             }
-            if(!empty($data)){
+            if (!empty($data)) {
                 return $data;
             }
         }
     }
 
-    public function providers_detail(){
+    public function providers_detail()
+    {
         $this->db->select('*');
         $this->db->from('tblproviders_details');
         $this->db->where('is_deleted', 0);
         $this->db->order_by("id", "desc");
-        $query     = $this->db->get();
+        $query = $this->db->get();
         $companyNo = $query->result_array();
         return $companyNo;
     }
 
-    public function arrears_status_detail(){
+    public function arrears_status_detail()
+    {
 
         $this->db->select('*');
         $this->db->from('tblproject_arrears_status');
-        $query     = $this->db->get();
+        $query = $this->db->get();
         $companyNo = $query->result_array();
         return $companyNo;
     }
 
-    public function get_arrears_project_data() {
+    public function get_arrears_project_data()
+    {
 
         $this->db->select('*');
         $this->db->from('tblprojecttype');
@@ -4440,40 +4588,42 @@ public function delete_ClaimIdentified($data, $id)
         return $query->result_array();
     }
 
-//  8 nov jaya code for underwriting report
-    public function underwriting_status_detail(){
+    //  8 nov jaya code for underwriting report
+    public function underwriting_status_detail()
+    {
 
         $this->db->select('*');
         $this->db->from('tblproject_underwriting_status');
         $this->db->where('is_deleted', 0);
-        $query     = $this->db->get();
+        $query = $this->db->get();
         $companyNo = $query->result_array();
         return $companyNo;
     }
 
-    public function get_filtered_underwriting_project_data($filter, $check_is_admin){
+    public function get_filtered_underwriting_project_data($filter, $check_is_admin)
+    {
         // echo '<pre>';
         // print_r($filter);
         // exit;
-   //non admin filter underwriting
-        if($check_is_admin == 0){
+        //non admin filter underwriting
+        if ($check_is_admin == 0) {
 
             $staff_id = get_staff_user_id();
             //NEW ADDED
             $this->db->select("customer_id");
             // $this->db->from("tblcustomer_adviser");
             $this->db->from("tblcustomer_admins");
-            $this->db->where("tblcustomer_admins.staff_id",$staff_id);
+            $this->db->where("tblcustomer_admins.staff_id", $staff_id);
             $this->db->get();
             $query1 = $this->db->last_query();
 
             $this->db->select("clientid");
             $this->db->from("tblprojects");
-            $this->db->where("tblprojects.created_staff_id",$staff_id);
+            $this->db->where("tblprojects.created_staff_id", $staff_id);
             $this->db->get();
             $query2 = $this->db->last_query();
 
-            $querycustomer = $this->db->query($query1." UNION ".$query2);
+            $querycustomer = $this->db->query($query1 . " UNION " . $query2);
             $customerdetails = $querycustomer->result_array();
             // neW eNDED
             foreach ($customerdetails as $customerdetail) {
@@ -4483,40 +4633,40 @@ public function delete_ClaimIdentified($data, $id)
             $cids = array_unique($cids);
 
             $statick = 0;
-            foreach($cids as $cid){
+            foreach ($cids as $cid) {
                 $this->db->select('*,tblprojects.id as project_id');
 
                 //$this->db->select('*');
                 $this->db->from('tblprojects');
-                $this->db->where('tblprojects.clientid',$cid);
+                $this->db->where('tblprojects.clientid', $cid);
                 //$this->db->join('tblproject_underwriting', 'tblprojects.id = tblproject_underwriting.project_id');
                 $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
                 $this->db->where('tblprojects.projecttype', 1);
-                if($filter['provider'] != ''){
-                    $this->db->where('provider',$filter['provider']);
+                if ($filter['provider'] != '') {
+                    $this->db->where('provider', $filter['provider']);
                 }
-                if($filter['status'] != ''){
-                    $this->db->where_in('status',$filter['status']);
+                if ($filter['status'] != '') {
+                    $this->db->where_in('status', $filter['status']);
                 }
-                if($filter['under_status'] != ''){
+                if ($filter['under_status'] != '') {
                     $this->db->join('tblproject_underwriting', 'tblprojects.id = tblproject_underwriting.project_id');
 
-                    $this->db->where_in('tblproject_underwriting.under_status',$filter['under_status']);
+                    $this->db->where_in('tblproject_underwriting.under_status', $filter['under_status']);
                 }
-                if($filter['adviser'] != ''){
+                if ($filter['adviser'] != '') {
                     $this->db->join('tblcustomer_adviser', 'tblcustomer_adviser.customer_id=tblprojects.clientid');
-                    $this->db->where_in('tblcustomer_adviser.staff_id',$filter['adviser']);
+                    $this->db->where_in('tblcustomer_adviser.staff_id', $filter['adviser']);
                 }
-                if($filter['member'] != ''){
+                if ($filter['member'] != '') {
                     $member_data = $filter['member'];
-                    $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id' , 'inner');
-                    $this->db->where('tblproject_members.staff_id',$member_data);
+                    $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id', 'inner');
+                    $this->db->where('tblproject_members.staff_id', $member_data);
                 }
                 $query = $this->db->get();
                 $group_project_data = array();
-                
 
-                if($query !== FALSE && $query->num_rows() > 0){
+
+                if ($query !== FALSE && $query->num_rows() > 0) {
                     foreach ($query->result_array() as $row) {
                         $group_project[][$statick] = $row;
                     }
@@ -4526,66 +4676,66 @@ public function delete_ClaimIdentified($data, $id)
             }
 
             $data = [];
-            $i=0;
+            $i = 0;
 
-            foreach($group_project as $group_project_data){
-                foreach($group_project_data as $group_project_datas){
+            foreach ($group_project as $group_project_data) {
+                foreach ($group_project_data as $group_project_datas) {
 
                     $startTimeStamp = strtotime($group_project_datas['project_created']);
-                    $endTimeStamp   = strtotime(date("Y/m/d"));
-                    $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                    $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                    $numberDays     = intval($numberDays);
+                    $endTimeStamp = strtotime(date("Y/m/d"));
+                    $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                    $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                    $numberDays = intval($numberDays);
                     $status = $group_project_datas['status'];
-                    if($status==1){
+                    if ($status == 1) {
                         $project_status = _l('project_status_1');
                     }
-                    if($status==2){
+                    if ($status == 2) {
                         $project_status = _l('project_status_2');
                     }
-                    if($status==3){
+                    if ($status == 3) {
                         $project_status = _l('project_status_3');
                     }
-                    if($status==4){
+                    if ($status == 4) {
                         $project_status = _l('project_status_4');
                     }
-                    if($status==5){
+                    if ($status == 5) {
                         $project_status = _l('project_status_5');
                     }
                     $data[$i] = [
-                        'id'              => $group_project_datas['project_id'],
-                        'name'            => $group_project_datas['name'],
-                        'projecttype'     => $this->projects_model->projectType($group_project_datas['projecttype']),
-                        'status'          => $project_status,
-                        'client_group'    => $this->projects_model->client_name($group_project_datas['clientid']),
-                        'advisor'         => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                        'member'          => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
-                        'policy_number'   => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                        'provider'        => $this->projects_model->provider_data($group_project_datas['provider']),
+                        'id' => $group_project_datas['project_id'],
+                        'name' => $group_project_datas['name'],
+                        'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                        'status' => $project_status,
+                        'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                        'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                        'member' => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
+                        'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                        'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
                         'project_created' => $group_project_datas['project_created'],
-                        'days_elapsed'    => $numberDays .' '.'days',
-                        'arrears_status'  => $this->projects_model->arrears_status($group_project_datas['project_id']),
-                        'under_status'    => $this->projects_model->get_underwriting($group_project_datas['project_id']),
-                        'subbmited_api'   => $this->projects_model->subbmited_api($group_project_datas['project_id']),
-                        'subbmited_date'  => $this->projects_model->subbmited_date($group_project_datas['project_id']),
-                        'requested_api'   => $this->projects_model->requested_api($group_project_datas['project_id']),
-                        'issue_date'      => $this->projects_model->issue_date($group_project_datas['project_id']),
-                        'final_status'    => $this->projects_model->final_status($group_project_datas['project_id']),
-                        'issue_policy'    => $this->projects_model->issue_policy($group_project_datas['project_id']),
-                        'ownership'       => $this->projects_model->getOwner($group_project_datas['clientid']),
+                        'days_elapsed' => $numberDays . ' ' . 'days',
+                        'arrears_status' => $this->projects_model->arrears_status($group_project_datas['project_id']),
+                        'under_status' => $this->projects_model->get_underwriting($group_project_datas['project_id']),
+                        'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['project_id']),
+                        'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['project_id']),
+                        'requested_api' => $this->projects_model->requested_api($group_project_datas['project_id']),
+                        'issue_date' => $this->projects_model->issue_date($group_project_datas['project_id']),
+                        'final_status' => $this->projects_model->final_status($group_project_datas['project_id']),
+                        'issue_policy' => $this->projects_model->issue_policy($group_project_datas['project_id']),
+                        'ownership' => $this->projects_model->getOwner($group_project_datas['clientid']),
                     ];
                     $i++;
                 }
-                
+
             }
-           
-            if(!empty($data)){
+
+            if (!empty($data)) {
                 return $data;
             }
         }
-   //admin filter underwriting
+        //admin filter underwriting
 
-        if($check_is_admin == 1){
+        if ($check_is_admin == 1) {
 
             $this->db->select('*,tblprojects.id as project_id');
 
@@ -4595,124 +4745,125 @@ public function delete_ClaimIdentified($data, $id)
             $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
             $this->db->where('tblprojects.projecttype', 1);
             // $this->db->where('status',$workflow_statuss);
-            if($filter['status'] != ''){
-                $workflow_status = $filter['status']; 
-                $this->db->where_in('tblprojects.status',$workflow_status);
+            if ($filter['status'] != '') {
+                $workflow_status = $filter['status'];
+                $this->db->where_in('tblprojects.status', $workflow_status);
             }
 
-            if($filter['provider'] != ''){
-                $this->db->where('provider',$filter['provider']);
+            if ($filter['provider'] != '') {
+                $this->db->where('provider', $filter['provider']);
             }
-            
-            if($filter['under_status'] != ''){
+
+            if ($filter['under_status'] != '') {
                 $this->db->join('tblproject_underwriting', 'tblprojects.id = tblproject_underwriting.project_id');
 
-                $this->db->where_in('tblproject_underwriting.under_status',$filter['under_status']);
+                $this->db->where_in('tblproject_underwriting.under_status', $filter['under_status']);
             }
 
-            if($filter['adviser'] != ''){
+            if ($filter['adviser'] != '') {
                 $this->db->join('tblcustomer_adviser', 'tblcustomer_adviser.customer_id=tblprojects.clientid');
-                $this->db->where_in('tblcustomer_adviser.staff_id',$filter['adviser']);
+                $this->db->where_in('tblcustomer_adviser.staff_id', $filter['adviser']);
             }
 
-            if($filter['member'] != ''){
+            if ($filter['member'] != '') {
                 $member_data = $filter['member'];
-                $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id' , 'inner');
-                $this->db->where('tblproject_members.staff_id',$member_data);
+                $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id', 'inner');
+                $this->db->where('tblproject_members.staff_id', $member_data);
             }
 
             $query = $this->db->get();
             $group_project_data = array();
-            if($query !== FALSE && $query->num_rows() > 0){
+            if ($query !== FALSE && $query->num_rows() > 0) {
                 foreach ($query->result_array() as $row) {
                     $group_project[][] = $row;
-                    
+
                 }
             }
             // echo '<pre>';
             // print_r($group_project);
             // exit;
-           
+
             $data = [];
-            $i=0;
-            foreach($group_project as $group_project_data){
-            
-            foreach($group_project_data as $group_project_datas){
+            $i = 0;
+            foreach ($group_project as $group_project_data) {
 
-                $startTimeStamp = strtotime($group_project_datas['project_created']);
-                $endTimeStamp   = strtotime(date("Y/m/d"));
-                $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                $numberDays     = intval($numberDays);
-                $status = $group_project_datas['status'];
-                if($status==1){
-                    $project_status = _l('project_status_1');
+                foreach ($group_project_data as $group_project_datas) {
+
+                    $startTimeStamp = strtotime($group_project_datas['project_created']);
+                    $endTimeStamp = strtotime(date("Y/m/d"));
+                    $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                    $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                    $numberDays = intval($numberDays);
+                    $status = $group_project_datas['status'];
+                    if ($status == 1) {
+                        $project_status = _l('project_status_1');
+                    }
+                    if ($status == 2) {
+                        $project_status = _l('project_status_2');
+                    }
+                    if ($status == 3) {
+                        $project_status = _l('project_status_3');
+                    }
+                    if ($status == 4) {
+                        $project_status = _l('project_status_4');
+                    }
+                    if ($status == 5) {
+                        $project_status = _l('project_status_5');
+                    }
+                    $data[$i] = [
+                        'id' => $group_project_datas['project_id'],
+                        'name' => $group_project_datas['name'],
+                        'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                        'status' => $project_status,
+                        'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                        'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                        'member' => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
+                        'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                        'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
+                        'project_created' => $group_project_datas['project_created'],
+                        'days_elapsed' => $numberDays . ' ' . 'days',
+                        'arrears_status' => $this->projects_model->arrears_status($group_project_datas['project_id']),
+                        'under_status' => $this->projects_model->get_underwriting($group_project_datas['project_id']),
+                        'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['project_id']),
+                        'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['project_id']),
+                        'requested_api' => $this->projects_model->requested_api($group_project_datas['project_id']),
+                        'issue_date' => $this->projects_model->issue_date($group_project_datas['project_id']),
+                        'final_status' => $this->projects_model->final_status($group_project_datas['project_id']),
+                        'issue_policy' => $this->projects_model->issue_policy($group_project_datas['project_id']),
+                        'ownership' => $this->projects_model->getOwner($group_project_datas['clientid']),
+                    ];
+                    $i++;
                 }
-                if($status==2){
-                    $project_status = _l('project_status_2');
-                }
-                if($status==3){
-                    $project_status = _l('project_status_3');
-                }
-                if($status==4){
-                    $project_status = _l('project_status_4');
-                }
-                if($status==5){
-                    $project_status = _l('project_status_5');
-                }
-                $data[$i] = [
-                    'id'              => $group_project_datas['project_id'],
-                    'name'            => $group_project_datas['name'],
-                    'projecttype'     => $this->projects_model->projectType($group_project_datas['projecttype']),
-                    'status'          => $project_status,
-                    'client_group'    => $this->projects_model->client_name($group_project_datas['clientid']),
-                    'advisor'         => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                    'member'          => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
-                    'policy_number'   => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                    'provider'        => $this->projects_model->provider_data($group_project_datas['provider']),
-                    'project_created' => $group_project_datas['project_created'],
-                    'days_elapsed'    => $numberDays .' '.'days',
-                    'arrears_status'  => $this->projects_model->arrears_status($group_project_datas['project_id']),
-                    'under_status'    => $this->projects_model->get_underwriting($group_project_datas['project_id']),
-                    'subbmited_api'   => $this->projects_model->subbmited_api($group_project_datas['project_id']),
-                    'subbmited_date'  => $this->projects_model->subbmited_date($group_project_datas['project_id']),
-                    'requested_api'   => $this->projects_model->requested_api($group_project_datas['project_id']),
-                    'issue_date'      => $this->projects_model->issue_date($group_project_datas['project_id']),
-                    'final_status'    => $this->projects_model->final_status($group_project_datas['project_id']),
-                    'issue_policy'    => $this->projects_model->issue_policy($group_project_datas['project_id']),
-                    'ownership'       => $this->projects_model->getOwner($group_project_datas['clientid']),
-                ];
-                $i++;
+
             }
-           
-        } 
-    }
-        if(!empty($data)){
+        }
+        if (!empty($data)) {
             return $data;
-        }  
+        }
     }
 
-    public function get_underwriting_project_data($check_is_admin){
+    public function get_underwriting_project_data($check_is_admin)
+    {
 
-        if($check_is_admin == 0){
-           
+        if ($check_is_admin == 0) {
+
             $staff_id = get_staff_user_id();
             //NEW ADDED
             $this->db->select("customer_id");
             // $this->db->from("tblcustomer_adviser");
             $this->db->from("tblcustomer_admins");
-            $this->db->where("tblcustomer_admins.staff_id",$staff_id);
+            $this->db->where("tblcustomer_admins.staff_id", $staff_id);
             $this->db->get();
             $query1 = $this->db->last_query();
-           
+
             $this->db->select("clientid");
             $this->db->from("tblprojects");
-            $this->db->where("tblprojects.created_staff_id",$staff_id);
+            $this->db->where("tblprojects.created_staff_id", $staff_id);
             $this->db->get();
             $query2 = $this->db->last_query();
 
-            $querycustomer = $this->db->query($query1." UNION ".$query2);
-           
+            $querycustomer = $this->db->query($query1 . " UNION " . $query2);
+
             $customerdetails = $querycustomer->result_array();
             // neW eNDED
             foreach ($customerdetails as $customerdetail) {
@@ -4722,73 +4873,73 @@ public function delete_ClaimIdentified($data, $id)
             $cids = array_unique($cids);
             // print_r($cids);
             // exit;
-            foreach($cids as $cid){
+            foreach ($cids as $cid) {
 
                 $this->db->select('* , tblprojects.id as project_id');
-//
+                //
                 // $this->db->select('*');
                 $this->db->from('tblprojects');
-                $this->db->where('tblprojects.clientid',$cid);
+                $this->db->where('tblprojects.clientid', $cid);
                 //$this->db->join('tblproject_underwriting', 'tblprojects.id = tblproject_underwriting.project_id');
                 $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
                 $this->db->where('tblprojects.projecttype', 1);
                 $result = $this->db->get();
-                $group_project[] =  $result->result_array();
+                $group_project[] = $result->result_array();
 
                 // print_r($group_project);
                 // exit;
 
             }
-           
-            $data = [];
-            $i=0;
-            foreach($group_project as $group_project_data){
 
-                foreach($group_project_data as $group_project_datas){
-       
+            $data = [];
+            $i = 0;
+            foreach ($group_project as $group_project_data) {
+
+                foreach ($group_project_data as $group_project_datas) {
+
                     $startTimeStamp = strtotime($group_project_datas['project_created']);
-                    $endTimeStamp   = strtotime(date("Y/m/d"));
-                    $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                    $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                    $numberDays     = intval($numberDays);
+                    $endTimeStamp = strtotime(date("Y/m/d"));
+                    $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                    $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                    $numberDays = intval($numberDays);
                     $status = $group_project_datas['status'];
-                    if($status==1){
+                    if ($status == 1) {
                         $project_status = _l('project_status_1');
                     }
-                    if($status==2){
+                    if ($status == 2) {
                         $project_status = _l('project_status_2');
                     }
-                    if($status==3){
+                    if ($status == 3) {
                         $project_status = _l('project_status_3');
                     }
-                    if($status==4){
+                    if ($status == 4) {
                         $project_status = _l('project_status_4');
                     }
-                    if($status==5){
+                    if ($status == 5) {
                         $project_status = _l('project_status_5');
                     }
                     $data[$i] = [
-                        'U_id'            => $group_project_datas['id'],
-                        'id'              => $group_project_datas['project_id'],
-                        'name'            => $group_project_datas['name'],
-                        'projecttype'     => $this->projects_model->projectType($group_project_datas['projecttype']),
-                        'status'          => $project_status,
-                        'client_group'    => $this->projects_model->client_name($group_project_datas['clientid']),
-                        'advisor'         => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                        'member'          => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
-                        'policy_number'   => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                        'provider'        => $this->projects_model->provider_data($group_project_datas['provider']),
+                        'U_id' => $group_project_datas['id'],
+                        'id' => $group_project_datas['project_id'],
+                        'name' => $group_project_datas['name'],
+                        'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                        'status' => $project_status,
+                        'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                        'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                        'member' => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
+                        'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                        'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
                         'project_created' => $group_project_datas['project_created'],
-                        'days_elapsed'    => $numberDays .' '.'days',
-                        'arrears_status'  => $this->projects_model->arrears_status($group_project_datas['project_id']),
-                        'under_status'    => $this->projects_model->get_underwriting($group_project_datas['project_id']),
-                        'subbmited_api'   => $this->projects_model->subbmited_api($group_project_datas['project_id']),
-                        'subbmited_date'  => $this->projects_model->subbmited_date($group_project_datas['project_id']),
-                        'requested_api'   => $this->projects_model->requested_api($group_project_datas['project_id']),
-                        'issue_date'      => $this->projects_model->issue_date($group_project_datas['project_id']),
-                        'final_status'    => $this->projects_model->final_status($group_project_datas['project_id']),
-                        'issue_policy'    => $this->projects_model->issue_policy($group_project_datas['project_id']),
-                        'ownership'       => $this->projects_model->getOwner($group_project_datas['clientid']),
+                        'days_elapsed' => $numberDays . ' ' . 'days',
+                        'arrears_status' => $this->projects_model->arrears_status($group_project_datas['project_id']),
+                        'under_status' => $this->projects_model->get_underwriting($group_project_datas['project_id']),
+                        'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['project_id']),
+                        'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['project_id']),
+                        'requested_api' => $this->projects_model->requested_api($group_project_datas['project_id']),
+                        'issue_date' => $this->projects_model->issue_date($group_project_datas['project_id']),
+                        'final_status' => $this->projects_model->final_status($group_project_datas['project_id']),
+                        'issue_policy' => $this->projects_model->issue_policy($group_project_datas['project_id']),
+                        'ownership' => $this->projects_model->getOwner($group_project_datas['clientid']),
                     ];
                     $i++;
                 }
@@ -4796,7 +4947,7 @@ public function delete_ClaimIdentified($data, $id)
             return $data;
         }
 
-        if($check_is_admin == 1){
+        if ($check_is_admin == 1) {
 
             $this->db->select('*,tblprojects.id as project_id');
             $this->db->from('tblprojects');
@@ -4809,153 +4960,162 @@ public function delete_ClaimIdentified($data, $id)
             // print_r($group_project_data);
             // exit;
             $data = [];
-            $i=0;
-            foreach($group_project_data as $group_project_datas){
-        
+            $i = 0;
+            foreach ($group_project_data as $group_project_datas) {
+
                 $startTimeStamp = strtotime($group_project_datas['project_created']);
-                $endTimeStamp   = strtotime(date("Y/m/d"));
-                $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                $numberDays     = intval($numberDays);
+                $endTimeStamp = strtotime(date("Y/m/d"));
+                $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                $numberDays = intval($numberDays);
                 $status = $group_project_datas['status'];
-                if($status==1){
+                if ($status == 1) {
                     $project_status = _l('project_status_1');
                 }
-                if($status==2){
+                if ($status == 2) {
                     $project_status = _l('project_status_2');
                 }
-                if($status==3){
+                if ($status == 3) {
                     $project_status = _l('project_status_3');
                 }
-                if($status==4){
+                if ($status == 4) {
                     $project_status = _l('project_status_4');
                 }
-                if($status==5){
+                if ($status == 5) {
                     $project_status = _l('project_status_5');
                 }
                 $data[$i] = [
-                    'U_id'            => $group_project_datas['id'],
-                    'id'              => $group_project_datas['project_id'],
-                    'name'            => $group_project_datas['name'],
-                    'projecttype'     => $this->projects_model->projectType($group_project_datas['projecttype']),
-                    'status'          => $project_status,
-                    'client_group'    => $this->projects_model->client_name($group_project_datas['clientid']),
-                    'advisor'         => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                    'member'          => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
-                    'policy_number'   => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                    'provider'        => $this->projects_model->provider_data($group_project_datas['provider']),
+                    'U_id' => $group_project_datas['id'],
+                    'id' => $group_project_datas['project_id'],
+                    'name' => $group_project_datas['name'],
+                    'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                    'status' => $project_status,
+                    'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                    'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                    'member' => $this->projects_model->get_projectMembers($group_project_datas['project_id']),
+                    'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                    'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
                     'project_created' => $group_project_datas['project_created'],
-                    'days_elapsed'    => $numberDays .' '.'days',
-                    'arrears_status'  => $this->projects_model->arrears_status($group_project_datas['project_id']),
-                    'under_status'    => $this->projects_model->get_underwriting($group_project_datas['project_id']),
-                    'subbmited_api'   => $this->projects_model->subbmited_api($group_project_datas['project_id']),
-                    'subbmited_date'  => $this->projects_model->subbmited_date($group_project_datas['project_id']),
-                    'requested_api'   => $this->projects_model->requested_api($group_project_datas['project_id']),
-                    'issue_date'      => $this->projects_model->issue_date($group_project_datas['project_id']),
-                    'final_status'    => $this->projects_model->final_status($group_project_datas['project_id']),
-                    'issue_policy'    => $this->projects_model->issue_policy($group_project_datas['project_id']),
-                    'ownership'       => $this->projects_model->getOwner($group_project_datas['clientid']),
+                    'days_elapsed' => $numberDays . ' ' . 'days',
+                    'arrears_status' => $this->projects_model->arrears_status($group_project_datas['project_id']),
+                    'under_status' => $this->projects_model->get_underwriting($group_project_datas['project_id']),
+                    'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['project_id']),
+                    'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['project_id']),
+                    'requested_api' => $this->projects_model->requested_api($group_project_datas['project_id']),
+                    'issue_date' => $this->projects_model->issue_date($group_project_datas['project_id']),
+                    'final_status' => $this->projects_model->final_status($group_project_datas['project_id']),
+                    'issue_policy' => $this->projects_model->issue_policy($group_project_datas['project_id']),
+                    'ownership' => $this->projects_model->getOwner($group_project_datas['clientid']),
                 ];
                 $i++;
             }
             return $data;
         }
     }
-    public function getOwner($client_id){
+    public function getOwner($client_id)
+    {
         $this->db->select('mtg_owned');
         $this->db->from('tblclients');
-        $this->db->where('userid' , $client_id);
+        $this->db->where('userid', $client_id);
         $query = $this->db->get();
         $result = $query->result_array();
         return $result[0]['mtg_owned'];
     }
 
-    public function get_underwriting($project_id){
+    public function get_underwriting($project_id)
+    {
         $this->db->select('*');
         $this->db->from('tblproject_underwriting');
         $this->db->join('tblproject_underwriting_status', 'tblproject_underwriting_status.id = tblproject_underwriting.under_status'); // , 'inner'
         $this->db->where('tblproject_underwriting.project_id', $project_id);
-        $query             = $this->db->get();
-        $under_statusId  = $query->row();
+        $query = $this->db->get();
+        $under_statusId = $query->row();
         $under_status_Id = $under_statusId->under_status;
         return $under_status_Id;
     }
 
-    public function subbmited_api($project_id){
+    public function subbmited_api($project_id)
+    {
         $this->db->select('submitted_api');
         $this->db->from('tblproject_underwriting');
         $this->db->where('project_id', $project_id);
         $query = $this->db->get();
-        $submitted_api  = $query->row();
+        $submitted_api = $query->row();
         $submitted_api_Id = $submitted_api->submitted_api;
         return $submitted_api_Id;
     }
 
-    public function subbmited_date($project_id){
+    public function subbmited_date($project_id)
+    {
         $this->db->select('submitted_date');
         $this->db->from('tblproject_underwriting');
         $this->db->where('project_id', $project_id);
         $query = $this->db->get();
-        $submitted_date  = $query->row();
+        $submitted_date = $query->row();
         $submitted_date_Id = $submitted_date->submitted_date;
         return $submitted_date_Id;
     }
 
-    public function requested_api($project_id){
+    public function requested_api($project_id)
+    {
         $this->db->select('requested_api');
         $this->db->from('tblproject_underwriting');
         $this->db->where('project_id', $project_id);
         $query = $this->db->get();
-        $requested_api  = $query->row();
+        $requested_api = $query->row();
         $requestedApi = $requested_api->requested_api;
         return $requestedApi;
     }
 
-    public function issue_date($project_id){
+    public function issue_date($project_id)
+    {
         $this->db->select('issue_date');
         $this->db->from('tblproject_underwriting');
         $this->db->where('project_id', $project_id);
         $query = $this->db->get();
-        $issue_date  = $query->row();
+        $issue_date = $query->row();
         $issue_date = $issue_date->issue_date;
         return $issue_date;
     }
 
-    public function final_status($project_id){
+    public function final_status($project_id)
+    {
         $this->db->select('*');
         $this->db->from('tblproject_underwriting');
         $this->db->join(' tblproject_final_status', ' tblproject_final_status.id = tblproject_underwriting.final_status'); // , 'inner'
         $this->db->where('tblproject_underwriting.project_id', $project_id);
-        $query             = $this->db->get();
-        $final_status  = $query->row();
-        $final_status = $final_status->final_status; 
+        $query = $this->db->get();
+        $final_status = $query->row();
+        $final_status = $final_status->final_status;
         return $final_status;
     }
 
-    public function issue_policy($project_id){
+    public function issue_policy($project_id)
+    {
         $this->db->select('*');
         $this->db->from('tblproject_underwriting');
         $this->db->join(' tblproject_reason_not_issue_policy', ' tblproject_reason_not_issue_policy.id = tblproject_underwriting.reason_policynotissued'); // , 'inner'
         $this->db->where('tblproject_underwriting.project_id', $project_id);
-        $query             = $this->db->get();
-        $issue_policy= $query->row();
-        $issue_policy = $issue_policy->issue_policy	; 
+        $query = $this->db->get();
+        $issue_policy = $query->row();
+        $issue_policy = $issue_policy->issue_policy;
         return $issue_policy;
     }
-// 19-11 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // 19-11 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    public function get_filtered_adviser_project_data($filter, $check_is_admin){
+    public function get_filtered_adviser_project_data($filter, $check_is_admin)
+    {
         // echo 'hello';
         // exit;
-         $people = array(1, 2, 3);
-        if($check_is_admin == 0){
+        $people = array(1, 2, 3);
+        if ($check_is_admin == 0) {
 
             $staff_id = get_staff_user_id();
             //NEW ADDED
             $this->db->select("customer_id");
             // $this->db->from("tblcustomer_adviser");
             $this->db->from("tblcustomer_admins");
-            $this->db->where("tblcustomer_admins.staff_id",$staff_id);
+            $this->db->where("tblcustomer_admins.staff_id", $staff_id);
             $querycustomer = $this->db->get();
             // $query1 = $this->db->last_query();
 
@@ -4975,42 +5135,42 @@ public function delete_ClaimIdentified($data, $id)
             $cids = array_unique($cids);
 
             $statick = 0;
-            foreach($cids as $cid){
+            foreach ($cids as $cid) {
 
                 $this->db->select(' *, tbltasks.name AS task_name, tbltasks.id AS task_id, tblprojects.name AS project_name, tblprojects.status AS project_status');
                 $this->db->from('tblprojects');
-                $this->db->where('tblprojects.clientid',$cid);
+                $this->db->where('tblprojects.clientid', $cid);
                 $this->db->join('tbltasks', 'tblprojects.id = tbltasks.rel_id');
                 // $this->db->where('tbltasks.status', 4);
                 $this->db->where_in('tbltasks.status', $people);
                 $this->db->where_in('tblprojects.status', $people);
                 $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
-               
-                if($filter['projectType'] != ''){
-                    $this->db->where('projecttype',$filter['projectType']);
+
+                if ($filter['projectType'] != '') {
+                    $this->db->where('projecttype', $filter['projectType']);
                 }
 
-                if($filter['provider'] != ''){
-                    $this->db->where('provider',$filter['provider']);
+                if ($filter['provider'] != '') {
+                    $this->db->where('provider', $filter['provider']);
                 }
-                if($filter['status'] != ''){
-                    $this->db->where('tblprojects.status',$filter['status']);
+                if ($filter['status'] != '') {
+                    $this->db->where('tblprojects.status', $filter['status']);
                 }
-                if($filter['under_status'] != ''){
-                    $this->db->where('tblproject_underwriting.under_status',$filter['under_status']);
+                if ($filter['under_status'] != '') {
+                    $this->db->where('tblproject_underwriting.under_status', $filter['under_status']);
                 }
-                if($filter['adviser'] != ''){
+                if ($filter['adviser'] != '') {
                     $this->db->join('tblcustomer_adviser', 'tblcustomer_adviser.customer_id=tblprojects.clientid');
-                    $this->db->where('tblcustomer_adviser.staff_id',$filter['adviser']);
+                    $this->db->where('tblcustomer_adviser.staff_id', $filter['adviser']);
                 }
-                if($filter['member'] != ''){
+                if ($filter['member'] != '') {
                     $member_data = $filter['member'];
-                    $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id' , 'inner');
-                    $this->db->where('tblproject_members.staff_id',$member_data);
+                    $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id', 'inner');
+                    $this->db->where('tblproject_members.staff_id', $member_data);
                 }
                 $query = $this->db->get();
                 $group_project_data = array();
-                if($query !== FALSE && $query->num_rows() > 0){
+                if ($query !== FALSE && $query->num_rows() > 0) {
                     foreach ($query->result_array() as $row) {
                         $group_project[][$statick] = $row;
                     }
@@ -5020,77 +5180,77 @@ public function delete_ClaimIdentified($data, $id)
             }
 
             $data = [];
-            $i=0;
+            $i = 0;
 
-            foreach($group_project as $group_project_data){
-                foreach($group_project_data as $group_project_datas){
+            foreach ($group_project as $group_project_data) {
+                foreach ($group_project_data as $group_project_datas) {
 
                     $startTimeStamp = strtotime($group_project_datas['project_created']);
-                    $endTimeStamp   = strtotime(date("Y/m/d"));
-                    $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                    $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                    $numberDays     = intval($numberDays);
+                    $endTimeStamp = strtotime(date("Y/m/d"));
+                    $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                    $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                    $numberDays = intval($numberDays);
                     $status = $group_project_datas['project_status'];
-                    if($status==1){
+                    if ($status == 1) {
                         $project_status = _l('project_status_1');
                     }
-                    if($status==2){
+                    if ($status == 2) {
                         $project_status = _l('project_status_2');
                     }
-                    if($status==3){
+                    if ($status == 3) {
                         $project_status = _l('project_status_3');
                     }
-                    if($status==4){
+                    if ($status == 4) {
                         $project_status = _l('project_status_4');
                     }
-                    if($status==5){
+                    if ($status == 5) {
                         $project_status = _l('project_status_5');
                     }
 
-                    if($group_project_datas['status'] == 4){
+                    if ($group_project_datas['status'] == 4) {
                         $project_task_status = _l('project_status_2');
-    
+
                     }
 
                     $data[$i] = [
-                        'U_id'             => $group_project_datas['id'],
-                        'id'               => $group_project_datas['rel_id'],
-                        'project_name'     => $group_project_datas['project_name'],
-                        'task_name'        => $group_project_datas['task_name'],
+                        'U_id' => $group_project_datas['id'],
+                        'id' => $group_project_datas['rel_id'],
+                        'project_name' => $group_project_datas['project_name'],
+                        'task_name' => $group_project_datas['task_name'],
                         'task_description' => $group_project_datas['description'],
-                        'task_status'      => $project_task_status,
+                        'task_status' => $project_task_status,
 
-                        'projecttype'      => $this->projects_model->projectType($group_project_datas['projecttype']),
-                        'status'           => $project_status,
-                        'client_group'     => $this->projects_model->client_name($group_project_datas['clientid']),
-                        'advisor'          => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                        'member'           => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
-                        'policy_number'    => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                        'provider'         => $this->projects_model->provider_data($group_project_datas['provider']),
-                        'project_created'  => $group_project_datas['project_created'],
-                        'days_elapsed'     => $numberDays .' '.'days',
-                        'arrears_status'   => $this->projects_model->arrears_status($group_project_datas['rel_id']),
-                        'under_status'     => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
-                        'subbmited_api'    => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
-                        'subbmited_date'   => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
-                        'requested_api'    => $this->projects_model->requested_api($group_project_datas['rel_id']),
-                        'issue_date'       => $this->projects_model->issue_date($group_project_datas['rel_id']),
-                        'final_status'     => $this->projects_model->final_status($group_project_datas['rel_id']),
-                        'issue_policy'     => $this->projects_model->issue_policy($group_project_datas['rel_id']),
-                        'latest_comment'     => $this->projects_model->latest_comment($group_project_datas['task_id']),
-                        'milestone_name'   => $this->projects_model->milestone_name($group_project_datas['milestone']),
+                        'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                        'status' => $project_status,
+                        'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                        'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                        'member' => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
+                        'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                        'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
+                        'project_created' => $group_project_datas['project_created'],
+                        'days_elapsed' => $numberDays . ' ' . 'days',
+                        'arrears_status' => $this->projects_model->arrears_status($group_project_datas['rel_id']),
+                        'under_status' => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
+                        'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
+                        'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
+                        'requested_api' => $this->projects_model->requested_api($group_project_datas['rel_id']),
+                        'issue_date' => $this->projects_model->issue_date($group_project_datas['rel_id']),
+                        'final_status' => $this->projects_model->final_status($group_project_datas['rel_id']),
+                        'issue_policy' => $this->projects_model->issue_policy($group_project_datas['rel_id']),
+                        'latest_comment' => $this->projects_model->latest_comment($group_project_datas['task_id']),
+                        'milestone_name' => $this->projects_model->milestone_name($group_project_datas['milestone']),
 
 
                     ];
                     $i++;
                 }
-                
+
             }
-            if(!empty($data)){
+            if (!empty($data)) {
                 return $data;
             }
         }
-        if($check_is_admin == 1){
+        if ($check_is_admin == 1) {
             // echo 'hedllo';
             // exit;
             $this->db->select(' *, tbltasks.name AS task_name, tbltasks.id AS task_id, tblprojects.name AS project_name, tblprojects.status AS project_status');
@@ -5099,123 +5259,124 @@ public function delete_ClaimIdentified($data, $id)
             $this->db->join('tbltasks', 'tblprojects.id = tbltasks.rel_id');
             $this->db->where('tbltasks.status', 4);
             $this->db->where_in('tblprojects.status', $people);
-            
+
             $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
-           
-            if($filter['projectType'] != ''){
-                $this->db->where_in('projecttype',$filter['projectType']);
+
+            if ($filter['projectType'] != '') {
+                $this->db->where_in('projecttype', $filter['projectType']);
             }
 
-            if($filter['provider'] != ''){
-                $this->db->where('provider',$filter['provider']);
+            if ($filter['provider'] != '') {
+                $this->db->where('provider', $filter['provider']);
             }
 
-            if($filter['status'] != ''){
-                $this->db->where('tblprojects.status',$filter['status']);
+            if ($filter['status'] != '') {
+                $this->db->where('tblprojects.status', $filter['status']);
             }
 
-            if($filter['under_status'] != ''){
-                $this->db->where('tblproject_underwriting.under_status',$filter['under_status']);
+            if ($filter['under_status'] != '') {
+                $this->db->where('tblproject_underwriting.under_status', $filter['under_status']);
             }
 
-            if($filter['adviser'] != ''){
+            if ($filter['adviser'] != '') {
                 $this->db->join('tblcustomer_adviser', 'tblcustomer_adviser.customer_id=tblprojects.clientid');
-                $this->db->where_in('tblcustomer_adviser.staff_id',$filter['adviser']);
+                $this->db->where_in('tblcustomer_adviser.staff_id', $filter['adviser']);
             }
 
-            if($filter['member'] != ''){
+            if ($filter['member'] != '') {
                 $member_data = $filter['member'];
-                $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id' , 'inner');
-                $this->db->where('tblproject_members.staff_id',$member_data);
+                $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id', 'inner');
+                $this->db->where('tblproject_members.staff_id', $member_data);
             }
             $query = $this->db->get();
             $group_project_data = array();
-            if($query !== FALSE && $query->num_rows() > 0){
+            if ($query !== FALSE && $query->num_rows() > 0) {
                 foreach ($query->result_array() as $row) {
                     $group_project_data[] = $row;
                 }
             }
             $data = [];
-            $i=0;
-            foreach($group_project_data as $group_project_datas){
+            $i = 0;
+            foreach ($group_project_data as $group_project_datas) {
 
                 $startTimeStamp = strtotime($group_project_datas['project_created']);
-                $endTimeStamp   = strtotime(date("Y/m/d"));
-                $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                $numberDays     = intval($numberDays);
+                $endTimeStamp = strtotime(date("Y/m/d"));
+                $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                $numberDays = intval($numberDays);
                 $status = $group_project_datas['project_status'];
-                if($status==1){
+                if ($status == 1) {
                     $project_status = _l('project_status_1');
                 }
-                if($status==2){
+                if ($status == 2) {
                     $project_status = _l('project_status_2');
                 }
-                if($status==3){
+                if ($status == 3) {
                     $project_status = _l('project_status_3');
                 }
-                if($status==4){
+                if ($status == 4) {
                     $project_status = _l('project_status_4');
                 }
-                if($status==5){
+                if ($status == 5) {
                     $project_status = _l('project_status_5');
                 }
 
-                if($group_project_datas['status'] == 4){
+                if ($group_project_datas['status'] == 4) {
                     $project_task_status = _l('project_status_2');
 
                 }
 
                 $data[$i] = [
-                    'U_id'             => $group_project_datas['id'],
-                    'id'               => $group_project_datas['rel_id'],
-                    'project_name'     => $group_project_datas['project_name'],
-                    'task_name'        => $group_project_datas['task_name'],
+                    'U_id' => $group_project_datas['id'],
+                    'id' => $group_project_datas['rel_id'],
+                    'project_name' => $group_project_datas['project_name'],
+                    'task_name' => $group_project_datas['task_name'],
                     'task_description' => $group_project_datas['description'],
-                    'task_status'      => $project_task_status,
-                    'projecttype'      => $this->projects_model->projectType($group_project_datas['projecttype']),
-                    'status'           => $project_status,
-                    'client_group'     => $this->projects_model->client_name($group_project_datas['clientid']),
-                    'advisor'          => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                    'member'           => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
-                    'policy_number'    => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                    'provider'         => $this->projects_model->provider_data($group_project_datas['provider']),
-                    'project_created'  => $group_project_datas['project_created'],
-                    'days_elapsed'     => $numberDays .' '.'days',
-                    'arrears_status'   => $this->projects_model->arrears_status($group_project_datas['rel_id']),
-                    'under_status'     => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
-                    'subbmited_api'    => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
-                    'subbmited_date'   => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
-                    'requested_api'    => $this->projects_model->requested_api($group_project_datas['rel_id']),
-                    'issue_date'       => $this->projects_model->issue_date($group_project_datas['rel_id']),
-                    'final_status'     => $this->projects_model->final_status($group_project_datas['rel_id']),
-                    'issue_policy'     => $this->projects_model->issue_policy($group_project_datas['rel_id']),
-                    'latest_comment'   => $this->projects_model->latest_comment($group_project_datas['task_id']),
-                    'milestone_name'   => $this->projects_model->milestone_name($group_project_datas['milestone']),
+                    'task_status' => $project_task_status,
+                    'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                    'status' => $project_status,
+                    'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                    'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                    'member' => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
+                    'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                    'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
+                    'project_created' => $group_project_datas['project_created'],
+                    'days_elapsed' => $numberDays . ' ' . 'days',
+                    'arrears_status' => $this->projects_model->arrears_status($group_project_datas['rel_id']),
+                    'under_status' => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
+                    'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
+                    'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
+                    'requested_api' => $this->projects_model->requested_api($group_project_datas['rel_id']),
+                    'issue_date' => $this->projects_model->issue_date($group_project_datas['rel_id']),
+                    'final_status' => $this->projects_model->final_status($group_project_datas['rel_id']),
+                    'issue_policy' => $this->projects_model->issue_policy($group_project_datas['rel_id']),
+                    'latest_comment' => $this->projects_model->latest_comment($group_project_datas['task_id']),
+                    'milestone_name' => $this->projects_model->milestone_name($group_project_datas['milestone']),
                 ];
                 $i++;
             }
-            if(!empty($data)){
+            if (!empty($data)) {
                 return $data;
             }
-        }   
+        }
     }
 
-    public function get_adviser_project_data($check_is_admin){
+    public function get_adviser_project_data($check_is_admin)
+    {
         $people = array(1, 2, 3);
-        if($check_is_admin == 0){
-           
+        if ($check_is_admin == 0) {
+
 
             $staff_id = get_staff_user_id();
-            
+
             //NEW ADDED
             $this->db->select("customer_id");
             // $this->db->from("tblcustomer_adviser");
             $this->db->from("tblcustomer_admins");
-            $this->db->where("tblcustomer_admins.staff_id",$staff_id);
+            $this->db->where("tblcustomer_admins.staff_id", $staff_id);
             $querycustomer = $this->db->get();
             // $query1 = $this->db->last_query();
-            
+
             // $this->db->select("clientid");
             // $this->db->from("tblprojects");
             // $this->db->where("tblprojects.created_staff_id",$staff_id);
@@ -5223,7 +5384,7 @@ public function delete_ClaimIdentified($data, $id)
             // $query2 = $this->db->last_query();
 
             // $querycustomer = $this->db->query($query1." UNION ".$query2);
-            
+
             $customerdetails = $querycustomer->result_array();
             // neW eNDED
             foreach ($customerdetails as $customerdetail) {
@@ -5231,83 +5392,83 @@ public function delete_ClaimIdentified($data, $id)
                 // $cids[] = $customerdetail['clientid'];
             }
             $cids = array_unique($cids);
-           
-            foreach($cids as $cid){
+
+            foreach ($cids as $cid) {
 
                 $this->db->select(' *, tbltasks.name AS task_name, tbltasks.id AS task_id, tblprojects.name AS project_name, tblprojects.status AS project_status');
                 $this->db->from('tblprojects');
-    
+
                 $this->db->join('tbltasks', 'tblprojects.id = tbltasks.rel_id');
                 // $this->db->where('tbltasks.status', 4);
                 $this->db->where_in('tbltasks.status', $people);
                 $this->db->where_in('tblprojects.status', $people);
 
                 $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
-                $this->db->where('tblprojects.clientid',$cid);
+                $this->db->where('tblprojects.clientid', $cid);
                 $result = $this->db->get();
-                $group_project[] =  $result->result_array();
+                $group_project[] = $result->result_array();
 
             }
-           
-            $data = [];
-            $i=0;
-            foreach($group_project as $group_project_data){
 
-                foreach($group_project_data as $group_project_datas){
-       
+            $data = [];
+            $i = 0;
+            foreach ($group_project as $group_project_data) {
+
+                foreach ($group_project_data as $group_project_datas) {
+
                     $startTimeStamp = strtotime($group_project_datas['project_created']);
-                    $endTimeStamp   = strtotime(date("Y/m/d"));
-                    $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                    $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                    $numberDays     = intval($numberDays);
+                    $endTimeStamp = strtotime(date("Y/m/d"));
+                    $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                    $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                    $numberDays = intval($numberDays);
                     $status = $group_project_datas['project_status'];
-                    if($status==1){
+                    if ($status == 1) {
                         $project_status = _l('project_status_1');
                     }
-                    if($status==2){
+                    if ($status == 2) {
                         $project_status = _l('project_status_2');
                     }
-                    if($status==3){
+                    if ($status == 3) {
                         $project_status = _l('project_status_3');
                     }
-                    if($status==4){
+                    if ($status == 4) {
                         $project_status = _l('project_status_4');
                     }
-                    if($status==5){
+                    if ($status == 5) {
                         $project_status = _l('project_status_5');
                     }
 
-                    if($group_project_datas['status'] == 4){
+                    if ($group_project_datas['status'] == 4) {
                         $project_task_status = _l('project_status_2');
-    
+
                     }
 
                     $data[$i] = [
-                        'U_id'             => $group_project_datas['id'],
-                        'id'               => $group_project_datas['rel_id'],
-                        'project_name'     => $group_project_datas['project_name'],
-                        'task_name'        => $group_project_datas['task_name'],
+                        'U_id' => $group_project_datas['id'],
+                        'id' => $group_project_datas['rel_id'],
+                        'project_name' => $group_project_datas['project_name'],
+                        'task_name' => $group_project_datas['task_name'],
                         'task_description' => $group_project_datas['description'],
-                        'task_status'      => $project_task_status,
-                        'projecttype'      => $this->projects_model->projectType($group_project_datas['projecttype']),
-                        'status'           => $project_status,
-                        'client_group'     => $this->projects_model->client_name($group_project_datas['clientid']),
-                        'advisor'          => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                        'member'           => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
-                        'policy_number'    => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                        'provider'         => $this->projects_model->provider_data($group_project_datas['provider']),
-                        'project_created'  => $group_project_datas['project_created'],
-                        'days_elapsed'     => $numberDays .' '.'days',
-                        'arrears_status'   => $this->projects_model->arrears_status($group_project_datas['rel_id']),
-                        'under_status'     => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
-                        'subbmited_api'    => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
-                        'subbmited_date'   => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
-                        'requested_api'    => $this->projects_model->requested_api($group_project_datas['rel_id']),
-                        'issue_date'       => $this->projects_model->issue_date($group_project_datas['rel_id']),
-                        'final_status'     => $this->projects_model->final_status($group_project_datas['rel_id']),
-                        'issue_policy'     => $this->projects_model->issue_policy($group_project_datas['rel_id']),
-                        'latest_comment'   => $this->projects_model->latest_comment($group_project_datas['task_id']),
-                        'milestone_name'   => $this->projects_model->milestone_name($group_project_datas['milestone']),
+                        'task_status' => $project_task_status,
+                        'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                        'status' => $project_status,
+                        'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                        'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                        'member' => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
+                        'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                        'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
+                        'project_created' => $group_project_datas['project_created'],
+                        'days_elapsed' => $numberDays . ' ' . 'days',
+                        'arrears_status' => $this->projects_model->arrears_status($group_project_datas['rel_id']),
+                        'under_status' => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
+                        'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
+                        'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
+                        'requested_api' => $this->projects_model->requested_api($group_project_datas['rel_id']),
+                        'issue_date' => $this->projects_model->issue_date($group_project_datas['rel_id']),
+                        'final_status' => $this->projects_model->final_status($group_project_datas['rel_id']),
+                        'issue_policy' => $this->projects_model->issue_policy($group_project_datas['rel_id']),
+                        'latest_comment' => $this->projects_model->latest_comment($group_project_datas['task_id']),
+                        'milestone_name' => $this->projects_model->milestone_name($group_project_datas['milestone']),
                     ];
                     $i++;
                 }
@@ -5315,8 +5476,8 @@ public function delete_ClaimIdentified($data, $id)
             return $data;
         }
 
-        if($check_is_admin == 1){
-          
+        if ($check_is_admin == 1) {
+
             $this->db->select(' *, tbltasks.name AS task_name, tbltasks.id AS task_id, tblprojects.name AS project_name, tblprojects.status AS project_status');
             $this->db->from('tblprojects');
 
@@ -5338,63 +5499,63 @@ public function delete_ClaimIdentified($data, $id)
             // exit;
 
             $data = [];
-            $i=0;
-            foreach($group_project_data as $group_project_datas){
-        
-                $startTimeStamp = strtotime($group_project_datas['project_created']);
-                $endTimeStamp   = strtotime(date("Y/m/d"));
-                $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                $numberDays     = intval($numberDays);
-                $status         = $group_project_datas['project_status'];
+            $i = 0;
+            foreach ($group_project_data as $group_project_datas) {
 
-                if($status == 1){
+                $startTimeStamp = strtotime($group_project_datas['project_created']);
+                $endTimeStamp = strtotime(date("Y/m/d"));
+                $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                $numberDays = intval($numberDays);
+                $status = $group_project_datas['project_status'];
+
+                if ($status == 1) {
                     $project_status = _l('project_status_1');
                 }
-                if($status == 2){
+                if ($status == 2) {
                     $project_status = _l('project_status_2');
                 }
-                if($status == 3){
+                if ($status == 3) {
                     $project_status = _l('project_status_3');
                 }
-                if($status == 4){
-                    $project_status = _l('project_status_4'); 
+                if ($status == 4) {
+                    $project_status = _l('project_status_4');
                 }
-                if($status == 5){
+                if ($status == 5) {
                     $project_status = _l('project_status_5');
                 }
 
-                if($group_project_datas['status'] == 4){
+                if ($group_project_datas['status'] == 4) {
                     $project_task_status = _l('project_status_2');
 
                 }
 
                 $data[$i] = [
-                    'U_id'             => $group_project_datas['id'],
-                    'id'               => $group_project_datas['rel_id'],
-                    'project_name'     => $group_project_datas['project_name'],
-                    'task_name'        => $group_project_datas['task_name'],
+                    'U_id' => $group_project_datas['id'],
+                    'id' => $group_project_datas['rel_id'],
+                    'project_name' => $group_project_datas['project_name'],
+                    'task_name' => $group_project_datas['task_name'],
                     'task_description' => $group_project_datas['description'],
-                    'task_status'      => $project_task_status,
-                    'projecttype'      => $this->projects_model->projectType($group_project_datas['projecttype']),
-                    'status'           => $project_status,
-                    'client_group'     => $this->projects_model->client_name($group_project_datas['clientid']),
-                    'advisor'          => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                    'member'           => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
-                    'policy_number'    => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                    'provider'         => $this->projects_model->provider_data($group_project_datas['provider']),
-                    'project_created'  => $group_project_datas['project_created'],
-                    'days_elapsed'     => $numberDays .' '.'days',
-                    'arrears_status'   => $this->projects_model->arrears_status($group_project_datas['rel_id']),
-                    'under_status'     => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
-                    'subbmited_api'    => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
-                    'subbmited_date'   => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
-                    'requested_api'    => $this->projects_model->requested_api($group_project_datas['rel_id']),
-                    'issue_date'       => $this->projects_model->issue_date($group_project_datas['rel_id']),
-                    'final_status'     => $this->projects_model->final_status($group_project_datas['rel_id']),
-                    'issue_policy'     => $this->projects_model->issue_policy($group_project_datas['rel_id']),
-                    'latest_comment'   => $this->projects_model->latest_comment($group_project_datas['task_id']),
-                    'milestone_name'   => $this->projects_model->milestone_name($group_project_datas['milestone']),
+                    'task_status' => $project_task_status,
+                    'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                    'status' => $project_status,
+                    'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                    'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                    'member' => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
+                    'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                    'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
+                    'project_created' => $group_project_datas['project_created'],
+                    'days_elapsed' => $numberDays . ' ' . 'days',
+                    'arrears_status' => $this->projects_model->arrears_status($group_project_datas['rel_id']),
+                    'under_status' => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
+                    'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
+                    'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
+                    'requested_api' => $this->projects_model->requested_api($group_project_datas['rel_id']),
+                    'issue_date' => $this->projects_model->issue_date($group_project_datas['rel_id']),
+                    'final_status' => $this->projects_model->final_status($group_project_datas['rel_id']),
+                    'issue_policy' => $this->projects_model->issue_policy($group_project_datas['rel_id']),
+                    'latest_comment' => $this->projects_model->latest_comment($group_project_datas['task_id']),
+                    'milestone_name' => $this->projects_model->milestone_name($group_project_datas['milestone']),
 
                 ];
                 $i++;
@@ -5403,43 +5564,46 @@ public function delete_ClaimIdentified($data, $id)
         }
     }
 
-    public function milestone_name($milestone_id){
+    public function milestone_name($milestone_id)
+    {
         $this->db->select('name');
         $this->db->from('tblmilestones');
-        $this->db->where('id',$milestone_id );
+        $this->db->where('id', $milestone_id);
         $query = $this->db->get();
         $result = $query->row();
         return $result->name;
     }
 
-    public function latest_comment($task_id){
+    public function latest_comment($task_id)
+    {
         $this->db->select('content');
         $this->db->from('tbltask_comments');
-        $this->db->where_in('taskid',$task_id );
+        $this->db->where_in('taskid', $task_id);
         $query = $this->db->get();
         $result = $query->result_array();
         $numItems = count($result);
         $i = 0;
-        foreach($result as $key=>$value) {
-            if(++$i === $numItems) {
+        foreach ($result as $key => $value) {
+            if (++$i === $numItems) {
                 return $value['content'];
             }
-        }    
+        }
     }
 
-    public function get_activity_report_data($check_is_admin){
+    public function get_activity_report_data($check_is_admin)
+    {
         $people = array(1, 2, 3, 4, 5);
-        if($check_is_admin == 0){
+        if ($check_is_admin == 0) {
             $staff_id = get_staff_user_id();
-            
+
             //NEW ADDED
             $this->db->select("customer_id");
             // $this->db->from("tblcustomer_adviser");
             $this->db->from("tblcustomer_admins");
-            $this->db->where("tblcustomer_admins.staff_id",$staff_id);
+            $this->db->where("tblcustomer_admins.staff_id", $staff_id);
             $querycustomer = $this->db->get();
             // $query1 = $this->db->last_query();
-            
+
             // $this->db->select("clientid");
             // $this->db->from("tblprojects");
             // $this->db->where("tblprojects.created_staff_id",$staff_id);
@@ -5447,108 +5611,108 @@ public function delete_ClaimIdentified($data, $id)
             // $query2 = $this->db->last_query();
 
             // $querycustomer = $this->db->query($query1." UNION ".$query2);
-            
+
             $customerdetails = $querycustomer->result_array();
-           
+
             // neW eNDED
             foreach ($customerdetails as $customerdetail) {
                 $cids[] = $customerdetail['customer_id'];
                 // $cids[] = $customerdetail['clientid'];
             }
             $cids = array_unique($cids);
-            
-            foreach($cids as $cid){
+
+            foreach ($cids as $cid) {
 
                 $this->db->select(' *, tbltasks.name AS task_name, tbltasks.id AS task_id, tblprojects.name AS project_name, tblprojects.status AS project_status');
                 $this->db->from('tblprojects');
-    
+
                 $this->db->join('tbltasks', 'tblprojects.id = tbltasks.rel_id');
                 // $this->db->where('tbltasks.status', 4);
                 $this->db->where_in('tbltasks.status', $people);
                 $this->db->where_in('tblprojects.status', $people);
 
                 $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
-                $this->db->where('tblprojects.clientid',$cid);
+                $this->db->where('tblprojects.clientid', $cid);
                 $result = $this->db->get();
                 // echo $this->db->last_query();
                 // echo ";<br>";
-                $group_project[] =  $result->result_array();
+                $group_project[] = $result->result_array();
 
             }
-            
+
             // exit;
             $data = [];
-            $i=0;
-            foreach($group_project as $group_project_data){
+            $i = 0;
+            foreach ($group_project as $group_project_data) {
 
-                foreach($group_project_data as $group_project_datas){
-       
+                foreach ($group_project_data as $group_project_datas) {
+
                     $startTimeStamp = strtotime($group_project_datas['project_created']);
-                    $endTimeStamp   = strtotime(date("Y/m/d"));
-                    $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                    $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                    $numberDays     = intval($numberDays);
+                    $endTimeStamp = strtotime(date("Y/m/d"));
+                    $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                    $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                    $numberDays = intval($numberDays);
                     $status = $group_project_datas['project_status'];
-                    if($status==1){
+                    if ($status == 1) {
                         $project_status = _l('project_status_1');
                     }
-                    if($status==2){
+                    if ($status == 2) {
                         $project_status = _l('project_status_2');
                     }
-                    if($status==3){
+                    if ($status == 3) {
                         $project_status = _l('project_status_3');
                     }
-                    if($status==4){
+                    if ($status == 4) {
                         $project_status = _l('project_status_4');
                     }
-                    if($status==5){
+                    if ($status == 5) {
                         $project_status = _l('project_status_5');
                     }
 
-                    if($group_project_datas['status'] == 4){
+                    if ($group_project_datas['status'] == 4) {
                         $project_task_status = _l('project_status_2');
-    
+
                     }
 
                     $data[$i] = [
-                        'U_id'             => $group_project_datas['id'],
-                        'id'               => $group_project_datas['rel_id'],
-                        'project_name'     => $group_project_datas['project_name'],
-                        'task_name'        => $group_project_datas['task_name'],
+                        'U_id' => $group_project_datas['id'],
+                        'id' => $group_project_datas['rel_id'],
+                        'project_name' => $group_project_datas['project_name'],
+                        'task_name' => $group_project_datas['task_name'],
                         'task_description' => $group_project_datas['description'],
-                        'start_date'       => $group_project_datas['start_date'],
-                        'end_date'         => $group_project_datas['date_finished'],
-                        'task_status'      => $project_task_status,
-                        'projecttype'      => $this->projects_model->projectType($group_project_datas['projecttype']),
-                        'status'           => $project_status,
-                        'client_group'     => $this->projects_model->client_name($group_project_datas['clientid']),
-                        'advisor'          => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                        'member'           => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
-                        'policy_number'    => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                        'provider'         => $this->projects_model->provider_data($group_project_datas['provider']),
-                        'project_created'  => $group_project_datas['project_created'],
-                        'days_elapsed'     => $numberDays .' '.'days',
-                        'arrears_status'   => $this->projects_model->arrears_status($group_project_datas['rel_id']),
-                        'under_status'     => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
-                        'subbmited_api'    => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
-                        'subbmited_date'   => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
-                        'requested_api'    => $this->projects_model->requested_api($group_project_datas['rel_id']),
-                        'issue_date'       => $this->projects_model->issue_date($group_project_datas['rel_id']),
-                        'final_status'     => $this->projects_model->final_status($group_project_datas['rel_id']),
-                        'issue_policy'     => $this->projects_model->issue_policy($group_project_datas['rel_id']),
-                        'latest_comment'   => $this->projects_model->latest_comment($group_project_datas['task_id']),
-                        'milestone_name'   => $this->projects_model->milestone_name($group_project_datas['milestone']),
+                        'start_date' => $group_project_datas['start_date'],
+                        'end_date' => $group_project_datas['date_finished'],
+                        'task_status' => $project_task_status,
+                        'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                        'status' => $project_status,
+                        'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                        'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                        'member' => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
+                        'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                        'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
+                        'project_created' => $group_project_datas['project_created'],
+                        'days_elapsed' => $numberDays . ' ' . 'days',
+                        'arrears_status' => $this->projects_model->arrears_status($group_project_datas['rel_id']),
+                        'under_status' => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
+                        'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
+                        'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
+                        'requested_api' => $this->projects_model->requested_api($group_project_datas['rel_id']),
+                        'issue_date' => $this->projects_model->issue_date($group_project_datas['rel_id']),
+                        'final_status' => $this->projects_model->final_status($group_project_datas['rel_id']),
+                        'issue_policy' => $this->projects_model->issue_policy($group_project_datas['rel_id']),
+                        'latest_comment' => $this->projects_model->latest_comment($group_project_datas['task_id']),
+                        'milestone_name' => $this->projects_model->milestone_name($group_project_datas['milestone']),
                     ];
                     $i++;
                 }
             }
-            
-            
+
+
             return $data;
         }
 
-        if($check_is_admin == 1){
-          
+        if ($check_is_admin == 1) {
+
             $this->db->select(' *, tbltasks.name AS task_name, tbltasks.id AS task_id, tblprojects.name AS project_name, tblprojects.status AS project_status');
             $this->db->from('tblprojects');
 
@@ -5566,65 +5730,65 @@ public function delete_ClaimIdentified($data, $id)
             $group_project_data = $result->result_array();
 
             $data = [];
-            $i=0;
-            foreach($group_project_data as $group_project_datas){
-        
-                $startTimeStamp = strtotime($group_project_datas['project_created']);
-                $endTimeStamp   = strtotime(date("Y/m/d"));
-                $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                $numberDays     = intval($numberDays);
-                $status         = $group_project_datas['project_status'];
+            $i = 0;
+            foreach ($group_project_data as $group_project_datas) {
 
-                if($status == 1){
+                $startTimeStamp = strtotime($group_project_datas['project_created']);
+                $endTimeStamp = strtotime(date("Y/m/d"));
+                $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                $numberDays = intval($numberDays);
+                $status = $group_project_datas['project_status'];
+
+                if ($status == 1) {
                     $project_status = _l('project_status_1');
                 }
-                if($status == 2){
+                if ($status == 2) {
                     $project_status = _l('project_status_2');
                 }
-                if($status == 3){
+                if ($status == 3) {
                     $project_status = _l('project_status_3');
                 }
-                if($status == 4){
-                    $project_status = _l('project_status_4'); 
+                if ($status == 4) {
+                    $project_status = _l('project_status_4');
                 }
-                if($status == 5){
+                if ($status == 5) {
                     $project_status = _l('project_status_5');
                 }
 
-                if($group_project_datas['status'] == 4){
+                if ($group_project_datas['status'] == 4) {
                     $project_task_status = _l('project_status_2');
 
                 }
 
                 $data[$i] = [
-                    'U_id'             => $group_project_datas['id'],
-                    'id'               => $group_project_datas['rel_id'],
-                    'project_name'     => $group_project_datas['project_name'],
-                    'task_name'        => $group_project_datas['task_name'],
+                    'U_id' => $group_project_datas['id'],
+                    'id' => $group_project_datas['rel_id'],
+                    'project_name' => $group_project_datas['project_name'],
+                    'task_name' => $group_project_datas['task_name'],
                     'task_description' => $group_project_datas['description'],
-                    'start_date'       => $group_project_datas['start_date'],
-                    'end_date'         => $group_project_datas['date_finished'],
-                    'task_status'      => $project_task_status,
-                    'projecttype'      => $this->projects_model->projectType($group_project_datas['projecttype']),
-                    'status'           => $project_status,
-                    'client_group'     => $this->projects_model->client_name($group_project_datas['clientid']),
-                    'advisor'          => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                    'member'           => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
-                    'policy_number'    => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                    'provider'         => $this->projects_model->provider_data($group_project_datas['provider']),
-                    'project_created'  => $group_project_datas['project_created'],
-                    'days_elapsed'     => $numberDays .' '.'days',
-                    'arrears_status'   => $this->projects_model->arrears_status($group_project_datas['rel_id']),
-                    'under_status'     => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
-                    'subbmited_api'    => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
-                    'subbmited_date'   => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
-                    'requested_api'    => $this->projects_model->requested_api($group_project_datas['rel_id']),
-                    'issue_date'       => $this->projects_model->issue_date($group_project_datas['rel_id']),
-                    'final_status'     => $this->projects_model->final_status($group_project_datas['rel_id']),
-                    'issue_policy'     => $this->projects_model->issue_policy($group_project_datas['rel_id']),
-                    'latest_comment'   => $this->projects_model->latest_comment($group_project_datas['task_id']),
-                    'milestone_name'   => $this->projects_model->milestone_name($group_project_datas['milestone']),
+                    'start_date' => $group_project_datas['start_date'],
+                    'end_date' => $group_project_datas['date_finished'],
+                    'task_status' => $project_task_status,
+                    'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                    'status' => $project_status,
+                    'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                    'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                    'member' => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
+                    'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                    'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
+                    'project_created' => $group_project_datas['project_created'],
+                    'days_elapsed' => $numberDays . ' ' . 'days',
+                    'arrears_status' => $this->projects_model->arrears_status($group_project_datas['rel_id']),
+                    'under_status' => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
+                    'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
+                    'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
+                    'requested_api' => $this->projects_model->requested_api($group_project_datas['rel_id']),
+                    'issue_date' => $this->projects_model->issue_date($group_project_datas['rel_id']),
+                    'final_status' => $this->projects_model->final_status($group_project_datas['rel_id']),
+                    'issue_policy' => $this->projects_model->issue_policy($group_project_datas['rel_id']),
+                    'latest_comment' => $this->projects_model->latest_comment($group_project_datas['task_id']),
+                    'milestone_name' => $this->projects_model->milestone_name($group_project_datas['milestone']),
 
                 ];
                 $i++;
@@ -5633,16 +5797,17 @@ public function delete_ClaimIdentified($data, $id)
         }
     }
 
-    public function get_filtered_activity_report_data($filter, $check_is_admin){
-         $people = array(1, 2, 3, 4, 5);
-        if($check_is_admin == 0){
+    public function get_filtered_activity_report_data($filter, $check_is_admin)
+    {
+        $people = array(1, 2, 3, 4, 5);
+        if ($check_is_admin == 0) {
 
             $staff_id = get_staff_user_id();
             //NEW ADDED
             $this->db->select("customer_id");
             // $this->db->from("tblcustomer_adviser");
             $this->db->from("tblcustomer_admins");
-            $this->db->where("tblcustomer_admins.staff_id",$staff_id);
+            $this->db->where("tblcustomer_admins.staff_id", $staff_id);
             $querycustomer = $this->db->get();
             // $query1 = $this->db->last_query();
 
@@ -5662,42 +5827,42 @@ public function delete_ClaimIdentified($data, $id)
             $cids = array_unique($cids);
 
             $statick = 0;
-            foreach($cids as $cid){
+            foreach ($cids as $cid) {
 
                 $this->db->select(' *, tbltasks.name AS task_name, tbltasks.id AS task_id, tblprojects.name AS project_name, tblprojects.status AS project_status');
                 $this->db->from('tblprojects');
-                $this->db->where('tblprojects.clientid',$cid);
+                $this->db->where('tblprojects.clientid', $cid);
                 $this->db->join('tbltasks', 'tblprojects.id = tbltasks.rel_id');
                 // $this->db->where('tbltasks.status', 4);
                 $this->db->where_in('tbltasks.status', $people);
                 $this->db->where_in('tblprojects.status', $people);
                 $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
-               
-                if($filter['projectType'] != ''){
-                    $this->db->where('projecttype',$filter['projectType']);
+
+                if ($filter['projectType'] != '') {
+                    $this->db->where('projecttype', $filter['projectType']);
                 }
 
-                if($filter['provider'] != ''){
-                    $this->db->where('provider',$filter['provider']);
+                if ($filter['provider'] != '') {
+                    $this->db->where('provider', $filter['provider']);
                 }
-                if($filter['status'] != ''){
-                    $this->db->where('tblprojects.status',$filter['status']);
+                if ($filter['status'] != '') {
+                    $this->db->where('tblprojects.status', $filter['status']);
                 }
-                if($filter['under_status'] != ''){
-                    $this->db->where('tblproject_underwriting.under_status',$filter['under_status']);
+                if ($filter['under_status'] != '') {
+                    $this->db->where('tblproject_underwriting.under_status', $filter['under_status']);
                 }
-                if($filter['adviser'] != ''){
+                if ($filter['adviser'] != '') {
                     $this->db->join('tblcustomer_adviser', 'tblcustomer_adviser.customer_id=tblprojects.clientid');
-                    $this->db->where('tblcustomer_adviser.staff_id',$filter['adviser']);
+                    $this->db->where('tblcustomer_adviser.staff_id', $filter['adviser']);
                 }
-                if($filter['member'] != ''){
+                if ($filter['member'] != '') {
                     $member_data = $filter['member'];
-                    $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id' , 'inner');
-                    $this->db->where('tblproject_members.staff_id',$member_data);
+                    $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id', 'inner');
+                    $this->db->where('tblproject_members.staff_id', $member_data);
                 }
                 $query = $this->db->get();
                 $group_project_data = array();
-                if($query !== FALSE && $query->num_rows() > 0){
+                if ($query !== FALSE && $query->num_rows() > 0) {
                     foreach ($query->result_array() as $row) {
                         $group_project[][$statick] = $row;
                     }
@@ -5707,187 +5872,187 @@ public function delete_ClaimIdentified($data, $id)
             }
 
             $data = [];
-            $i=0;
+            $i = 0;
 
-            foreach($group_project as $group_project_data){
-                foreach($group_project_data as $group_project_datas){
+            foreach ($group_project as $group_project_data) {
+                foreach ($group_project_data as $group_project_datas) {
 
                     $startTimeStamp = strtotime($group_project_datas['project_created']);
-                    $endTimeStamp   = strtotime(date("Y/m/d"));
-                    $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                    $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                    $numberDays     = intval($numberDays);
+                    $endTimeStamp = strtotime(date("Y/m/d"));
+                    $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                    $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                    $numberDays = intval($numberDays);
                     $status = $group_project_datas['project_status'];
-                    if($status==1){
+                    if ($status == 1) {
                         $project_status = _l('project_status_1');
                     }
-                    if($status==2){
+                    if ($status == 2) {
                         $project_status = _l('project_status_2');
                     }
-                    if($status==3){
+                    if ($status == 3) {
                         $project_status = _l('project_status_3');
                     }
-                    if($status==4){
+                    if ($status == 4) {
                         $project_status = _l('project_status_4');
                     }
-                    if($status==5){
+                    if ($status == 5) {
                         $project_status = _l('project_status_5');
                     }
 
-                    if($group_project_datas['status'] == 4){
+                    if ($group_project_datas['status'] == 4) {
                         $project_task_status = _l('project_status_2');
-    
+
                     }
 
                     $data[$i] = [
-                        'U_id'             => $group_project_datas['id'],
-                        'id'               => $group_project_datas['rel_id'],
-                        'project_name'     => $group_project_datas['project_name'],
-                        'task_name'        => $group_project_datas['task_name'],
+                        'U_id' => $group_project_datas['id'],
+                        'id' => $group_project_datas['rel_id'],
+                        'project_name' => $group_project_datas['project_name'],
+                        'task_name' => $group_project_datas['task_name'],
                         'task_description' => $group_project_datas['description'],
-                        'start_date'       => $group_project_datas['start_date'],
-                        'end_date'         => $group_project_datas['date_finished'],
-                        'task_status'      => $project_task_status,
+                        'start_date' => $group_project_datas['start_date'],
+                        'end_date' => $group_project_datas['date_finished'],
+                        'task_status' => $project_task_status,
 
-                        'projecttype'      => $this->projects_model->projectType($group_project_datas['projecttype']),
-                        'status'           => $project_status,
-                        'client_group'     => $this->projects_model->client_name($group_project_datas['clientid']),
-                        'advisor'          => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                        'member'           => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
-                        'policy_number'    => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                        'provider'         => $this->projects_model->provider_data($group_project_datas['provider']),
-                        'project_created'  => $group_project_datas['project_created'],
-                        'days_elapsed'     => $numberDays .' '.'days',
-                        'arrears_status'   => $this->projects_model->arrears_status($group_project_datas['rel_id']),
-                        'under_status'     => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
-                        'subbmited_api'    => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
-                        'subbmited_date'   => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
-                        'requested_api'    => $this->projects_model->requested_api($group_project_datas['rel_id']),
-                        'issue_date'       => $this->projects_model->issue_date($group_project_datas['rel_id']),
-                        'final_status'     => $this->projects_model->final_status($group_project_datas['rel_id']),
-                        'issue_policy'     => $this->projects_model->issue_policy($group_project_datas['rel_id']),
-                        'latest_comment'     => $this->projects_model->latest_comment($group_project_datas['task_id']),
-                        'milestone_name'   => $this->projects_model->milestone_name($group_project_datas['milestone']),
+                        'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                        'status' => $project_status,
+                        'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                        'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                        'member' => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
+                        'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                        'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
+                        'project_created' => $group_project_datas['project_created'],
+                        'days_elapsed' => $numberDays . ' ' . 'days',
+                        'arrears_status' => $this->projects_model->arrears_status($group_project_datas['rel_id']),
+                        'under_status' => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
+                        'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
+                        'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
+                        'requested_api' => $this->projects_model->requested_api($group_project_datas['rel_id']),
+                        'issue_date' => $this->projects_model->issue_date($group_project_datas['rel_id']),
+                        'final_status' => $this->projects_model->final_status($group_project_datas['rel_id']),
+                        'issue_policy' => $this->projects_model->issue_policy($group_project_datas['rel_id']),
+                        'latest_comment' => $this->projects_model->latest_comment($group_project_datas['task_id']),
+                        'milestone_name' => $this->projects_model->milestone_name($group_project_datas['milestone']),
 
 
                     ];
                     $i++;
                 }
-                
+
             }
-            if(!empty($data)){
+            if (!empty($data)) {
                 return $data;
             }
         }
-        if($check_is_admin == 1){
+        if ($check_is_admin == 1) {
             $this->db->select(' *, tbltasks.name AS task_name, tbltasks.id AS task_id, tblprojects.name AS project_name, tblprojects.status AS project_status');
             $this->db->from('tblprojects');
 
             $this->db->join('tbltasks', 'tblprojects.id = tbltasks.rel_id');
             // $this->db->where('tbltasks.status', 4);
             // $this->db->where_in('tblprojects.status', $people);
-            
+
             $this->db->join('tblprojecttype', 'tblprojects.projecttype = tblprojecttype.id', 'left');
-           
-            if($filter['projectType'] != ''){
-                $this->db->where_in('projecttype',$filter['projectType']);
+
+            if ($filter['projectType'] != '') {
+                $this->db->where_in('projecttype', $filter['projectType']);
             }
 
-            if($filter['provider'] != ''){
-                $this->db->where('provider',$filter['provider']);
+            if ($filter['provider'] != '') {
+                $this->db->where('provider', $filter['provider']);
             }
 
-            if($filter['status'] != ''){
-                $this->db->where('tblprojects.status',$filter['status']);
+            if ($filter['status'] != '') {
+                $this->db->where('tblprojects.status', $filter['status']);
             }
 
-            if($filter['under_status'] != ''){
-                $this->db->where('tblproject_underwriting.under_status',$filter['under_status']);
+            if ($filter['under_status'] != '') {
+                $this->db->where('tblproject_underwriting.under_status', $filter['under_status']);
             }
 
-            if($filter['adviser'] != ''){
+            if ($filter['adviser'] != '') {
                 $this->db->join('tblcustomer_adviser', 'tblcustomer_adviser.customer_id=tblprojects.clientid');
-                $this->db->where_in('tblcustomer_adviser.staff_id',$filter['adviser']);
+                $this->db->where_in('tblcustomer_adviser.staff_id', $filter['adviser']);
             }
 
-            if($filter['member'] != ''){
+            if ($filter['member'] != '') {
                 $member_data = $filter['member'];
-                $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id' , 'inner');
-                $this->db->where('tblproject_members.staff_id',$member_data);
+                $this->db->join('tblproject_members', 'tblproject_members.project_id = tblprojects.id', 'inner');
+                $this->db->where('tblproject_members.staff_id', $member_data);
             }
             $query = $this->db->get();
             $group_project_data = array();
-            if($query !== FALSE && $query->num_rows() > 0){
+            if ($query !== FALSE && $query->num_rows() > 0) {
                 foreach ($query->result_array() as $row) {
                     $group_project_data[] = $row;
                 }
             }
             $data = [];
-            $i=0;
-            foreach($group_project_data as $group_project_datas){
+            $i = 0;
+            foreach ($group_project_data as $group_project_datas) {
 
                 $startTimeStamp = strtotime($group_project_datas['project_created']);
-                $endTimeStamp   = strtotime(date("Y/m/d"));
-                $timeDiff       = abs($endTimeStamp - $startTimeStamp);
-                $numberDays     = $timeDiff/86400;  // 86400 seconds in one day // and you might want to convert to integer
-                $numberDays     = intval($numberDays);
+                $endTimeStamp = strtotime(date("Y/m/d"));
+                $timeDiff = abs($endTimeStamp - $startTimeStamp);
+                $numberDays = $timeDiff / 86400;  // 86400 seconds in one day // and you might want to convert to integer
+                $numberDays = intval($numberDays);
                 $status = $group_project_datas['project_status'];
-                if($status==1){
+                if ($status == 1) {
                     $project_status = _l('project_status_1');
                 }
-                if($status==2){
+                if ($status == 2) {
                     $project_status = _l('project_status_2');
                 }
-                if($status==3){
+                if ($status == 3) {
                     $project_status = _l('project_status_3');
                 }
-                if($status==4){
+                if ($status == 4) {
                     $project_status = _l('project_status_4');
                 }
-                if($status==5){
+                if ($status == 5) {
                     $project_status = _l('project_status_5');
                 }
 
-                if($group_project_datas['status'] == 4){
+                if ($group_project_datas['status'] == 4) {
                     $project_task_status = _l('project_status_2');
 
                 }
 
                 $data[$i] = [
-                    'U_id'             => $group_project_datas['id'],
-                    'id'               => $group_project_datas['rel_id'],
-                    'project_name'     => $group_project_datas['project_name'],
-                    'task_name'        => $group_project_datas['task_name'],
+                    'U_id' => $group_project_datas['id'],
+                    'id' => $group_project_datas['rel_id'],
+                    'project_name' => $group_project_datas['project_name'],
+                    'task_name' => $group_project_datas['task_name'],
                     'task_description' => $group_project_datas['description'],
-                    'start_date'       => $group_project_datas['start_date'],
-                    'end_date'         => $group_project_datas['date_finished'],
-                    'task_status'      => $project_task_status,
-                    'projecttype'      => $this->projects_model->projectType($group_project_datas['projecttype']),
-                    'status'           => $project_status,
-                    'client_group'     => $this->projects_model->client_name($group_project_datas['clientid']),
-                    'advisor'          => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
-                    'member'           => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
-                    'policy_number'    => $this->projects_model->policy_data($group_project_datas['policy_number']),
-                    'provider'         => $this->projects_model->provider_data($group_project_datas['provider']),
-                    'project_created'  => $group_project_datas['project_created'],
-                    'days_elapsed'     => $numberDays .' '.'days',
-                    'arrears_status'   => $this->projects_model->arrears_status($group_project_datas['rel_id']),
-                    'under_status'     => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
-                    'subbmited_api'    => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
-                    'subbmited_date'   => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
-                    'requested_api'    => $this->projects_model->requested_api($group_project_datas['rel_id']),
-                    'issue_date'       => $this->projects_model->issue_date($group_project_datas['rel_id']),
-                    'final_status'     => $this->projects_model->final_status($group_project_datas['rel_id']),
-                    'issue_policy'     => $this->projects_model->issue_policy($group_project_datas['rel_id']),
-                    'latest_comment'   => $this->projects_model->latest_comment($group_project_datas['task_id']),
-                    'milestone_name'   => $this->projects_model->milestone_name($group_project_datas['milestone']),
+                    'start_date' => $group_project_datas['start_date'],
+                    'end_date' => $group_project_datas['date_finished'],
+                    'task_status' => $project_task_status,
+                    'projecttype' => $this->projects_model->projectType($group_project_datas['projecttype']),
+                    'status' => $project_status,
+                    'client_group' => $this->projects_model->client_name($group_project_datas['clientid']),
+                    'advisor' => $this->projects_model->get_adviser_data($group_project_datas['clientid']),
+                    'member' => $this->projects_model->get_projectMembers($group_project_datas['rel_id']),
+                    'policy_number' => $this->projects_model->policy_data($group_project_datas['policy_number']),
+                    'provider' => $this->projects_model->provider_data($group_project_datas['provider']),
+                    'project_created' => $group_project_datas['project_created'],
+                    'days_elapsed' => $numberDays . ' ' . 'days',
+                    'arrears_status' => $this->projects_model->arrears_status($group_project_datas['rel_id']),
+                    'under_status' => $this->projects_model->get_underwriting($group_project_datas['rel_id']),
+                    'subbmited_api' => $this->projects_model->subbmited_api($group_project_datas['rel_id']),
+                    'subbmited_date' => $this->projects_model->subbmited_date($group_project_datas['rel_id']),
+                    'requested_api' => $this->projects_model->requested_api($group_project_datas['rel_id']),
+                    'issue_date' => $this->projects_model->issue_date($group_project_datas['rel_id']),
+                    'final_status' => $this->projects_model->final_status($group_project_datas['rel_id']),
+                    'issue_policy' => $this->projects_model->issue_policy($group_project_datas['rel_id']),
+                    'latest_comment' => $this->projects_model->latest_comment($group_project_datas['task_id']),
+                    'milestone_name' => $this->projects_model->milestone_name($group_project_datas['milestone']),
                 ];
                 $i++;
             }
-            if(!empty($data)){
+            if (!empty($data)) {
                 return $data;
             }
-        }   
+        }
     }
 
 
@@ -5930,268 +6095,275 @@ public function delete_ClaimIdentified($data, $id)
     //     return $result_data->customer_id;
     // }
 
-   # Data of Underwriting By Adviser
-   public function get_underwriting_by_adviser_project_data($cleck_is_admin){
-    if($cleck_is_admin == 0){
-        $staff_id = get_staff_user_id();
-        $this->db->select('*');
+    # Data of Underwriting By Adviser
+    public function get_underwriting_by_adviser_project_data($cleck_is_admin)
+    {
+        if ($cleck_is_admin == 0) {
+            $staff_id = get_staff_user_id();
+            $this->db->select('*');
+            $this->db->from('tblcustomer_adviser');
+            $this->db->where('staff_id', $staff_id);
+            $query = $this->db->get();
+            $result_data = $query->result_array();
+            $i = 0;
+            foreach ($result_data as $results) {
+                $data[$i] = [
+                    'adviser' => $this->projects_model->adviser($results['staff_id']),
+                    'adviser_id' => $results['staff_id'],
+                    'adviser_data' => $this->projects_model->get_all_data_project($results['staff_id'], $cleck_is_admin),
+                ];
+
+                $i++;
+            }
+            // echo "<pre>";
+            // print_r($data);
+            // exit;
+
+            return $data;
+        }
+        if ($cleck_is_admin == 1) {
+            $this->db->select('*');
+            $this->db->group_by('staff_id');
+            $this->db->from('tblcustomer_adviser');
+            $query = $this->db->get();
+            $result_data = $query->result_array();
+
+            $i = 0;
+            foreach ($result_data as $results) {
+                $data[$i] = [
+                    'adviser' => $this->projects_model->adviser($results['staff_id']),
+                    'adviser_id' => $results['staff_id'],
+                    'adviser_data' => $this->projects_model->get_all_data_project($results['staff_id'], $cleck_is_admin),
+                ];
+
+                $i++;
+            }
+            //  echo "<pre>";
+            // print_r($data);
+            // exit;
+            return $data;
+        }
+    }
+
+    public function adviser($staff_id)
+    {
+        $this->db->select('firstname,lastname');
+        $this->db->from("tblstaff");
+        $this->db->where('staffid', $staff_id);
+        $query = $this->db->get();
+        $result = $query->row();
+        $firstname = $result->firstname;
+        $lastname = $result->lastname;
+        $adviser = $firstname . ' ' . $lastname;
+        return $adviser;
+    }
+
+    public function get_all_data_project($staff_id, $cleck_is_admin)
+    {
+        $this->db->select('tblcustomer_adviser.customer_id');
         $this->db->from('tblcustomer_adviser');
         $this->db->where('staff_id', $staff_id);
         $query = $this->db->get();
         $result_data = $query->result_array();
-        $i=0;
-        foreach($result_data as $results){
-            $data[$i] = [
-                'adviser' => $this->projects_model->adviser($results['staff_id']),
-                'adviser_id' => $results['staff_id'],
-                'adviser_data' => $this->projects_model->get_all_data_project($results['staff_id'],$cleck_is_admin),
+        $j = 0;
+        foreach ($result_data as $results) {
+            $data[$j] = [
+                'name' => $this->projects_model->project_data($results['customer_id'], $cleck_is_admin),
             ];
-        
-            $i++;
+            $j++;
         }
-        // echo "<pre>";
-        // print_r($data);
-        // exit;
-       
         return $data;
     }
-    if($cleck_is_admin == 1){
-        $this->db->select('*');
-        $this->db->group_by('staff_id');
-        $this->db->from('tblcustomer_adviser');
-        $query = $this->db->get();
-        $result_data = $query->result_array(); 
-        
-        $i=0;
-        foreach($result_data as $results){
-            $data[$i] = [
-                'adviser' => $this->projects_model->adviser($results['staff_id']),
-                'adviser_id' => $results['staff_id'],
-                'adviser_data' => $this->projects_model->get_all_data_project($results['staff_id'],$cleck_is_admin),
-            ];
-        
-            $i++;
+
+    public function project_data($customer_id, $cleck_is_admin)
+    {
+        $static_id_Of_underwriting_new_and_underwriting_Existing = [1, 2];
+
+        # Non Admin
+        if ($cleck_is_admin == 0) {
+
+
+            $staff_id = get_staff_user_id();
+
+            # NEW ADDED
+            $this->db->select("customer_id");
+            # $this->db->from("tblcustomer_adviser");
+            $this->db->from("tblcustomer_admins");
+            $this->db->where("tblcustomer_admins.staff_id", $staff_id);
+            $this->db->get();
+            $query1 = $this->db->last_query();
+
+            $this->db->select("clientid");
+            $this->db->from("tblprojects");
+            $this->db->where("tblprojects.created_staff_id", $staff_id);
+            $this->db->get();
+            $query2 = $this->db->last_query();
+
+            $querycustomer = $this->db->query($query1 . " UNION " . $query2);
+
+            $customerdetails = $querycustomer->result_array();
+            // echo  $this->db->last_query();
+
+            # neW eNDED
+            foreach ($customerdetails as $customerdetail) {
+                $cids[] = $customerdetail['customer_id'];
+                $cids[] = $customerdetail['clientid'];
+            }
+            $cids = array_unique($cids);
+
+            foreach ($cids as $cid) {
+                $this->db->select('*');
+                $this->db->from("tblprojects");
+                $this->db->join('tblproject_underwriting', 'tblprojects.id = tblproject_underwriting.project_id');
+                $this->db->where_in('tblprojects.projecttype', $static_id_Of_underwriting_new_and_underwriting_Existing);
+                $this->db->where('(tblprojects.clientid = ' . $cid . ' OR tblprojects.clientid = ' . $customer_id . ')');
+                // $this->db->where('tblprojects.clientid',$cid);
+                // $this->db->where('tblprojects.clientid', $customer_id);
+                $query = $this->db->get();
+                $result = $query->result_array();
+                return $result;
+            }
+
         }
-        //  echo "<pre>";
-        // print_r($data);
-        // exit;
-        return $data;
-    }
-}
-
-public function adviser($staff_id){
-    $this->db->select('firstname,lastname');
-    $this->db->from("tblstaff");
-    $this->db->where('staffid', $staff_id);
-    $query = $this->db->get();
-    $result = $query->row();
-    $firstname =  $result->firstname;
-    $lastname = $result->lastname;
-    $adviser = $firstname .' '. $lastname;
-    return $adviser;
-}
-
-public function get_all_data_project($staff_id,$cleck_is_admin){
-    $this->db->select('tblcustomer_adviser.customer_id');
-    $this->db->from('tblcustomer_adviser');
-    $this->db->where('staff_id',$staff_id);
-    $query = $this->db->get();
-    $result_data = $query->result_array(); 
-    $j=0;
-    foreach($result_data as $results){
-        $data[$j] = [
-            'name' => $this->projects_model->project_data($results['customer_id'],$cleck_is_admin),
-        ];
-        $j++;
-    } 
-    return $data;
-}
-
-public function project_data($customer_id,$cleck_is_admin){
-$static_id_Of_underwriting_new_and_underwriting_Existing = [1,2];
-
-    # Non Admin
-    if($cleck_is_admin == 0){
-
-
-        $staff_id = get_staff_user_id();
-        
-        # NEW ADDED
-        $this->db->select("customer_id");
-        # $this->db->from("tblcustomer_adviser");
-        $this->db->from("tblcustomer_admins");
-        $this->db->where("tblcustomer_admins.staff_id",$staff_id);
-        $this->db->get();
-        $query1 = $this->db->last_query();
-        
-        $this->db->select("clientid");
-        $this->db->from("tblprojects");
-        $this->db->where("tblprojects.created_staff_id",$staff_id);
-        $this->db->get();
-        $query2 = $this->db->last_query();
-
-        $querycustomer = $this->db->query($query1." UNION ".$query2);
-        
-        $customerdetails = $querycustomer->result_array();
-        // echo  $this->db->last_query();
-       
-        # neW eNDED
-        foreach ($customerdetails as $customerdetail) {
-            $cids[] = $customerdetail['customer_id'];
-            $cids[] = $customerdetail['clientid'];
-        }
-        $cids = array_unique($cids);
-       
-        foreach($cids as $cid){
-            $this->db->select('*');
+        # Admin
+        if ($cleck_is_admin == 1) {
+            $this->db->select('*,');
             $this->db->from("tblprojects");
             $this->db->join('tblproject_underwriting', 'tblprojects.id = tblproject_underwriting.project_id');
             $this->db->where_in('tblprojects.projecttype', $static_id_Of_underwriting_new_and_underwriting_Existing);
-            $this->db->where('(tblprojects.clientid = ' . $cid . ' OR tblprojects.clientid = ' . $customer_id . ')');
-            // $this->db->where('tblprojects.clientid',$cid);
-            // $this->db->where('tblprojects.clientid', $customer_id);
+
+            $this->db->where('clientid', $customer_id);
             $query = $this->db->get();
             $result = $query->result_array();
             return $result;
         }
-       
     }
-    # Admin
-    if($cleck_is_admin == 1){
-        $this->db->select('*,');
-        $this->db->from("tblprojects");
-        $this->db->join('tblproject_underwriting', 'tblprojects.id = tblproject_underwriting.project_id');
-        $this->db->where_in('tblprojects.projecttype', $static_id_Of_underwriting_new_and_underwriting_Existing);
 
-        $this->db->where('clientid', $customer_id);
-        $query = $this->db->get();
-        $result = $query->result_array();
-        return $result;
-    }
-}
-
-// public function filter_get_underwriting_by_adviser_project_data($filter , $cleck_is_admin) {
-    public function filter_get_underwriting_by_adviser_project_data( $cleck_is_admin, $filter) {
-        if($cleck_is_admin == 0){
+    // public function filter_get_underwriting_by_adviser_project_data($filter , $cleck_is_admin) {
+    public function filter_get_underwriting_by_adviser_project_data($cleck_is_admin, $filter)
+    {
+        if ($cleck_is_admin == 0) {
             $staff_id = get_staff_user_id();
             $this->db->select('*');
             $this->db->group_by('staff_id');
             $this->db->from('tblcustomer_adviser');
             $this->db->where('staff_id', $staff_id);
             $query = $this->db->get();
-            $result_data = $query->result_array(); 
-            $i=0;
-            foreach($result_data as $results){
+            $result_data = $query->result_array();
+            $i = 0;
+            foreach ($result_data as $results) {
                 $data[$i] = [
                     'adviser' => $this->projects_model->adviser($results['staff_id']),
                     'adviser_id' => $results['staff_id'],
-                    'adviser_data' => $this->projects_model->get_all_data_project_filter($cleck_is_admin, $results['staff_id'],$filter['provider']),
+                    'adviser_data' => $this->projects_model->get_all_data_project_filter($cleck_is_admin, $results['staff_id'], $filter['provider']),
                     // 'adviser_data' => $this->projects_model->get_all_data_project_filter($results['staff_id'],$filter['provider'],$cleck_is_admin),
                 ];
                 $i++;
             }
             return $data;
         }
-        if($cleck_is_admin == 1){
+        if ($cleck_is_admin == 1) {
             $this->db->select('*');
             $this->db->group_by('staff_id');
             $this->db->from('tblcustomer_adviser');
             $query = $this->db->get();
-            $result_data = $query->result_array(); 
-            $i=0;
-            foreach($result_data as $results){
+            $result_data = $query->result_array();
+            $i = 0;
+            foreach ($result_data as $results) {
                 $data[$i] = [
                     'adviser' => $this->projects_model->adviser($results['staff_id']),
                     'adviser_id' => $results['staff_id'],
-                    'adviser_data' => $this->projects_model->get_all_data_project_filter($cleck_is_admin, $results['staff_id'],$filter['provider']),
+                    'adviser_data' => $this->projects_model->get_all_data_project_filter($cleck_is_admin, $results['staff_id'], $filter['provider']),
                     // 'adviser_data' => $this->projects_model->get_all_data_project_filter($results['staff_id'],$filter['provider'],$cleck_is_admin),
                 ];
                 $i++;
             }
             return $data;
         }
-}
+    }
 
-// public function get_all_data_project_filter($staff_id, $filter_provider,$cleck_is_admin){
-    public function get_all_data_project_filter($cleck_is_admin, $staff_id, $filter_provider){
+    // public function get_all_data_project_filter($staff_id, $filter_provider,$cleck_is_admin){
+    public function get_all_data_project_filter($cleck_is_admin, $staff_id, $filter_provider)
+    {
         $this->db->select('tblcustomer_adviser.customer_id');
         $this->db->from('tblcustomer_adviser');
-        $this->db->where('staff_id',$staff_id);
+        $this->db->where('staff_id', $staff_id);
         $query = $this->db->get();
-        $result_data = $query->result_array(); 
-        $j=0;
-        foreach($result_data as $results){
+        $result_data = $query->result_array();
+        $j = 0;
+        foreach ($result_data as $results) {
             $data[$j] = [
                 // 'name' => $this->projects_model->filter_project_data($results['customer_id'],$filter_provider,$cleck_is_admin),
-                'name' => $this->projects_model->filter_project_data($results['customer_id'],$filter_provider,$cleck_is_admin),
+                'name' => $this->projects_model->filter_project_data($results['customer_id'], $filter_provider, $cleck_is_admin),
             ];
             $j++;
         }
         return $data;
-        
-}
 
-# Filtered underwriting by adviser data when $filter_provider have some value
+    }
+
+    # Filtered underwriting by adviser data when $filter_provider have some value
 // public function filter_project_data($customer_id, $filter_provider,$cleck_is_admin){
-    public function filter_project_data($customer_id, $filter_provider,$cleck_is_admin){
-    $static_id_Of_underwriting_new_and_underwriting_Existing = [1,2];
-    # Non Admin
-    if($cleck_is_admin == 0){
+    public function filter_project_data($customer_id, $filter_provider, $cleck_is_admin)
+    {
+        $static_id_Of_underwriting_new_and_underwriting_Existing = [1, 2];
+        # Non Admin
+        if ($cleck_is_admin == 0) {
 
-        $staff_id = get_staff_user_id();
-        # NEW ADDED
-        $this->db->select("customer_id");
-        # $this->db->from("tblcustomer_adviser");
-        $this->db->from("tblcustomer_admins");
-        $this->db->where("tblcustomer_admins.staff_id",$staff_id);
-        $this->db->get();
-        $query1 = $this->db->last_query();
-        
-        $this->db->select("clientid");
-        $this->db->from("tblprojects");
-        $this->db->where("tblprojects.created_staff_id",$staff_id);
-        $this->db->get();
-        $query2 = $this->db->last_query();
+            $staff_id = get_staff_user_id();
+            # NEW ADDED
+            $this->db->select("customer_id");
+            # $this->db->from("tblcustomer_adviser");
+            $this->db->from("tblcustomer_admins");
+            $this->db->where("tblcustomer_admins.staff_id", $staff_id);
+            $this->db->get();
+            $query1 = $this->db->last_query();
 
-        $querycustomer = $this->db->query($query1." UNION ".$query2);
-        
-        $customerdetails = $querycustomer->result_array();
-        # neW eNDED
-        foreach ($customerdetails as $customerdetail) {
-            $cids[] = $customerdetail['customer_id'];
-            $cids[] = $customerdetail['clientid'];
+            $this->db->select("clientid");
+            $this->db->from("tblprojects");
+            $this->db->where("tblprojects.created_staff_id", $staff_id);
+            $this->db->get();
+            $query2 = $this->db->last_query();
+
+            $querycustomer = $this->db->query($query1 . " UNION " . $query2);
+
+            $customerdetails = $querycustomer->result_array();
+            # neW eNDED
+            foreach ($customerdetails as $customerdetail) {
+                $cids[] = $customerdetail['customer_id'];
+                $cids[] = $customerdetail['clientid'];
+            }
+            $cids = array_unique($cids);
+
+            foreach ($cids as $cid) {
+                $this->db->select('*,');
+                $this->db->from("tblprojects");
+                $this->db->join('tblproject_underwriting', 'tblprojects.id = tblproject_underwriting.project_id');
+                $this->db->where_in('tblprojects.projecttype', $static_id_Of_underwriting_new_and_underwriting_Existing);
+                $this->db->where('tblprojects.clientid', $cid);
+                $this->db->where('tblprojects.clientid', $customer_id);
+                $this->db->where_in('provider', $filter_provider);
+                $query = $this->db->get();
+                $result = $query->result_array();
+                return $result;
+            }
         }
-        $cids = array_unique($cids);
-       
-        foreach($cids as $cid){
+
+        # Admin
+        if ($cleck_is_admin == 1) {
             $this->db->select('*,');
             $this->db->from("tblprojects");
             $this->db->join('tblproject_underwriting', 'tblprojects.id = tblproject_underwriting.project_id');
             $this->db->where_in('tblprojects.projecttype', $static_id_Of_underwriting_new_and_underwriting_Existing);
-            $this->db->where('tblprojects.clientid',$cid);
-            $this->db->where('tblprojects.clientid', $customer_id);
+
+            $this->db->where('clientid', $customer_id);
             $this->db->where_in('provider', $filter_provider);
             $query = $this->db->get();
-            $result = $query->result_array();
-            return $result;
+            return $result = $query->result_array();
         }
     }
 
-    # Admin
-    if($cleck_is_admin == 1){
-        $this->db->select('*,');
-        $this->db->from("tblprojects");
-        $this->db->join('tblproject_underwriting', 'tblprojects.id = tblproject_underwriting.project_id');
-        $this->db->where_in('tblprojects.projecttype', $static_id_Of_underwriting_new_and_underwriting_Existing);
-
-        $this->db->where('clientid', $customer_id);
-        $this->db->where_in('provider', $filter_provider);
-        $query = $this->db->get();
-        return $result = $query->result_array();
-    }  
-}
-
-public function client_resp_project($customer_id)
+    public function client_resp_project($customer_id)
     {
         $this->db->select('*');
         $this->db->from("tblprojects");
@@ -6201,7 +6373,8 @@ public function client_resp_project($customer_id)
         return $result;
     }
 
-    public function getAdmins($clientId){
+    public function getAdmins($clientId)
+    {
         $this->db->select('staff_id');
         $this->db->from("tblcustomer_admins");
         $this->db->where('customer_id', $clientId);
@@ -6210,7 +6383,8 @@ public function client_resp_project($customer_id)
         return $result;
     }
 
-    public function saveMembers($data) {
+    public function saveMembers($data)
+    {
         $projectId = $data['project_id'];
         $staffIds = $data['staff_id'];
         foreach ($staffIds as $staffId) {
@@ -6229,5 +6403,5 @@ public function client_resp_project($customer_id)
     }
 
 
-    
+
 }

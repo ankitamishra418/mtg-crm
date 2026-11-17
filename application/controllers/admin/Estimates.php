@@ -29,8 +29,8 @@ class Estimates extends AdminController
 
         $data['estimate_statuses'] = $this->estimates_model->get_statuses();
         if ($isPipeline && !$this->input->get('status') && !$this->input->get('filter')) {
-            $data['title']           = _l('estimates_pipeline');
-            $data['bodyclass']       = 'estimates-pipeline estimates-total-manual';
+            $data['title'] = _l('estimates_pipeline');
+            $data['bodyclass'] = 'estimates-pipeline estimates-total-manual';
             $data['switch_pipeline'] = false;
 
             if (is_numeric($id)) {
@@ -47,11 +47,11 @@ class Estimates extends AdminController
                 $this->pipeline(0, true);
             }
 
-            $data['estimateid']            = $id;
-            $data['switch_pipeline']       = true;
-            $data['title']                 = _l('estimates');
-            $data['bodyclass']             = 'estimates-total-manual';
-            $data['estimates_years']       = $this->estimates_model->get_estimates_years();
+            $data['estimateid'] = $id;
+            $data['switch_pipeline'] = true;
+            $data['title'] = _l('estimates');
+            $data['bodyclass'] = 'estimates-total-manual';
+            $data['estimates_years'] = $this->estimates_model->get_estimates_years();
             $data['estimates_sale_agents'] = $this->estimates_model->get_sale_agents();
             $this->load->view('admin/estimates/manage', $data);
         }
@@ -125,8 +125,8 @@ class Estimates extends AdminController
             }
 
             $data['estimate'] = $estimate;
-            $data['edit']     = true;
-            $title            = _l('edit', _l('estimate_lowercase'));
+            $data['edit'] = true;
+            $title = _l('edit', _l('estimate_lowercase'));
         }
 
         if ($this->input->get('customer_id')) {
@@ -150,14 +150,14 @@ class Estimates extends AdminController
         if (total_rows(db_prefix() . 'items') <= ajax_on_total_items()) {
             $data['items'] = $this->invoice_items_model->get_grouped();
         } else {
-            $data['items']     = [];
+            $data['items'] = [];
             $data['ajaxItems'] = true;
         }
         $data['items_groups'] = $this->invoice_items_model->get_groups();
 
-        $data['staff']             = $this->staff_model->get('', ['active' => 1]);
+        $data['staff'] = $this->staff_model->get('', ['active' => 1]);
         $data['estimate_statuses'] = $this->estimates_model->get_statuses();
-        $data['title']             = $title;
+        $data['title'] = $title;
         $this->load->view('admin/estimates/estimate', $data);
     }
 
@@ -193,12 +193,12 @@ class Estimates extends AdminController
 
     public function validate_estimate_number()
     {
-        $isedit          = $this->input->post('isedit');
-        $number          = $this->input->post('number');
-        $date            = $this->input->post('date');
-        $original_number = $this->input->post('original_number');
-        $number          = trim($number);
-        $number          = ltrim($number, '0');
+        $isedit = $this->input->post('isedit') ?? false;
+        $number = $this->input->post('number') ?? '';
+        $date = $this->input->post('date') ?? '';
+        $original_number = $this->input->post('original_number') ?? '';
+        $number = trim($number);
+        $number = ltrim($number, '0');
 
         if ($isedit == 'true') {
             if ($number == $original_number) {
@@ -207,10 +207,12 @@ class Estimates extends AdminController
             }
         }
 
-        if (total_rows(db_prefix() . 'estimates', [
-            'YEAR(date)' => date('Y', strtotime(to_sql_date($date))),
-            'number' => $number,
-        ]) > 0) {
+        if (
+            total_rows(db_prefix() . 'estimates', [
+                'YEAR(date)' => date('Y', strtotime(to_sql_date($date))),
+                'number' => $number,
+            ]) > 0
+        ) {
             echo 'false';
         } else {
             echo 'true';
@@ -248,7 +250,7 @@ class Estimates extends AdminController
             die;
         }
 
-        $estimate->date       = _d($estimate->date);
+        $estimate->date = _d($estimate->date);
         $estimate->expirydate = _d($estimate->expirydate);
         if ($estimate->invoiceid !== null) {
             $this->load->model('invoices_model');
@@ -263,11 +265,11 @@ class Estimates extends AdminController
 
         $data = prepare_mail_preview_data($template_name, $estimate->clientid);
 
-        $data['activity']          = $this->estimates_model->get_estimate_activity($id);
-        $data['estimate']          = $estimate;
-        $data['members']           = $this->staff_model->get('', ['active' => 1]);
+        $data['activity'] = $this->estimates_model->get_estimate_activity($id);
+        $data['estimate'] = $estimate;
+        $data['members'] = $this->staff_model->get('', ['active' => 1]);
         $data['estimate_statuses'] = $this->estimates_model->get_statuses();
-        $data['totalNotes']        = total_rows(db_prefix() . 'notes', ['rel_id' => $id, 'rel_type' => 'estimate']);
+        $data['totalNotes'] = total_rows(db_prefix() . 'notes', ['rel_id' => $id, 'rel_type' => 'estimate']);
 
         $data['send_later'] = false;
         if ($this->session->has_userdata('send_later')) {
@@ -507,7 +509,7 @@ class Estimates extends AdminController
         if (!$id) {
             redirect(admin_url('estimates/list_estimates'));
         }
-        $estimate        = $this->estimates_model->get($id);
+        $estimate = $this->estimates_model->get($id);
         $estimate_number = format_estimate_number($estimate->id);
 
         try {
@@ -532,9 +534,9 @@ class Estimates extends AdminController
         }
 
         $fileNameHookData = hooks()->apply_filters('estimate_file_name_admin_area', [
-                            'file_name' => mb_strtoupper(slug_it($estimate_number)) . '.pdf',
-                            'estimate'  => $estimate,
-                        ]);
+            'file_name' => mb_strtoupper(slug_it($estimate_number)) . '.pdf',
+            'estimate' => $estimate,
+        ]);
 
         $pdf->Output($fileNameHookData['file_name'], $type);
     }
@@ -559,7 +561,7 @@ class Estimates extends AdminController
             }
         }
 
-        $data['id']       = $id;
+        $data['id'] = $id;
         $data['estimate'] = $this->get_estimate_data_ajax($id, true);
         $this->load->view('admin/estimates/pipeline/estimate', $data);
     }
@@ -589,7 +591,7 @@ class Estimates extends AdminController
     public function pipeline_load_more()
     {
         $status = $this->input->get('status');
-        $page   = $this->input->get('page');
+        $page = $this->input->get('page');
 
         $estimates = (new EstimatesPipeline($status))
             ->search($this->input->get('search'))
@@ -602,7 +604,7 @@ class Estimates extends AdminController
         foreach ($estimates as $estimate) {
             $this->load->view('admin/estimates/pipeline/_kanban_card', [
                 'estimate' => $estimate,
-                'status'   => $status,
+                'status' => $status,
             ]);
         }
     }
@@ -613,8 +615,10 @@ class Estimates extends AdminController
             return false;
         }
 
-        if ($this->session->has_userdata('estimate_pipeline')
-                && $this->session->userdata('estimate_pipeline') == 'true') {
+        if (
+            $this->session->has_userdata('estimate_pipeline')
+            && $this->session->userdata('estimate_pipeline') == 'true'
+        ) {
             $this->session->set_flashdata('estimateid', $id);
 
             return true;
@@ -625,14 +629,27 @@ class Estimates extends AdminController
 
     public function get_due_date()
     {
+        // if ($this->input->post()) {
+        //     $date = $this->input->post('date');
+        //     $duedate = '';
+        //     if (get_option('estimate_due_after') != 0) {
+        //         $date = to_sql_date($date);
+        //         $d = date('Y-m-d', strtotime('+' . get_option('estimate_due_after') . ' DAY', strtotime($date)));
+        //         $duedate = _d($d);
+        //         echo $duedate;
+        //     }
+        // }
+
         if ($this->input->post()) {
-            $date    = $this->input->post('date');
+            $date = $this->input->post('date') ?? '';
             $duedate = '';
-            if (get_option('estimate_due_after') != 0) {
-                $date    = to_sql_date($date);
-                $d       = date('Y-m-d', strtotime('+' . get_option('estimate_due_after') . ' DAY', strtotime($date)));
-                $duedate = _d($d);
-                echo $duedate;
+            if (get_option('estimate_due_after') != 0 && $date !== '') {
+                $sqlDate = to_sql_date($date);
+                if ($sqlDate) {
+                    $d = date('Y-m-d', strtotime('+' . get_option('estimate_due_after') . ' DAY', strtotime($sqlDate)));
+                    $duedate = _d($d);
+                    echo $duedate;
+                }
             }
         }
     }

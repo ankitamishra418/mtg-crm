@@ -2,21 +2,21 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 /*
-* --------------------------------------------------------------------------
-* Base Site URL
-* --------------------------------------------------------------------------
-*
-* URL to your CodeIgniter root. Typically this will be your base URL,
-* WITH a trailing slash:
-*
-*   http://example.com/
-*
-* If this is not set then CodeIgniter will try guess the protocol, domain
-* and path to your installation. However, you should always configure this
-* explicitly and never rely on auto-guessing, especially in production
-* environments.
-*
-*/
+ * --------------------------------------------------------------------------
+ * Base Site URL
+ * --------------------------------------------------------------------------
+ *
+ * URL to your CodeIgniter root. Typically this will be your base URL,
+ * WITH a trailing slash:
+ *
+ *   http://example.com/
+ *
+ * If this is not set then CodeIgniter will try guess the protocol, domain
+ * and path to your installation. However, you should always configure this
+ * explicitly and never rely on auto-guessing, especially in production
+ * environments.
+ *
+ */
 //define('APP_BASE_URL', 'http://3.111.164.22/mtgonline/perfex_crm/');
 //define('APP_BASE_URL', 'https://'.$_SERVER['HTTP_HOST'].'/');
 
@@ -24,23 +24,23 @@ defined('BASEPATH') or exit('No direct script access allowed');
 //define('APP_BASE_URL', 'http://192.168.20.20/httpdocs/');
 //define('APP_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/');
 // define('APP_BASE_URL', 'http://192.168.20.20/mtg-staging/');
-define('APP_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/mtg-staging/');
+define('APP_BASE_URL', 'http://mtg-crm.local/');
 
 
 
 /*
-* --------------------------------------------------------------------------
-* Encryption Key
-* IMPORTANT: Do not change this ever!
-* --------------------------------------------------------------------------
-*
-* If you use the Encryption class, you must set an encryption key.
-* See the user guide for more info.
-*
-* http://codeigniter.com/user_guide/libraries/encryption.html
-*
-* Auto added on install
-*/
+ * --------------------------------------------------------------------------
+ * Encryption Key
+ * IMPORTANT: Do not change this ever!
+ * --------------------------------------------------------------------------
+ *
+ * If you use the Encryption class, you must set an encryption key.
+ * See the user guide for more info.
+ *
+ * http://codeigniter.com/user_guide/libraries/encryption.html
+ *
+ * Auto added on install
+ */
 //define('APP_ENC_KEY', '9d581f230320a0b20458db40a8fabce0');
 define('APP_ENC_KEY', '02ec4a2caadc7b8f80121dafaf76eb1d');
 /**
@@ -62,7 +62,7 @@ define('APP_DB_USERNAME', 'root');
 //define('APP_DB_PASSWORD', 'Server10@121');
 //define('APP_DB_PASSWORD', 'Mtgonline#121');
 
-define('APP_DB_PASSWORD', 'password');
+define('APP_DB_PASSWORD', 'password123');
 
 
 /**
@@ -71,7 +71,7 @@ define('APP_DB_PASSWORD', 'password');
  */
 //define('APP_DB_NAME', 'perfex_crm2');
 
-define('APP_DB_NAME', 'mtgcrm_staging');
+define('APP_DB_NAME', 'mtg-crm');
 
 
 

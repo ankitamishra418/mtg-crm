@@ -9,8 +9,8 @@ class Clients extends AdminController
     {
         $this->load->library('session');
         $staffid = $this->session->get_userdata();
-        $data['staff_id']  = $staffid['staff_user_id'];
-        
+        $data['staff_id'] = $staffid['staff_user_id'];
+
         if (!has_permission('customers', '', 'view')) {
             if (!have_assigned_customers() && !has_permission('customers', '', 'create')) {
                 access_denied('customers');
@@ -19,8 +19,8 @@ class Clients extends AdminController
 
         $this->load->model('contracts_model');
         $data['contract_types'] = $this->contracts_model->get_contract_types();
-        $data['groups']         = $this->clients_model->get_groups();
-        $data['title']          = _l('clients');
+        $data['groups'] = $this->clients_model->get_groups();
+        $data['title'] = _l('clients');
 
         $this->load->model('proposals_model');
         $data['proposal_statuses'] = $this->proposals_model->get_statuses();
@@ -59,40 +59,37 @@ class Clients extends AdminController
     }
 
     public function all_contacts()
-    { 
+    {
         if ($this->input->is_ajax_request()) {
-             $this->app->get_table_data('all_contacts');
+            $this->app->get_table_data('all_contacts');
         }
 
         if (is_gdpr() && get_option('gdpr_enable_consent_for_contacts') == '1') {
             $this->load->model('gdpr_model');
-           
+
             $data['consent_purposes'] = $this->gdpr_model->get_consent_purposes();
         }
 
         //added march 1  -----------------------------------------
         $sortFirstName = $this->clients_model->fetch_firstname();
         $sortKeyFirstName = [];
-        foreach ($sortFirstName as $sortFname)
-        {
+        foreach ($sortFirstName as $sortFname) {
             $sortKeyFirstName[] = $sortFname['firstname'];
         }
         $sortlastName = $this->clients_model->fetch_lastname();
         $sortKeylastName = [];
-        foreach ($sortlastName as $sortLname)
-        {
+        foreach ($sortlastName as $sortLname) {
             $sortKeylastName[] = $sortLname['lastname'];
         }
         $data['firstname'] = array_unique($sortKeyFirstName);
         $data['lastname'] = array_unique($sortKeylastName);
         // filter
-        if($this->input->post('firstnameindividual') != '' || $this->input->post('lastnameindividual') != '')
-        {
+        if ($this->input->post('firstnameindividual') != '' || $this->input->post('lastnameindividual') != '') {
             $data['firstname'] = array_unique($sortKeyFirstName);
             $data['lastname'] = array_unique($sortKeylastName);
             $filter = [
-            'firstNameIndividual' => $this->input->post('firstnameindividual'),
-            'lastNameIndividual' =>$this->input->post('lastnameindividual')
+                'firstNameIndividual' => $this->input->post('firstnameindividual'),
+                'lastNameIndividual' => $this->input->post('lastnameindividual')
             ];
             $this->session->set_userdata($filter);
         }
@@ -100,85 +97,85 @@ class Clients extends AdminController
         $data['title'] = _l('customer_contacts');
         $this->load->view('admin/clients/all_contacts', $data);
     }
-    
+
     public function choose_contacts($client_id)
     {
         $currentCompany = $this->uri->segment(4);
         $this->load->model('choose_contacts_model');
         $data['data'] = $this->choose_contacts_model->get_consents($currentCompany);
         $data['company_id'] = $currentCompany;
-        $this->load->view('admin/clients/choose_contacts_list',$data);
+        $this->load->view('admin/clients/choose_contacts_list', $data);
     }
 
     public function choose_contacts_insert()
     {
-        $for_company =$this->input->post('for_company');
+        $for_company = $this->input->post('for_company');
         $selected_contacts = $this->input->post('selected_contacts');
         $total_contacts = $this->input->post('total_contacts');
-        $selected_contacts_array = explode(",",$selected_contacts);
-        foreach($selected_contacts_array as $selected_contacts_ar){
+        $selected_contacts_array = explode(",", $selected_contacts);
+        foreach ($selected_contacts_array as $selected_contacts_ar) {
             $data = array(
                 'company_id' => $for_company,
                 'contact_id' => $selected_contacts_ar
             );
             $this->load->model('Choose_contacts_model');
             $this->Choose_contacts_model->insertcontact($data);
-            $old_contact= $this->Choose_contacts_model->get_selectdata($selected_contacts_ar);
+            $old_contact = $this->Choose_contacts_model->get_selectdata($selected_contacts_ar);
             $dataContact = array(
-                'userid'                     => $for_company,
-                'is_primary'                 => $old_contact[0]['is_primary'],
-                'datecreated'                => $old_contact[0]['datecreated'],
-                'firstname'                  => $old_contact[0]['firstname'],
-                'lastname'                   => $old_contact[0]['lastname'],
-                'email'                      => $old_contact[0]['email'],
-                'phonenumber'                => $old_contact[0]['phonenumber'],
-                'title'                      => $old_contact[0]['title'],
-                'password'                   => $old_contact[0]['password'],
-                'new_pass_key'               => $old_contact[0]['new_pass_key'],
-                'new_pass_key_requested'     => $old_contact[0]['new_pass_key_requested'],
-                'email_verified_at'          => $old_contact[0]['email_verified_at'],
-                'email_verification_key'     => $old_contact[0]['email_verification_key'],
+                'userid' => $for_company,
+                'is_primary' => $old_contact[0]['is_primary'],
+                'datecreated' => $old_contact[0]['datecreated'],
+                'firstname' => $old_contact[0]['firstname'],
+                'lastname' => $old_contact[0]['lastname'],
+                'email' => $old_contact[0]['email'],
+                'phonenumber' => $old_contact[0]['phonenumber'],
+                'title' => $old_contact[0]['title'],
+                'password' => $old_contact[0]['password'],
+                'new_pass_key' => $old_contact[0]['new_pass_key'],
+                'new_pass_key_requested' => $old_contact[0]['new_pass_key_requested'],
+                'email_verified_at' => $old_contact[0]['email_verified_at'],
+                'email_verification_key' => $old_contact[0]['email_verification_key'],
                 'email_verification_sent_at' => $old_contact[0]['email_verification_sent_at'],
-                'last_ip	'                => $old_contact[0]['last_ip	'],
-                'last_login'                 => $old_contact[0]['last_login'],
-                'last_password_change'       => $old_contact[0]['last_password_change'],
-                'active'                     => $old_contact[0]['active'],
-                'profile_image'              => $old_contact[0]['profile_image'],
-                'direction'                  => $old_contact[0]['direction'],
-                'invoice_emails'             => $old_contact[0]['invoice_emails'],
-                'estimate_emails'            => $old_contact[0]['estimate_emails'],
-                'credit_note_emails'         => $old_contact[0]['credit_note_emails'],
-                'contract_emails'            => $old_contact[0]['contract_emails'],
-                'task_emails'                => $old_contact[0]['task_emails'],
-                'project_emails'             => $old_contact[0]['project_emails'],
-                'ticket_emails'              => $old_contact[0]['ticket_emails'],
-                'otp'                        => $old_contact[0]['otp'],
-                'homephone'                  => $old_contact[0]['homephone'],
-                'gender'                     => $old_contact[0]['gender'],
-                'vulnerable_client'          => $old_contact[0]['vulnerable_client'],
-                'client_type'                => $old_contact[0]['client_type'],
-                'custom_occupation'          => $old_contact[0]['custom_occupation'],
-                'smoker'                     => $old_contact[0]['smoker'],
-                'residential_address'        => $old_contact[0]['residential_address'],	
-                'residential_city'           => $old_contact[0]['residential_city'],	
-                'residential_state'          => $old_contact[0]['residential_state'],		
-                'residential_zipcode'        => $old_contact[0]['residential_zipcode'],		
-                'residential_country'        => $old_contact[0]['residential_country'],		
-                'postal_address'             => $old_contact[0]['postal_address'],		
-                'postal_city'                => $old_contact[0]['postal_city'],		
-                'postal_state'               => $old_contact[0]['postal_state'],		
-                'postal_zipcode'             => $old_contact[0]['postal_zipcode'],		
-                'postal_country'             => $old_contact[0]['postal_country'],		
-                'additional_note'            => $old_contact[0]['additional_note'],		
-                'dob'                        => $old_contact[0]['dob'],		
-                'age'                        => $old_contact[0]['age'],		
-                'occupation_name'            => $old_contact[0]['occupation_name'],	
-                'imported_date'              => $old_contact[0]['imported_date'],		
-                'vulnerable_note'            => $old_contact[0]['vulnerable_note'],	
-                'occupation'                 => $old_contact[0]['occupation']
+                'last_ip	' => $old_contact[0]['last_ip	'],
+                'last_login' => $old_contact[0]['last_login'],
+                'last_password_change' => $old_contact[0]['last_password_change'],
+                'active' => $old_contact[0]['active'],
+                'profile_image' => $old_contact[0]['profile_image'],
+                'direction' => $old_contact[0]['direction'],
+                'invoice_emails' => $old_contact[0]['invoice_emails'],
+                'estimate_emails' => $old_contact[0]['estimate_emails'],
+                'credit_note_emails' => $old_contact[0]['credit_note_emails'],
+                'contract_emails' => $old_contact[0]['contract_emails'],
+                'task_emails' => $old_contact[0]['task_emails'],
+                'project_emails' => $old_contact[0]['project_emails'],
+                'ticket_emails' => $old_contact[0]['ticket_emails'],
+                'otp' => $old_contact[0]['otp'],
+                'homephone' => $old_contact[0]['homephone'],
+                'gender' => $old_contact[0]['gender'],
+                'vulnerable_client' => $old_contact[0]['vulnerable_client'],
+                'client_type' => $old_contact[0]['client_type'],
+                'custom_occupation' => $old_contact[0]['custom_occupation'],
+                'smoker' => $old_contact[0]['smoker'],
+                'residential_address' => $old_contact[0]['residential_address'],
+                'residential_city' => $old_contact[0]['residential_city'],
+                'residential_state' => $old_contact[0]['residential_state'],
+                'residential_zipcode' => $old_contact[0]['residential_zipcode'],
+                'residential_country' => $old_contact[0]['residential_country'],
+                'postal_address' => $old_contact[0]['postal_address'],
+                'postal_city' => $old_contact[0]['postal_city'],
+                'postal_state' => $old_contact[0]['postal_state'],
+                'postal_zipcode' => $old_contact[0]['postal_zipcode'],
+                'postal_country' => $old_contact[0]['postal_country'],
+                'additional_note' => $old_contact[0]['additional_note'],
+                'dob' => $old_contact[0]['dob'],
+                'age' => $old_contact[0]['age'],
+                'occupation_name' => $old_contact[0]['occupation_name'],
+                'imported_date' => $old_contact[0]['imported_date'],
+                'vulnerable_note' => $old_contact[0]['vulnerable_note'],
+                'occupation' => $old_contact[0]['occupation']
             );
             $lastId = $this->Choose_contacts_model->get_selectdata_insert($dataContact);
-            $permissions = [1,2,3,4,5,6];
+            $permissions = [1, 2, 3, 4, 5, 6];
             foreach ($permissions as $permission) {
                 $data2 = array(
                     'permission_id' => $permission,
@@ -186,15 +183,15 @@ class Clients extends AdminController
                 );
                 $this->Choose_contacts_model->permissions_insert($data2);
             }
-            
+
         }
         if ($lastId) {
             set_alert('success', 'Contact Added Successfully');
             redirect(admin_url('clients/client/' . $for_company . '?group=contacts'));
-            } else {
-                redirect(admin_url('clients/choose_contacts/' . $for_company));
+        } else {
+            redirect(admin_url('clients/choose_contacts/' . $for_company));
         }
-        
+
         // redirect(admin_url('clients/choose_contacts/' . $for_company));
     }
 
@@ -202,19 +199,19 @@ class Clients extends AdminController
     public function client($id = '')
     {
 
-   
+
         if (!has_permission('customers', '', 'view')) {
             if ($id != '' && !is_customer_admin($id)) {
                 access_denied('customers');
             }
         }
         if ($this->input->post() && !$this->input->is_ajax_request()) {
-         
+
             if ($id == '') {
                 if (!has_permission('customers', '', 'create')) {
                     access_denied('customers');
                 }
-                
+
                 $data = $this->input->post();
 
 
@@ -226,21 +223,21 @@ class Clients extends AdminController
 
 
                 if (empty($data['client_review_month'])) {
-    $data['client_review_month'] = (int) date('m');
-}
+                    $data['client_review_month'] = (int) date('m');
+                }
 
-$client_review_month = $data['client_review_month'];
-$review_month = $this->clients_model->review_month($client_review_month);
+                $client_review_month = $data['client_review_month'];
+                $review_month = $this->clients_model->review_month($client_review_month);
 
-if (!empty($review_month)) {
-    $data['review_month_name'] = $review_month[0]['month_name'];
-}
+                if (!empty($review_month)) {
+                    $data['review_month_name'] = $review_month[0]['month_name'];
+                }
 
-                if(isset($data['client_review_date'])){
-                $exploadedDate = (explode('/',$data['client_review_date'])); 
-                 $newDate = $exploadedDate[2] .'-'. $exploadedDate[1] .'-'. $exploadedDate[0];
-          	 $data['client_review_date'] = $newDate;
-                
+                if (isset($data['client_review_date'])) {
+                    $exploadedDate = (explode('/', $data['client_review_date']));
+                    $newDate = $exploadedDate[2] . '-' . $exploadedDate[1] . '-' . $exploadedDate[0];
+                    $data['client_review_date'] = $newDate;
+
                 }
                 $adviser_data = $data['customer_advisor'];
                 $data['adviser_data'] = $adviser_data;
@@ -255,16 +252,16 @@ if (!empty($review_month)) {
                     $assigndata['customerAdvisor'] = $data['customer_advisor'];
                     // $assigndata['customer_admins'] = $updatedata['customer_admins'];
                     unset($data['customer_advisor']);
-                    $assigndataCondistion =true;
+                    $assigndataCondistion = true;
                 }
                 $id = $this->clients_model->add($data);
-                if($assigndataCondistion){
+                if ($assigndataCondistion) {
                     $this->clients_model->assign_adviser($assigndata, $id);
                     //$this->clients_model->assign_admins($assigndata, $id);
                 }
 
                 if (!has_permission('customers', '', 'view')) {
-                    $assign['customer_admins']   = [];
+                    $assign['customer_admins'] = [];
                     $assign['customer_admins'][] = get_staff_user_id();
                     $this->clients_model->assign_admins($assign, $id);
                 }
@@ -293,20 +290,20 @@ if (!empty($review_month)) {
 
 
                 if (empty($updatedata['client_review_month'])) {
-    $updatedata['client_review_month'] = (int) date('m');
-}
+                    $updatedata['client_review_month'] = (int) date('m');
+                }
 
-$client_review_month = $updatedata['client_review_month'];
-$review_month = $this->clients_model->review_month($client_review_month);
+                $client_review_month = $updatedata['client_review_month'];
+                $review_month = $this->clients_model->review_month($client_review_month);
 
-if (!empty($review_month)) {
-    $updatedata['review_month_name'] = $review_month[0]['month_name'];
-}
-               
-                if(isset($updatedata['client_review_date'])){
-                $exploadedDate = (explode('/',$updatedata['client_review_date'])); 
-                 $newDate = $exploadedDate[2] .'-'. $exploadedDate[1] .'-'. $exploadedDate[0];
-          	 $updatedata['client_review_date'] = $newDate; 
+                if (!empty($review_month)) {
+                    $updatedata['review_month_name'] = $review_month[0]['month_name'];
+                }
+
+                if (isset($updatedata['client_review_date'])) {
+                    $exploadedDate = (explode('/', $updatedata['client_review_date']));
+                    $newDate = $exploadedDate[2] . '-' . $exploadedDate[1] . '-' . $exploadedDate[0];
+                    $updatedata['client_review_date'] = $newDate;
                 }
                 $adviser_data = $updatedata['customer_advisor'];
                 $updatedata['adviser_data'] = $adviser_data;
@@ -315,9 +312,9 @@ if (!empty($review_month)) {
                     $assigndata['customerAdvisor'] = $updatedata['customer_advisor'];
                     // $assigndata['customer_admins'] = $updatedata['customer_admins'];
                     unset($updatedata['customer_advisor']);
-                    $assigndataCondistion =true;
+                    $assigndataCondistion = true;
                 }
-                if($assigndataCondistion){
+                if ($assigndataCondistion) {
                     $this->clients_model->assign_adviser($assigndata, $id);
                     // $this->clients_model->assign_admins($assigndata, $id);
                 }
@@ -329,7 +326,7 @@ if (!empty($review_month)) {
                 redirect(admin_url('clients/client/' . $id));
             }
         }
-        $group         = !$this->input->get('group') ? 'profile' : $this->input->get('group');
+        $group = !$this->input->get('group') ? 'profile' : $this->input->get('group');
         $data['group'] = $group;
 
         if ($group != 'contacts' && $contact_id = $this->input->get('contactid')) {
@@ -342,13 +339,13 @@ if (!empty($review_month)) {
             $title = _l('add_new', _l('client_lowercase'));
             $data['staff'] = $this->staff_model->get('', ['active' => 1]);
         } else {
-            $client                = $this->clients_model->get($id);
+            $client = $this->clients_model->get($id);
             $data['customer_tabs'] = get_customer_profile_tabs($id);
             if (!$client) {
                 show_404();
             }
             $data['contacts'] = $this->clients_model->get_contacts($id);
-            $data['tab']      = isset($data['customer_tabs'][$group]) ? $data['customer_tabs'][$group] : null;
+            $data['tab'] = isset($data['customer_tabs'][$group]) ? $data['customer_tabs'][$group] : null;
 
             if (!$data['tab']) {
                 show_404();
@@ -360,15 +357,15 @@ if (!empty($review_month)) {
                 $data['customer_advisor'] = $this->clients_model->get_adviser($id);
             } elseif ($group == 'attachments') {
                 $data['attachments'] = get_all_customer_attachments($id);
-                
+
                 $data['staff'] = $this->projects_model->staffName();
                 //print_r($data['staff']);
-               // exit;
-                   $data['category'] = $this->projects_model->fetchCategory();
+                // exit;
+                $data['category'] = $this->projects_model->fetchCategory();
                 $data['complience'] = $this->projects_model->fetchComplience();
                 $data['archive_file'] = $this->clients_model->archive_file($id);
 
-                
+
             } elseif ($group == 'vault') {
                 $data['vault_entries'] = hooks()->apply_filters('check_vault_entries_visibility', $this->clients_model->get_vault_entries($id));
 
@@ -384,7 +381,7 @@ if (!empty($review_month)) {
             } elseif ($group == 'credit_notes') {
                 $this->load->model('credit_notes_model');
                 $data['credit_notes_statuses'] = $this->credit_notes_model->get_statuses();
-                $data['credits_available']     = $this->credit_notes_model->total_remaining_credits_by_customer($id);
+                $data['credits_available'] = $this->credit_notes_model->total_remaining_credits_by_customer($id);
             } elseif ($group == 'payments') {
                 $this->load->model('payment_modes_model');
                 $data['payment_modes'] = $this->payment_modes_model->get();
@@ -404,15 +401,15 @@ if (!empty($review_month)) {
                     $this->app_scripts->add('map-js', base_url($this->app_scripts->core_file('assets/js', 'map.js')) . '?v=' . $this->app_css->core_version());
 
                     $this->app_scripts->add('google-maps-api-js', [
-                        'path'       => 'https://maps.googleapis.com/maps/api/js?key=' . get_option('google_api_key') . '&callback=initMap',
+                        'path' => 'https://maps.googleapis.com/maps/api/js?key=' . get_option('google_api_key') . '&callback=initMap',
                         'attributes' => [
                             'async',
                             'defer',
-                            'latitude'       => "$client->latitude",
-                            'longitude'      => "$client->longitude",
+                            'latitude' => "$client->latitude",
+                            'longitude' => "$client->longitude",
                             'mapMarkerTitle' => "$client->company",
                         ],
-                        ]);
+                    ]);
                 }
             }
 
@@ -421,7 +418,7 @@ if (!empty($review_month)) {
             $data['client'] = $client;
             $keycontact = $this->clients_model->getKeyContact($client->userid);
             $data['client']->keycontact = $keycontact[0];
-            $title          = $client->company;
+            $title = $client->company;
 
             // Get all active staff members (used to add reminder)
             $data['members'] = $data['staff'];
@@ -468,12 +465,12 @@ if (!empty($review_month)) {
 
             $data['zip_in_folder'] = slug_it($slug_zip_folder);
         }
-        $data['review_month'] =  $this->clients_model->review_month();
-        $data['clientTypedata'] =  $this->clients_model->fetchtype();
-        $data['client_icon'] =  $this->clients_model->fetchclient_type($client->client_type);
+        $data['review_month'] = $this->clients_model->review_month();
+        $data['clientTypedata'] = $this->clients_model->fetchtype();
+        $data['client_icon'] = $this->clients_model->fetchclient_type($client->client_type);
         $data['projecttemplates'] = $this->projects_model->fetchprojecttemplate();
         $data['bodyclass'] = 'customer-profile dynamic-create-groups';
-        $data['title']     = $title;
+        $data['title'] = $title;
         $choose = $this->input->get('choose');
         if (isset($choose)) {
             $data['choose'] = $choose;
@@ -481,13 +478,15 @@ if (!empty($review_month)) {
         $this->load->view('admin/clients/client', $data);
     }
 
-    public function checkKeyContact(){
+    public function checkKeyContact()
+    {
         $userId = $this->input->post('userid');
         $data = $this->clients_model->check_key_contact($userId);
         echo $data;
         exit;
     }
-    public function KeyContactAddress(){
+    public function KeyContactAddress()
+    {
         $userId = $this->input->post('userid');
         $data = $this->clients_model->key_contact_address($userId);
         echo json_encode($data);
@@ -507,8 +506,8 @@ if (!empty($review_month)) {
     {
         if (has_permission('customers', '', 'create')) {
             $companyName = trim($this->input->post('company'));
-            $response    = [
-                'exists'  => (bool) total_rows(db_prefix() . 'clients', ['company' => $companyName]) > 0,
+            $response = [
+                'exists' => (bool) total_rows(db_prefix() . 'clients', ['company' => $companyName]) > 0,
                 'message' => _l('company_exists_info', '<b>' . $companyName . '</b>'),
             ];
             echo json_encode($response);
@@ -526,7 +525,7 @@ if (!empty($review_month)) {
         $this->db->where('userid', $client_id);
         $this->db->update(db_prefix() . 'clients', [
             'longitude' => $this->input->post('longitude'),
-            'latitude'  => $this->input->post('latitude'),
+            'latitude' => $this->input->post('latitude'),
         ]);
         if ($this->db->affected_rows() > 0) {
             echo 'success';
@@ -545,7 +544,7 @@ if (!empty($review_month)) {
             }
         }
         $data['customer_id'] = $customer_id;
-        $data['contactid']   = $contact_id;
+        $data['contactid'] = $contact_id;
 
         if (is_automatic_calling_codes_enabled()) {
             $clientCountryId = $this->db->select('country')
@@ -553,13 +552,13 @@ if (!empty($review_month)) {
                 ->get('clients')->row()->country ?? null;
 
             $clientCountry = get_country($clientCountryId);
-            $callingCode   = $clientCountry ? '+' . ltrim($clientCountry->calling_code, '+') : null;
+            $callingCode = $clientCountry ? '+' . ltrim($clientCountry->calling_code, '+') : null;
         } else {
             $callingCode = null;
         }
 
-        if ($this->input->post()){
-            $data             = $this->input->post();
+        if ($this->input->post()) {
+            $data = $this->input->post();
             if (!isset($data['contact_key'])) {
                 array_push($data['contact_key'], '');
             }
@@ -577,22 +576,22 @@ if (!empty($review_month)) {
             }
             $this->clients_model->updateResidentilaAddressClientReview($customer_id, $data);
 
-            if($data['email'] == ''){
+            if ($data['email'] == '') {
                 // $content = "mtg";
                 // $rand = (mt_rand(1000,10000));
                 // $mtgonline = '@mtgonline.com';
                 // $data['email'] = $content.$rand.$mtgonline;
                 $data['email'] = $this->clients_model->get_unique_email();
             }
-            if($data['occupation']){
+            if ($data['occupation']) {
                 $a = $data['occupation'];
-                $stringarr = explode(',',$a);
+                $stringarr = explode(',', $a);
                 $data['occupation'] = $stringarr[0];
                 $data['occupation_name'] = $stringarr[1];
             }
 
-            if(isset($data['dob'])){
-               
+            if (isset($data['dob'])) {
+
                 // $exploadedDate = (explode('/',$data['dob'])); 
                 // $newDate = $exploadedDate[2] .'-'. $exploadedDate[1] .'-'. $exploadedDate[0];
                 $newDate = $data['dob'];
@@ -601,20 +600,20 @@ if (!empty($review_month)) {
                 // $from = $newDate;
                 // $to   = new DateTime('today');
                 # procedural
-                $data['age'] =  date_diff(date_create($newDate), date_create('today'))->y;
+                $data['age'] = date_diff(date_create($newDate), date_create('today'))->y;
             }
 
             // if(isset($data['dob'])){
             //     $from = new DateTime('1970-02-01');
             //     $to   = new DateTime('today');
             //     echo $from->diff($to)->y;
-                
+
             //     # procedural
             //     echo date_diff(date_create('1970-02-01'), date_create('today'))->y;
             //         exit;
             // }
 
-            $data['vulnerable_client'] =  serialize($this->input->post('vulnerable_client'));
+            $data['vulnerable_client'] = serialize($this->input->post('vulnerable_client'));
             $data['password'] = $this->input->post('password', false);
 
             if ($callingCode && !empty($data['phonenumber']) && $data['phonenumber'] == $callingCode) {
@@ -634,7 +633,7 @@ if (!empty($review_month)) {
                         die;
                     }
                 }
-                $id      = $this->clients_model->add_contact($data, $customer_id);
+                $id = $this->clients_model->add_contact($data, $customer_id);
                 $message = '';
                 $success = false;
                 if ($id) {
@@ -643,10 +642,10 @@ if (!empty($review_month)) {
                     $message = _l('added_successfully', _l('contact'));
                 }
                 echo json_encode([
-                    'success'             => $success,
-                    'message'             => $message,
+                    'success' => $success,
+                    'message' => $message,
                     'has_primary_contact' => (total_rows(db_prefix() . 'contacts', ['userid' => $customer_id, 'is_primary' => 1]) > 0 ? true : false),
-                    'is_individual'       => is_empty_customer_company($customer_id) && total_rows(db_prefix() . 'contacts', ['userid' => $customer_id]) == 1,
+                    'is_individual' => is_empty_customer_company($customer_id) && total_rows(db_prefix() . 'contacts', ['userid' => $customer_id]) == 1,
                 ]);
                 die;
             }
@@ -654,18 +653,18 @@ if (!empty($review_month)) {
                 if (!is_customer_admin($customer_id)) {
                     header($_SERVER['SERVER_PROTOCOL'] . '400 Bad error');
                     echo json_encode([
-                            'success' => false,
-                            'message' => _l('access_denied'),
-                        ]);
+                        'success' => false,
+                        'message' => _l('access_denied'),
+                    ]);
                     die;
                 }
             }
             $original_contact = $this->clients_model->get_contact($contact_id);
-            $success          = $this->clients_model->update_contact_email($data, $contact_id);
-            $message          = '';
+            $success = $this->clients_model->update_contact_email($data, $contact_id);
+            $message = '';
             $proposal_warning = false;
-            $original_email   = '';
-            $updated          = false;
+            $original_email = '';
+            $updated = false;
             //email
             $email = $original_contact->email;
             if (is_array($success)) {
@@ -681,28 +680,30 @@ if (!empty($review_month)) {
                     $message = _l('updated_successfully', _l('contact'));
                 }
             }
-            if (handle_contact_profile_image_upload($contact_id,$email) && !$updated) {
+            if (handle_contact_profile_image_upload($contact_id, $email) && !$updated) {
                 $message = _l('updated_successfully', _l('contact'));
                 $success = true;
             }
             if ($updated == true) {
                 $contact = $this->clients_model->get_contact($contact_id);
-                if (total_rows(db_prefix() . 'proposals', [
+                if (
+                    total_rows(db_prefix() . 'proposals', [
                         'rel_type' => 'customer',
                         'rel_id' => $contact->userid,
                         'email' => $original_contact->email,
-                    ]) > 0 && ($original_contact->email != $contact->email)) {
+                    ]) > 0 && ($original_contact->email != $contact->email)
+                ) {
                     $proposal_warning = true;
-                    $original_email   = $original_contact->email;
+                    $original_email = $original_contact->email;
                 }
             }
             echo json_encode([
-                    'success'             => $success,
-                    'proposal_warning'    => $proposal_warning,
-                    'message'             => $message,
-                    'original_email'      => $original_email,
-                    'has_primary_contact' => (total_rows(db_prefix() . 'contacts', ['userid' => $customer_id, 'is_primary' => 1]) > 0 ? true : false),
-                ]);
+                'success' => $success,
+                'proposal_warning' => $proposal_warning,
+                'message' => $message,
+                'original_email' => $original_email,
+                'has_primary_contact' => (total_rows(db_prefix() . 'contacts', ['userid' => $customer_id, 'is_primary' => 1]) > 0 ? true : false),
+            ]);
             die;
         }
 
@@ -725,10 +726,10 @@ if (!empty($review_month)) {
             $title = $data['contact']->firstname . ' ' . $data['contact']->lastname;
         }
         $data['data'] = $this->clients_model->fetchOccupationClass();
-        $data['vulnerableClient'] =  $this->clients_model->fetchvulnerableClient();
+        $data['vulnerableClient'] = $this->clients_model->fetchvulnerableClient();
         $data['smokerdata'] = $this->clients_model->fetchSmoker();
         $data['customer_permissions'] = get_contact_permissions();
-        $data['title']                = $title;
+        $data['title'] = $title;
         $this->load->view('admin/clients/modals/contact', $data);
     }
 
@@ -745,7 +746,7 @@ if (!empty($review_month)) {
     public function update_file_share_visibility()
     {
         if ($this->input->post()) {
-            $file_id           = $this->input->post('file_id');
+            $file_id = $this->input->post('file_id');
             $share_contacts_id = [];
 
             if ($this->input->post('share_contacts_id')) {
@@ -757,7 +758,7 @@ if (!empty($review_month)) {
 
             foreach ($share_contacts_id as $share_contact_id) {
                 $this->db->insert(db_prefix() . 'shared_customer_files', [
-                    'file_id'    => $file_id,
+                    'file_id' => $file_id,
                     'contact_id' => $share_contact_id,
                 ]);
             }
@@ -788,8 +789,8 @@ if (!empty($review_month)) {
         }
 
         $this->load->model('gdpr_model');
-        $data['purposes']   = $this->gdpr_model->get_consent_purposes($id, 'contact');
-        $data['consents']   = $this->gdpr_model->get_consents(['contact_id' => $id]);
+        $data['purposes'] = $this->gdpr_model->get_consent_purposes($id, 'contact');
+        $data['consents'] = $this->gdpr_model->get_consents(['contact_id' => $id]);
         $data['contact_id'] = $id;
         $this->load->view('admin/gdpr/contact_consent', $data);
     }
@@ -797,7 +798,7 @@ if (!empty($review_month)) {
     public function update_all_proposal_emails_linked_to_customer($contact_id)
     {
         $success = false;
-        $email   = '';
+        $email = '';
         if ($this->input->post('update')) {
             $this->load->model('proposals_model');
 
@@ -807,8 +808,8 @@ if (!empty($review_month)) {
 
             $proposals = $this->proposals_model->get('', [
                 'rel_type' => 'customer',
-                'rel_id'   => $contact->userid,
-                'email'    => $this->input->post('original_email'),
+                'rel_id' => $contact->userid,
+                'email' => $this->input->post('original_email'),
             ]);
             $affected_rows = 0;
 
@@ -867,7 +868,7 @@ if (!empty($review_month)) {
                 access_denied('customers');
             }
         }
-        $contact      = $this->clients_model->get_contact($id);
+        $contact = $this->clients_model->get_contact($id);
         $hasProposals = false;
         if ($contact && is_gdpr()) {
             if (total_rows(db_prefix() . 'proposals', ['email' => $contact->email]) > 0) {
@@ -904,7 +905,7 @@ if (!empty($review_month)) {
     public function delete_attachment($customer_id, $id)
     {
         // if (has_permission('customers', '', 'delete') || is_customer_admin($customer_id)) {
-            $this->clients_model->delete_attachment($id);
+        $this->clients_model->delete_attachment($id);
         // }
         redirect($_SERVER['HTTP_REFERER']);
     }
@@ -973,10 +974,10 @@ if (!empty($review_month)) {
 
         if ($this->input->post()) {
             $this->load->library('app_bulk_pdf_export', [
-                'export_type'       => 'credit_notes',
-                'status'            => $this->input->post('credit_note_zip_status'),
-                'date_from'         => $this->input->post('zip-from'),
-                'date_to'           => $this->input->post('zip-to'),
+                'export_type' => 'credit_notes',
+                'status' => $this->input->post('credit_note_zip_status'),
+                'date_from' => $this->input->post('zip-from'),
+                'date_to' => $this->input->post('zip-to'),
                 'redirect_on_error' => admin_url('clients/client/' . $id . '?group=credit_notes'),
             ]);
 
@@ -989,17 +990,19 @@ if (!empty($review_month)) {
     public function zip_invoices($id)
     {
         $has_permission_view = has_permission('invoices', '', 'view');
-        if (!$has_permission_view && !has_permission('invoices', '', 'view_own')
-            && get_option('allow_staff_view_invoices_assigned') == '0') {
+        if (
+            !$has_permission_view && !has_permission('invoices', '', 'view_own')
+            && get_option('allow_staff_view_invoices_assigned') == '0'
+        ) {
             access_denied('Zip Customer Invoices');
         }
 
         if ($this->input->post()) {
             $this->load->library('app_bulk_pdf_export', [
-                'export_type'       => 'invoices',
-                'status'            => $this->input->post('invoice_zip_status'),
-                'date_from'         => $this->input->post('zip-from'),
-                'date_to'           => $this->input->post('zip-to'),
+                'export_type' => 'invoices',
+                'status' => $this->input->post('invoice_zip_status'),
+                'date_from' => $this->input->post('zip-from'),
+                'date_to' => $this->input->post('zip-to'),
                 'redirect_on_error' => admin_url('clients/client/' . $id . '?group=invoices'),
             ]);
 
@@ -1013,17 +1016,19 @@ if (!empty($review_month)) {
     public function zip_estimates($id)
     {
         $has_permission_view = has_permission('estimates', '', 'view');
-        if (!$has_permission_view && !has_permission('estimates', '', 'view_own')
-            && get_option('allow_staff_view_estimates_assigned') == '0') {
+        if (
+            !$has_permission_view && !has_permission('estimates', '', 'view_own')
+            && get_option('allow_staff_view_estimates_assigned') == '0'
+        ) {
             access_denied('Zip Customer Estimates');
         }
 
         if ($this->input->post()) {
             $this->load->library('app_bulk_pdf_export', [
-                'export_type'       => 'estimates',
-                'status'            => $this->input->post('estimate_zip_status'),
-                'date_from'         => $this->input->post('zip-from'),
-                'date_to'           => $this->input->post('zip-to'),
+                'export_type' => 'estimates',
+                'status' => $this->input->post('estimate_zip_status'),
+                'date_from' => $this->input->post('zip-from'),
+                'date_to' => $this->input->post('zip-to'),
                 'redirect_on_error' => admin_url('clients/client/' . $id . '?group=estimates'),
             ]);
 
@@ -1037,18 +1042,20 @@ if (!empty($review_month)) {
     {
         $has_permission_view = has_permission('payments', '', 'view');
 
-        if (!$has_permission_view && !has_permission('invoices', '', 'view_own')
-            && get_option('allow_staff_view_invoices_assigned') == '0') {
+        if (
+            !$has_permission_view && !has_permission('invoices', '', 'view_own')
+            && get_option('allow_staff_view_invoices_assigned') == '0'
+        ) {
             access_denied('Zip Customer Payments');
         }
 
         $this->load->library('app_bulk_pdf_export', [
-                'export_type'       => 'payments',
-                'payment_mode'      => $this->input->post('paymentmode'),
-                'date_from'         => $this->input->post('zip-from'),
-                'date_to'           => $this->input->post('zip-to'),
-                'redirect_on_error' => admin_url('clients/client/' . $id . '?group=payments'),
-            ]);
+            'export_type' => 'payments',
+            'payment_mode' => $this->input->post('paymentmode'),
+            'date_from' => $this->input->post('zip-from'),
+            'date_to' => $this->input->post('zip-to'),
+            'redirect_on_error' => admin_url('clients/client/' . $id . '?group=payments'),
+        ]);
 
         $this->app_bulk_pdf_export->set_client_id($id);
         $this->app_bulk_pdf_export->set_client_id_column(db_prefix() . 'clients.userid');
@@ -1074,18 +1081,20 @@ if (!empty($review_month)) {
         $this->load->library('import/import_customers', [], 'import');
 
         $this->import->setDatabaseFields($dbFields)
-                     ->setCustomFields(get_custom_fields('customers'));
+            ->setCustomFields(get_custom_fields('customers'));
 
         if ($this->input->post('download_sample') === 'true') {
             $this->import->downloadSample();
         }
 
-        if ($this->input->post()
-            && isset($_FILES['file_csv']['name']) && $_FILES['file_csv']['name'] != '') {
+        if (
+            $this->input->post()
+            && isset($_FILES['file_csv']['name']) && $_FILES['file_csv']['name'] != ''
+        ) {
             $this->import->setSimulation($this->input->post('simulate'))
-                          ->setTemporaryFileLocation($_FILES['file_csv']['tmp_name'])
-                          ->setFilename($_FILES['file_csv']['name'])
-                          ->perform();
+                ->setTemporaryFileLocation($_FILES['file_csv']['tmp_name'])
+                ->setFilename($_FILES['file_csv']['name'])
+                ->perform();
 
 
             $data['total_rows_post'] = $this->import->totalRows();
@@ -1095,8 +1104,8 @@ if (!empty($review_month)) {
             }
         }
 
-        $data['groups']    = $this->clients_model->get_groups();
-        $data['title']     = _l('import');
+        $data['groups'] = $this->clients_model->get_groups();
+        $data['title'] = _l('import');
         $data['bodyclass'] = 'dynamic-create-groups';
         $this->load->view('admin/clients/import', $data);
     }
@@ -1122,13 +1131,13 @@ if (!empty($review_month)) {
         if ($this->input->is_ajax_request()) {
             $data = $this->input->post();
             if ($data['id'] == '') {
-                $id      = $this->clients_model->add_group($data);
+                $id = $this->clients_model->add_group($data);
                 $message = $id ? _l('added_successfully', _l('customer_group')) : '';
                 echo json_encode([
                     'success' => $id ? true : false,
                     'message' => $message,
-                    'id'      => $id,
-                    'name'    => $data['name'],
+                    'id' => $id,
+                    'name' => $data['name'],
                 ]);
             } else {
                 $success = $this->clients_model->edit_group($data);
@@ -1166,7 +1175,7 @@ if (!empty($review_month)) {
         hooks()->do_action('before_do_bulk_action_for_customers');
         $total_deleted = 0;
         if ($this->input->post()) {
-            $ids    = $this->input->post('ids');
+            $ids = $this->input->post('ids');
             $groups = $this->input->post('groups');
 
             if (is_array($ids)) {
@@ -1203,10 +1212,10 @@ if (!empty($review_month)) {
         }
 
         unset($data['id']);
-        $data['creator']      = get_staff_user_id();
+        $data['creator'] = get_staff_user_id();
         $data['creator_name'] = get_staff_full_name($data['creator']);
-        $data['description']  = nl2br($data['description']);
-        $data['password']     = $this->encryption->encrypt($this->input->post('password', false));
+        $data['description'] = nl2br($data['description']);
+        $data['password'] = $this->encryption->encrypt($this->input->post('password', false));
 
         if (empty($data['port'])) {
             unset($data['port']);
@@ -1232,7 +1241,7 @@ if (!empty($review_month)) {
             }
 
             $data['last_updated_from'] = get_staff_full_name(get_staff_user_id());
-            $data['description']       = nl2br($data['description']);
+            $data['description'] = nl2br($data['description']);
 
             if (!empty($data['password'])) {
                 $data['password'] = $this->encryption->encrypt($this->input->post('password', false));
@@ -1261,9 +1270,9 @@ if (!empty($review_month)) {
 
     public function vault_encrypt_password()
     {
-        $id            = $this->input->post('id');
+        $id = $this->input->post('id');
         $user_password = $this->input->post('user_password', false);
-        $user          = $this->staff_model->get(get_staff_user_id());
+        $user = $this->staff_model->get(get_staff_user_id());
 
         if (!app_hasher()->CheckPassword($user_password, $user->password)) {
             header('HTTP/1.1 401 Unauthorized');
@@ -1271,7 +1280,7 @@ if (!empty($review_month)) {
             die;
         }
 
-        $vault    = $this->clients_model->get_vault_entry($id);
+        $vault = $this->clients_model->get_vault_entry($id);
         $password = $this->encryption->decrypt($vault->password);
 
         $password = html_escape($password);
@@ -1304,7 +1313,7 @@ if (!empty($review_month)) {
         }
 
         $from = $this->input->get('from');
-        $to   = $this->input->get('to');
+        $to = $this->input->get('to');
 
         $data['statement'] = $this->clients_model->get_statement($customer_id, to_sql_date($from), to_sql_date($to));
 
@@ -1337,10 +1346,10 @@ if (!empty($review_month)) {
         }
 
         $from = $this->input->get('from');
-        $to   = $this->input->get('to');
+        $to = $this->input->get('to');
 
         $send_to = $this->input->post('send_to');
-        $cc      = $this->input->post('cc');
+        $cc = $this->input->post('cc');
 
         $success = $this->clients_model->send_statement_to_email($customer_id, $send_to, $from, $to, $cc);
         // In case client use another language
@@ -1363,48 +1372,53 @@ if (!empty($review_month)) {
         }
 
         $customer_id = $this->input->get('customer_id');
-        $from        = $this->input->get('from');
-        $to          = $this->input->get('to');
+        $from = $this->input->get('from');
+        $to = $this->input->get('to');
 
         $data['statement'] = $this->clients_model->get_statement($customer_id, to_sql_date($from), to_sql_date($to));
 
         $data['from'] = $from;
-        $data['to']   = $to;
+        $data['to'] = $to;
 
         $viewData['html'] = $this->load->view('admin/clients/groups/_statement', $data, true);
 
         echo json_encode($viewData);
     }
 
-    public function occupationClass(){
+    public function occupationClass()
+    {
         $data['data'] = $this->clients_model->fetchOccupationClass();
         $this->load->view('admin/clients/occupation', $data);
     }
 
-    public function saveOccupationClass(){
+    public function saveOccupationClass()
+    {
         $data = [
             'occupation' => $this->input->post('occupation'),
         ];
         $this->clients_model->save_Occupation_Class($data);
         redirect(admin_url('Clients/occupationClass'));
     }
-    
-    public function deleteOccupationClass(){
+
+    public function deleteOccupationClass()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->clients_model->delete_OccupationClass($data , $id);
+        $this->clients_model->delete_OccupationClass($data, $id);
         redirect(admin_url('Clients/occupationClass'));
     }
 
-    public function smoker(){
-       $data['data'] = $this->clients_model->fetchSmoker();
-       $this->load->view('admin/clients/smoker' , $data);
+    public function smoker()
+    {
+        $data['data'] = $this->clients_model->fetchSmoker();
+        $this->load->view('admin/clients/smoker', $data);
     }
 
-    public function saveSmoker(){
+    public function saveSmoker()
+    {
         $data = [
             'smoker' => $this->input->post('smoker'),
         ];
@@ -1412,13 +1426,14 @@ if (!empty($review_month)) {
         redirect(admin_url('Clients/smoker'));
     }
 
-    public function deleteSmoker(){
+    public function deleteSmoker()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->clients_model->delete_Smoker($data , $id);
+        $this->clients_model->delete_Smoker($data, $id);
         redirect(admin_url('Clients/smoker'));
     }
 
@@ -1434,83 +1449,82 @@ if (!empty($review_month)) {
     //     $this->clients_model->updateCompliancez($complian, $attachementId);
     // }
 
-    public function import_view(){
+    public function import_view()
+    {
         $this->load->view('admin/clients/import_customer_data');
     }
 
-    public function importExcel(){
-        if($this->input->post('upload') != NULL ){ 
-            $data = array(); 
+    public function importExcel()
+    {
+        if ($this->input->post('upload') != NULL) {
+            $data = array();
 
-            if(!empty($_FILES['file']['name'])){ 
+            if (!empty($_FILES['file']['name'])) {
 
-                $config['upload_path'] = 'assets/images/'; 
-                $config['allowed_types'] = 'csv'; 
+                $config['upload_path'] = 'assets/images/';
+                $config['allowed_types'] = 'csv';
                 $config['max_size'] = '1000'; // max_size in kb 
                 $config['file_name'] = $_FILES['file']['name'];
-                $this->load->library('upload',$config); 
+                $this->load->library('upload', $config);
 
-                if($this->upload->do_upload('file'))
-                { 
-                    $uploadData = $this->upload->data(); 
+                if ($this->upload->do_upload('file')) {
+                    $uploadData = $this->upload->data();
                     $filename = $uploadData['file_name'];
-                    $file = fopen("assets/images/".$filename,"r");
-                    
+                    $file = fopen("assets/images/" . $filename, "r");
+
                     $i = 0;
                     $numberOfFields = 26; // Total number of fields
                     $importData_arr = array();
-                
+
                     while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) {
-                    $num = count($filedata );
-                    
-                    if($numberOfFields == $num){
-                    
-                        for ($c=0; $c < $num; $c++) {
-                            $importData_arr[$i][] = $filedata [$c];
+                        $num = count($filedata);
+
+                        if ($numberOfFields == $num) {
+
+                            for ($c = 0; $c < $num; $c++) {
+                                $importData_arr[$i][] = $filedata[$c];
+                            }
                         }
-                    }
-                    $i++;
+                        $i++;
                     }
                     fclose($file);
                     $skip = 0;
-                    foreach($importData_arr as $userdata){
-                    if($skip != 0){
-                        $result = $this->clients_model->insertRecord($userdata);
+                    foreach ($importData_arr as $userdata) {
+                        if ($skip != 0) {
+                            $result = $this->clients_model->insertRecord($userdata);
                         }
-                    $skip ++;
+                        $skip++;
                     }
 
-                    if($result == 2){
+                    if ($result == 2) {
                         // set_alert('danger', 'This Records EXIST in table');
                         // log_activity('Record Exist in table');
                     }
-                    if($result == 1){
+                    if ($result == 1) {
                         // $data['response'] = 'O-YES '.$filename; 
                         // set_alert('success', 'Records Imported Successfully');
                     }
-                    if($result == 0){
+                    if ($result == 0) {
                         // $data['response'] = 'O-NO'; 
                         // set_alert('danger', 'Records Not Imported due to Blank Column');
                     }
+                } else {
+                    $data['response'] = 'failed';
                 }
-                else{ 
-                    $data['response'] = 'failed'; 
-                } 
+            } else {
+                $data['response'] = 'failed';
             }
-            else{ 
-                $data['response'] = 'failed'; 
-            } 
             redirect(admin_url('Clients/all_contacts'));
-        }
-        else{
-            $this->load->view('admin/clients/all_contacts'); 
+        } else {
+            $this->load->view('admin/clients/all_contacts');
             redirect(admin_url('Clients/all_contacts'));
         }
     }
 
-    public function InActivityLog(){
+    public function InActivityLog()
+    {
         $In_ActivityLog['InActivity_Log'] = $this->clients_model->activity_log_Individuals();
-        $this->load->view('admin/clients/individual_log_activity',$In_ActivityLog);
+        $this->load->view('admin/clients/individual_log_activity', $In_ActivityLog);
     }
 
     // public function vulnerableCheckData_tbl(){
@@ -1519,10 +1533,11 @@ if (!empty($review_month)) {
     //     $this->clients_model->change_Status_Vul_Check($vulnerable_checkValue , $individeal_id);
     // }
 
-    public function vulnerableCheckData_tbl(){
+    public function vulnerableCheckData_tbl()
+    {
         $vulnerable_checkValue['checkBox_vulnerable'] = $this->input->post('vulnerable_checkValue');
         $individeal_id = $this->input->post('individeal_id');
-        $this->clients_model->change_Status_Vul_Check($vulnerable_checkValue , $individeal_id);
+        $this->clients_model->change_Status_Vul_Check($vulnerable_checkValue, $individeal_id);
     }
 
     // public function primaryContact(){
@@ -1531,92 +1546,93 @@ if (!empty($review_month)) {
     //     $this->clients_model->change_Status_primary_Check($primary_checkVal , $individeal);
     // }
 
-    public function primaryContact(){
+    public function primaryContact()
+    {
         $primary_checkVal['contract_emails'] = $this->input->post('primary_checkVal');
         $individeal = $this->input->post('individeal');
-        $this->clients_model->change_Status_primary_Check($primary_checkVal , $individeal);
+        $this->clients_model->change_Status_primary_Check($primary_checkVal, $individeal);
     }
 
-    public function DeceasedContact(){
+    public function DeceasedContact()
+    {
         $deceased_checkVal = $this->input->post('deceased_checkVal');
         $email_checkVal = $this->input->post('email_checkVal');
-        $deceased                          = $this->input->post('deceased');
+        $deceased = $this->input->post('deceased');
         $data = [
-            'contract_emails'=> $email_checkVal,
-            'deceased'=> $deceased_checkVal
+            'contract_emails' => $email_checkVal,
+            'deceased' => $deceased_checkVal
         ];
         $this->clients_model->change_Status_deceaed_Check($data, $deceased);
     }
-    public function email_reciever(){
+    public function email_reciever()
+    {
         $email_checkVal = $this->input->post('email_checkVal');
-        $id             = $this->input->post('id');
+        $id = $this->input->post('id');
         $data = [
-            'contract_emails'=> $email_checkVal
+            'contract_emails' => $email_checkVal
         ];
         $this->clients_model->change_email_reciever_Check($data, $id);
     }
 
-    public function vulnerableDrivers(){
+    public function vulnerableDrivers()
+    {
         $id = $this->uri->segment(4);
-        if(!$id){
-            if(!$id){
-            $this->clients_model->save_vulnerableClient($id= '' , $this->input->post());
+        if (!$id) {
+            if ($this->input->post()) {
+                $this->clients_model->save_vulnerableClient('', $this->input->post());
             }
-            $data['data'] =  $this->clients_model->fetchvulnerableClient();
-                $this->load->view('admin/clients/vulnerabledivers', $data);
-        }
-        else{
-            if($id){
-                $data = [
-                    'is_deleted' => 1,
-                ];
-                $result = $this->clients_model->save_vulnerableClient($id , $data);
-                if($result==yes){
-                    set_alert('success', 'Deleted Successfully');
-                }
-                redirect(admin_url('clients/vulnerableDrivers'));
+            $data['data'] = $this->clients_model->fetchvulnerableClient();
+            $this->load->view('admin/clients/vulnerabledivers', $data);
+        } else {
+            $data = [
+                'is_deleted' => 1,
+            ];
+            $result = $this->clients_model->save_vulnerableClient($id, $data);
+            if ($result == 'yes') {
+                set_alert('success', 'Deleted Successfully');
             }
+            redirect(admin_url('clients/vulnerableDrivers'));
         }
     }
 
-    public function get_contact_details(){
+
+    public function get_contact_details()
+    {
         $contact_id_under_client = $this->input->post('contact_id');
         $userid = $this->input->post('userid');
 
-        $fetch_client_related_data = $this->clients_model->clientRelatedData($contact_id_under_client , $userid);
+        $fetch_client_related_data = $this->clients_model->clientRelatedData($contact_id_under_client, $userid);
         echo json_encode($fetch_client_related_data);
     }
 
-    public function type(){
-  
+    public function type()
+    {
         $id = $this->uri->segment(4);
-        if(!$id){
-            if(!$id){
-            $this->clients_model->save_type($id= '' , $this->input->post());
+        if (!$id) {
+            if ($this->input->post()) {
+                $this->clients_model->save_type('', $this->input->post());
             }
-            $data['data'] =  $this->clients_model->fetchtype();
-                $this->load->view('admin/clients/client_type', $data);
-        }
-        else{
-            if($id){
-                $data = [   
-                    'is_deleted' => 1,
-                ];
-                $result = $this->clients_model->save_type($id , $data);
-                if($result==yes){
-                    set_alert('success', 'Deleted Successfully');
-                }
-                redirect(admin_url('clients/type'));
+            $data['data'] = $this->clients_model->fetchtype();
+            $this->load->view('admin/clients/client_type', $data);
+        } else {
+            $data = [
+                'is_deleted' => 1,
+            ];
+            $result = $this->clients_model->save_type($id, $data);
+            if ($result == 'yes') {
+                set_alert('success', 'Deleted Successfully');
             }
+            redirect(admin_url('clients/type'));
         }
-        
     }
 
-    public function firstNameExists(){
+
+    public function firstNameExists()
+    {
         $firstname = $this->input->post('firstname');
         $lastname = $this->input->post('lastname');
         $dob = $this->input->post('dob');
-        $exists = $this->clients_model->firstNameExists($firstname,$lastname,$dob);
+        $exists = $this->clients_model->firstNameExists($firstname, $lastname, $dob);
         $count = count($exists);
         if ($count == 0) {
             echo 0;
@@ -1645,14 +1661,15 @@ if (!empty($review_month)) {
     //     }
     // }
 
-    public function updateCompliance(){
+    public function updateCompliance()
+    {
         $complianId = $this->input->post('id');
-        if($complianId){
-           $compliance_name =  $this->clients_model->compliance_name($complianId);
+        if ($complianId) {
+            $compliance_name = $this->clients_model->compliance_name($complianId);
         }
         $data = [
-            'compliance_id'     => $complianId,
-            'compliance_name'   => $compliance_name,
+            'compliance_id' => $complianId,
+            'compliance_name' => $compliance_name,
         ];
         $file_id = $this->input->post('attachementId');
         $this->clients_model->updateCompliancez($data, $file_id);
@@ -1663,57 +1680,61 @@ if (!empty($review_month)) {
         $data['category_id'] = $this->input->post('id');
         $file_id = $this->input->post('attachementId');
         $data['category_name'] = $this->clients_model->getCategory_Name($data['category_id']);
-        $this->clients_model->saveupdatecat($data,$file_id,);
+        $this->clients_model->saveupdatecat($data, $file_id, );
     }
 
-    public function reason_of_disable(){
-        if($this->input->post()){
+    public function reason_of_disable()
+    {
+        if ($this->input->post()) {
             $data = $this->input->post();
         }
         $exists = $this->clients_model->is_exist_userId($data['user_id']);
-        $count  = count($exists);
+        $count = count($exists);
         if ($count == 0) {
             $not_exists = $this->clients_model->reasonOfDisable_not_exist($data);
-        }
-        else {
-            $exist = $this->clients_model->reasonOfDisable_exist($data,$data['user_id']);
+        } else {
+            $exist = $this->clients_model->reasonOfDisable_exist($data, $data['user_id']);
         }
         redirect(admin_url('clients'));
     }
-    public function checkedData(){
-        $active       = $this->input->post('active');
+    public function checkedData()
+    {
+        $active = $this->input->post('active');
         $inputcheckId = $this->input->post('inputcheckId');
-        $exists       = $this->clients_model->save_active_one($active,$inputcheckId);
-        $count        = count($exists);
+        $exists = $this->clients_model->save_active_one($active, $inputcheckId);
+        $count = count($exists);
         if ($count == 0) {
             echo 0;
         } else {
             echo 1;
         }
     }
-    public function get_reason_of_disable(){
-        $clientGridId    = $this->input->post('clientGridId');
+    public function get_reason_of_disable()
+    {
+        $clientGridId = $this->input->post('clientGridId');
         $exists = $this->clients_model->getReasonOfDisable($clientGridId);
         echo ($exists);
     }
-    public function update_file_data(){
-        $rowid                   = $this->input->post('rowid');
-        $clientId                = $this->input->post('clientId');
+    public function update_file_data()
+    {
+        $rowid = $this->input->post('rowid');
+        $clientId = $this->input->post('clientId');
         $data = [
-            'client_file_discription'  => $this->input->post('client_file_discription'),
+            'client_file_discription' => $this->input->post('client_file_discription'),
             'filename_Notencript' => $this->input->post('filename_Notencript'),
         ];
-        $exists = $this->clients_model->update_fileData($rowid,$clientId,$data);
+        $exists = $this->clients_model->update_fileData($rowid, $clientId, $data);
     }
 
-    public function report_client_reviews(){
+    public function report_client_reviews()
+    {
         $this->clients_model->updateResidentilaAddress();
-        if($this->input->post('adviser') == '' && $this->input->post('client_review_month') == '' && $this->input->post('type') == ''){
-            $get_project_data['adviser']            = $this->projects_model->fetchadvisordata();
-            $get_project_data['type']            = $this->clients_model->fetchtype();
-            $get_project_data['review_month']       = $this->clients_model->review_month();
+        if ($this->input->post('adviser') == '' && $this->input->post('client_review_month') == '' && $this->input->post('type') == '') {
+            $get_project_data['adviser'] = $this->projects_model->fetchadvisordata();
+            $get_project_data['type'] = $this->clients_model->fetchtype();
+            $get_project_data['review_month'] = $this->clients_model->review_month();
             // $get_project_data['client_review_data'] = $this->clients_model->fetchClient_review_data();
-            if(!is_admin()) {
+            if (!is_admin()) {
                 $cleck_is_admin = 0;
                 $get_project_data['client_review_data'] = $this->clients_model->fetchClient_review_data($cleck_is_admin);
             }
@@ -1722,91 +1743,95 @@ if (!empty($review_month)) {
                     $cleck_is_admin = 0;
                     $get_project_data['client_review_data'] = $this->clients_model->fetchClient_review_data($cleck_is_admin);
                 }
-            }else{
+            } else {
                 $cleck_is_admin = 1;
                 $get_project_data['client_review_data'] = $this->clients_model->fetchClient_review_data($cleck_is_admin);
             }
             $filter = [
                 'adviser' => '',
                 'type' => '',
-                'client_review_month'   => '',
+                'client_review_month' => '',
             ];
             $this->session->set_userdata($filter);
-        }
-        else{
-            $get_project_data['adviser']            = $this->projects_model->fetchadvisordata();
-            $get_project_data['type']            = $this->clients_model->fetchtype();
-            $get_project_data['review_month']       = $this->clients_model->review_month();
+        } else {
+            $get_project_data['adviser'] = $this->projects_model->fetchadvisordata();
+            $get_project_data['type'] = $this->clients_model->fetchtype();
+            $get_project_data['review_month'] = $this->clients_model->review_month();
             $filter = [
                 'adviser' => $this->input->post('adviser'),
                 'type' => $this->input->post('type'),
-                'client_review_month'   => $this->input->post('client_review_month'),
+                'client_review_month' => $this->input->post('client_review_month'),
             ];
             $this->session->set_userdata($filter);
-            if(!is_admin()) {
+            if (!is_admin()) {
                 $cleck_is_admin = 0;
-                $get_project_data['client_review_data'] = $this->clients_model->fetchClient_filter_review_data($filter , $cleck_is_admin);
+                $get_project_data['client_review_data'] = $this->clients_model->fetchClient_filter_review_data($filter, $cleck_is_admin);
             }
             if (!has_permission('customers', '', 'view')) {
                 if (!is_customer_admin($id)) {
                     $cleck_is_admin = 0;
-                    $get_project_data['client_review_data'] = $this->clients_model->fetchClient_filter_review_data($filter , $cleck_is_admin);
+                    $get_project_data['client_review_data'] = $this->clients_model->fetchClient_filter_review_data($filter, $cleck_is_admin);
                 }
-            }else{
+            } else {
                 $cleck_is_admin = 1;
-                $get_project_data['client_review_data'] = $this->clients_model->fetchClient_filter_review_data($filter,$cleck_is_admin);
+                $get_project_data['client_review_data'] = $this->clients_model->fetchClient_filter_review_data($filter, $cleck_is_admin);
             }
         }
         $this->load->view('admin/clients/modals/client_review_report', $get_project_data);
     }
 
-    public function files_archive(){
+    public function files_archive()
+    {
         $this->load->model('policy_model');
-        $data['companey']           = $this->policy_model->fetchCompaney();
+        $data['companey'] = $this->policy_model->fetchCompaney();
         $data['fetch_ArchiveFiles'] = $this->clients_model->fetchArchiveFiles($data);
-        $this->load->view('admin/clients/modals/files_archive',$data);
+        $this->load->view('admin/clients/modals/files_archive', $data);
     }
-    public function save_files_archive(){
+    public function save_files_archive()
+    {
         $staff_id = get_staff_user_id();
         $archive_id = $this->input->post('archive_name');
-        if($archive_id == ''){
+        if ($archive_id == '') {
             $data = [
-                'customer'   => $this->input->post('customer'),
+                'customer' => $this->input->post('customer'),
                 'hyper_link' => $this->input->post('hyper_link'),
-                'staff_id'   => $staff_id,
+                'staff_id' => $staff_id,
             ];
             $saveArchiveFiles = $this->clients_model->saveArchiveFiles($data);
-        } else{
+        } else {
             $data = [
-                'customer'   => $this->input->post('customer'),
+                'customer' => $this->input->post('customer'),
                 'hyper_link' => $this->input->post('hyper_link'),
-                'staff_id'   => $staff_id,
+                'staff_id' => $staff_id,
             ];
             $updateArchiveFiles = $this->clients_model->updateArchiveFiles($archive_id, $data);
         }
         redirect(admin_url('Clients/files_archive'));
     }
-    public function delete_archive_file(){
+    public function delete_archive_file()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->clients_model->deleteArchive_file($data , $id);
+        $this->clients_model->deleteArchive_file($data, $id);
         redirect(admin_url('Clients/files_archive'));
     }
-    public function edit_archive_file(){
-        $edit_archive_id       = $this->input->post('edit_archive_id');
+    public function edit_archive_file()
+    {
+        $edit_archive_id = $this->input->post('edit_archive_id');
         $fetch_edit_archive_id = $this->clients_model->edit_archive_file($edit_archive_id);
         echo json_encode($fetch_edit_archive_id);
     }
-    public function update_dob(){
+    public function update_dob()
+    {
         $dateOfBirth = $this->clients_model->date_of_birth();
     }
 
     // public function client_dashboard()
     // {
-        
+
 
     //     $OpenClientDashboard = $this->input->post('OpenClientdashboard');
     //     $this->session->set_userdata('sessionDataOptionValue', $OpenClientDashboard);
@@ -1886,15 +1911,16 @@ if (!empty($review_month)) {
     //         {
     //             $get_project_data['ageProfile']        = $this->clients_model->ageProfile($cleck_is_admin);
     //         }
-           
+
     //     }
 
     //     $this->load->view('admin/clients/client_dashboard_widgets/client_dashboard', $get_project_data);
 
     // }
 
-    public function to_update_id(){
-       $update_data_ids = $this->clients_model->update_data_ids();
+    public function to_update_id()
+    {
+        $update_data_ids = $this->clients_model->update_data_ids();
     }
 
     #inter_id_dynamic_by_name
@@ -1908,22 +1934,23 @@ if (!empty($review_month)) {
     //         $update_data_id = $this->clients_model->update_data_id($status_type,$id);
     //     }
     // }
-    public function insert_record(){
+    public function insert_record()
+    {
         $get_data = $this->clients_model->get_data();
-        foreach($get_data as $get_datas){
-            $providername =  $get_datas['providername'];
-            $id =  $get_datas['id'];
-            $update_data_id = $this->clients_model->update_data_id($providername,$id);
+        foreach ($get_data as $get_datas) {
+            $providername = $get_datas['providername'];
+            $id = $get_datas['id'];
+            $update_data_id = $this->clients_model->update_data_id($providername, $id);
         }
     }
 
 
 
-    
-// public function provider_apis()
+
+    // public function provider_apis()
 // {
-   
-//     if(!is_admin())
+
+    //     if(!is_admin())
 //     {
 //         $cleck_is_admin = 0;
 //         $get_project_data['provider_summary']  = $this->clients_model->provider_summary_data($cleck_is_admin);
@@ -1940,192 +1967,174 @@ if (!empty($review_month)) {
 //     {
 //         $cleck_is_admin = 1;
 //         $get_project_data['provider_summary']  = $this->clients_model->provider_summary_data($cleck_is_admin);
-      
-//     }
+
+    //     }
 //     $this->load->view('admin/clients/client_dashboard_widgets/provider_apis', $get_project_data);
 //     // $this->load->view('admin/clients/client_dashboard_widgets/provider_apis', $get_project_data);
 // }
 
 
-public function provider_apis()
-{
-    // Default value for non-admin users
-    // if(!is_admin())
-    // {
-    //      $cleck_is_admin = 0;
-    //     $get_project_data['provider_summary']  = $this->clients_model->provider_summary_data($cleck_is_admin);
-    // }
-    // elseif (!has_permission('customers', '', 'view'))
-    // {
-    //     if (!is_customer_admin($id))
-    //     {
-    //          $cleck_is_admin = 0;
-    //         $get_project_data['provider_summary']  = $this->clients_model->provider_summary_data($cleck_is_admin);
-    //     }
-    // }
-    // else
-    // {
-    //     $cleck_is_admin = 1; // Set to 1 for admin users
-    //     $get_project_data['provider_summary']  = $this->clients_model->provider_summary_data($cleck_is_admin);
-    // }
-    $this->load->view('admin/clients/client_dashboard_widgets/provider_apis');
-}
-function provider_apis_data() {
-    if(!is_admin())
-   {
-       $cleck_is_admin = 0;
-       $get_project_data['provider_summary']  = $this->clients_model->provider_summary_data($cleck_is_admin);
-   }
-   if (!has_permission('customers', '', 'view'))
-   {
-       if (!is_customer_admin($id))
-       {
-           $cleck_is_admin = 0;
-           $get_project_data['provider_summary']  = $this->clients_model->provider_summary_data($cleck_is_admin);
-       }
-   }
-   else
-   {
-       $cleck_is_admin = 1;
-       $get_project_data['provider_summary']  = $this->clients_model->provider_summary_data($cleck_is_admin);
-   }
-
-   echo json_encode($get_project_data);
-}
-
-public function client_group_apis()
-{
-    // if(!is_admin())
-    // {
-    //     $cleck_is_admin = 0;
-    //     $get_project_data['client_group_api']  = $this->clients_model->client_group_api($cleck_is_admin);
-    // }
-    // if (!has_permission('customers', '', 'view'))
-    // {
-    //     if (!is_customer_admin($id))
-    //     {
-    //         $cleck_is_admin = 0;
-    //         $get_project_data['client_group_api']  = $this->clients_model->client_group_api($cleck_is_admin);
-    //     }
-    // }
-    // else
-    // {
-    //     $cleck_is_admin = 1;
-    //     $get_project_data['client_group_api']  = $this->clients_model->client_group_api($cleck_is_admin);
-    // }
-    $this->load->view('admin/clients/client_dashboard_widgets/client_group_apis');
-}
-public function client_group_apis_data() {
-    if(!is_admin())
+    public function provider_apis()
     {
-        $cleck_is_admin = 0;
-        $get_project_data['client_group_api']  = $this->clients_model->client_group_api($cleck_is_admin);
+        // Default value for non-admin users
+        // if(!is_admin())
+        // {
+        //      $cleck_is_admin = 0;
+        //     $get_project_data['provider_summary']  = $this->clients_model->provider_summary_data($cleck_is_admin);
+        // }
+        // elseif (!has_permission('customers', '', 'view'))
+        // {
+        //     if (!is_customer_admin($id))
+        //     {
+        //          $cleck_is_admin = 0;
+        //         $get_project_data['provider_summary']  = $this->clients_model->provider_summary_data($cleck_is_admin);
+        //     }
+        // }
+        // else
+        // {
+        //     $cleck_is_admin = 1; // Set to 1 for admin users
+        //     $get_project_data['provider_summary']  = $this->clients_model->provider_summary_data($cleck_is_admin);
+        // }
+        $this->load->view('admin/clients/client_dashboard_widgets/provider_apis');
     }
-    if (!has_permission('customers', '', 'view'))
+    function provider_apis_data()
     {
-        if (!is_customer_admin($id))
-        {
+        if (!is_admin()) {
             $cleck_is_admin = 0;
-            $get_project_data['client_group_api']  = $this->clients_model->client_group_api($cleck_is_admin);
+            $get_project_data['provider_summary'] = $this->clients_model->provider_summary_data($cleck_is_admin);
         }
-    }
-    else
-    {
-        $cleck_is_admin = 1;
-        $get_project_data['client_group_api']  = $this->clients_model->client_group_api($cleck_is_admin);
-    }
-   echo json_encode($get_project_data);
-    
-}
+        if (!has_permission('customers', '', 'view')) {
+            if (!is_customer_admin($id)) {
+                $cleck_is_admin = 0;
+                $get_project_data['provider_summary'] = $this->clients_model->provider_summary_data($cleck_is_admin);
+            }
+        } else {
+            $cleck_is_admin = 1;
+            $get_project_data['provider_summary'] = $this->clients_model->provider_summary_data($cleck_is_admin);
+        }
 
-public function client_group_types()
-{
-    // if(!is_admin())
-    // {
-    //     $cleck_is_admin = 0;
-    //     $get_project_data['client_group_type'] = $this->clients_model->clientGroupType($cleck_is_admin);
-    // }
-    // if (!has_permission('customers', '', 'view'))
-    // {
-    //     if (!is_customer_admin($id))
-    //     {
-    //         $cleck_is_admin = 0;
-    //         $get_project_data['client_group_type'] = $this->clients_model->clientGroupType($cleck_is_admin);
-    //     }
-    // }
-    // else
-    // {
-    //     $cleck_is_admin = 1;
-    //     $get_project_data['client_group_type'] = $this->clients_model->clientGroupType($cleck_is_admin);
-    // }
-    $this->load->view('admin/clients/client_dashboard_widgets/client_group_types');
-}
-public function client_group_types_data()
-{
-    if(!is_admin())
-    {
-        $cleck_is_admin = 0;
-        $get_project_data['client_group_type'] = $this->clients_model->clientGroupType($cleck_is_admin);
+        echo json_encode($get_project_data);
     }
-    if (!has_permission('customers', '', 'view'))
+
+    public function client_group_apis()
     {
-        if (!is_customer_admin($id))
-        {
+        // if(!is_admin())
+        // {
+        //     $cleck_is_admin = 0;
+        //     $get_project_data['client_group_api']  = $this->clients_model->client_group_api($cleck_is_admin);
+        // }
+        // if (!has_permission('customers', '', 'view'))
+        // {
+        //     if (!is_customer_admin($id))
+        //     {
+        //         $cleck_is_admin = 0;
+        //         $get_project_data['client_group_api']  = $this->clients_model->client_group_api($cleck_is_admin);
+        //     }
+        // }
+        // else
+        // {
+        //     $cleck_is_admin = 1;
+        //     $get_project_data['client_group_api']  = $this->clients_model->client_group_api($cleck_is_admin);
+        // }
+        $this->load->view('admin/clients/client_dashboard_widgets/client_group_apis');
+    }
+    public function client_group_apis_data()
+    {
+        if (!is_admin()) {
+            $cleck_is_admin = 0;
+            $get_project_data['client_group_api'] = $this->clients_model->client_group_api($cleck_is_admin);
+        }
+        if (!has_permission('customers', '', 'view')) {
+            if (!is_customer_admin($id)) {
+                $cleck_is_admin = 0;
+                $get_project_data['client_group_api'] = $this->clients_model->client_group_api($cleck_is_admin);
+            }
+        } else {
+            $cleck_is_admin = 1;
+            $get_project_data['client_group_api'] = $this->clients_model->client_group_api($cleck_is_admin);
+        }
+        echo json_encode($get_project_data);
+
+    }
+
+    public function client_group_types()
+    {
+        // if(!is_admin())
+        // {
+        //     $cleck_is_admin = 0;
+        //     $get_project_data['client_group_type'] = $this->clients_model->clientGroupType($cleck_is_admin);
+        // }
+        // if (!has_permission('customers', '', 'view'))
+        // {
+        //     if (!is_customer_admin($id))
+        //     {
+        //         $cleck_is_admin = 0;
+        //         $get_project_data['client_group_type'] = $this->clients_model->clientGroupType($cleck_is_admin);
+        //     }
+        // }
+        // else
+        // {
+        //     $cleck_is_admin = 1;
+        //     $get_project_data['client_group_type'] = $this->clients_model->clientGroupType($cleck_is_admin);
+        // }
+        $this->load->view('admin/clients/client_dashboard_widgets/client_group_types');
+    }
+    public function client_group_types_data()
+    {
+        if (!is_admin()) {
             $cleck_is_admin = 0;
             $get_project_data['client_group_type'] = $this->clients_model->clientGroupType($cleck_is_admin);
         }
-    }
-    else
-    {
-        $cleck_is_admin = 1;
-        $get_project_data['client_group_type'] = $this->clients_model->clientGroupType($cleck_is_admin);
-    }
-    echo json_encode($get_project_data);
-}
-public function age_profiles()
-{
-    // if(!is_admin())
-    // {
-    //     $cleck_is_admin = 0;
-    //     $get_project_data['ageProfile']        = $this->clients_model->ageProfile($cleck_is_admin);
-    // }
-    // if (!has_permission('customers', '', 'view'))
-    // {
-    //     if (!is_customer_admin($id))
-    //     {
-    //         $cleck_is_admin = 0;
-    //          $get_project_data['ageProfile']        = $this->clients_model->ageProfile($cleck_is_admin);
-    //     }
-    // }
-    // else
-    // {
-    //     $cleck_is_admin = 1;
-    //     $get_project_data['ageProfile']        = $this->clients_model->ageProfile($cleck_is_admin);
-    // }
-    $this->load->view('admin/clients/client_dashboard_widgets/age_profiles');
-}
-public function age_profiles_data()
-{
-    if(!is_admin())
-    {
-        $cleck_is_admin = 0;
-        $get_project_data['ageProfile']        = $this->clients_model->ageProfile($cleck_is_admin);
-    }
-    if (!has_permission('customers', '', 'view'))
-    {
-        if (!is_customer_admin($id))
-        {
-            $cleck_is_admin = 0;
-             $get_project_data['ageProfile']        = $this->clients_model->ageProfile($cleck_is_admin);
+        if (!has_permission('customers', '', 'view')) {
+            if (!is_customer_admin($id)) {
+                $cleck_is_admin = 0;
+                $get_project_data['client_group_type'] = $this->clients_model->clientGroupType($cleck_is_admin);
+            }
+        } else {
+            $cleck_is_admin = 1;
+            $get_project_data['client_group_type'] = $this->clients_model->clientGroupType($cleck_is_admin);
         }
+        echo json_encode($get_project_data);
     }
-    else
+    public function age_profiles()
     {
-        $cleck_is_admin = 1;
-        $get_project_data['ageProfile']        = $this->clients_model->ageProfile($cleck_is_admin);
+        // if(!is_admin())
+        // {
+        //     $cleck_is_admin = 0;
+        //     $get_project_data['ageProfile']        = $this->clients_model->ageProfile($cleck_is_admin);
+        // }
+        // if (!has_permission('customers', '', 'view'))
+        // {
+        //     if (!is_customer_admin($id))
+        //     {
+        //         $cleck_is_admin = 0;
+        //          $get_project_data['ageProfile']        = $this->clients_model->ageProfile($cleck_is_admin);
+        //     }
+        // }
+        // else
+        // {
+        //     $cleck_is_admin = 1;
+        //     $get_project_data['ageProfile']        = $this->clients_model->ageProfile($cleck_is_admin);
+        // }
+        $this->load->view('admin/clients/client_dashboard_widgets/age_profiles');
     }
-    echo json_encode($get_project_data);
-}
+    public function age_profiles_data()
+    {
+        if (!is_admin()) {
+            $cleck_is_admin = 0;
+            $get_project_data['ageProfile'] = $this->clients_model->ageProfile($cleck_is_admin);
+        }
+        if (!has_permission('customers', '', 'view')) {
+            if (!is_customer_admin($id)) {
+                $cleck_is_admin = 0;
+                $get_project_data['ageProfile'] = $this->clients_model->ageProfile($cleck_is_admin);
+            }
+        } else {
+            $cleck_is_admin = 1;
+            $get_project_data['ageProfile'] = $this->clients_model->ageProfile($cleck_is_admin);
+        }
+        echo json_encode($get_project_data);
+    }
 
 
 }

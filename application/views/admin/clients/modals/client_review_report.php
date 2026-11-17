@@ -18,7 +18,13 @@
                                         id="advis" name="adviser[]" multiple>
                                         <?php foreach($adviser as $row){ ?>
                                         <option value="<?php echo $row['staffid']?>"
-                                            <?php if(in_array($row['staffid'], $this->session->userdata('adviser'))){ echo 'selected';  }?>> <?php echo $row['firstname'].' '.$row['lastname']?>
+                                            <?php if (in_array($row['staffid'], (array) $this->session->userdata('adviser'))) {
+                                                echo 'selected';
+                                            } ?>> <?php echo $row['firstname'].' '.$row['lastname']?>
+
+
+                                            
+
                                         </option>
                                         <?php  }  ?>
                                     </select>
@@ -41,7 +47,10 @@
                                         data-live-search="true" id="type" name="type[]" multiple>
                                         <?php foreach($type as $row){ ?>
                                         <option value="<?php echo $row['id']?>"
-                                            <?php if(in_array($row['id'], $this->session->userdata('type'))){ echo 'selected';  }?>>
+                                            <?php if (in_array($row['id'], (array) $this->session->userdata('type'))) {
+                                                echo 'selected';
+                                            } ?>
+>
                                             <?php echo $row['client_type']?>
                                         </option>
                                         <?php  }  ?>

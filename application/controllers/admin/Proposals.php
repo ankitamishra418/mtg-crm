@@ -834,7 +834,7 @@ class Proposals extends AdminController
                     'is_deleted' => 1,
                 ];
                 $result = $this->proposals_model->save_productType($id , $data);
-                if($result==yes){
+                if($result== 'yes'){
                     set_alert('success', 'Deleted Successfully');
                 }
                 redirect(admin_url('proposals/productType'));
@@ -859,7 +859,7 @@ class Proposals extends AdminController
                     'is_deleted' => 1,
                 ];
                 $result = $this->proposals_model->save_complaintAgainst($id , $data);
-                if($result==yes){
+                if($result== 'yes'){
                     set_alert('success', 'Deleted Successfully');
                 }
                 redirect(admin_url('proposals/complaintAgainst'));
@@ -885,7 +885,7 @@ class Proposals extends AdminController
                     'is_deleted' => 1,
                 ];
                 $result = $this->proposals_model->save_medium($id , $data);
-                if($result==yes){
+                if($result== 'yes'){
                     set_alert('success', 'Deleted Successfully');
                 }
                 redirect(admin_url('proposals/medium'));
@@ -910,7 +910,7 @@ class Proposals extends AdminController
                     'is_deleted' => 1,
                 ];
                 $result = $this->proposals_model->save_status($id , $data);
-                if($result==yes){
+                if($result== 'yes'){
                     set_alert('success', 'Deleted Successfully');
                 }
                 redirect(admin_url('proposals/status'));

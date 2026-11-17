@@ -163,7 +163,11 @@ if (is_admin() || has_permission('internal_profiles', '', 'view')) :
                         foreach($customer_advisor as $ab){
                             array_push($selected,$ab['staff_id']);
                         }
-                        echo render_select('customer_advisor[]',$staff,array('staffid',array('firstname','lastname')),'Adviser',$selected,array(),'','',false); ?>
+                        // echo render_select('customer_advisor[]',$staff,array('staffid',array('firstname','lastname')),'Adviser',$selected,array(),'','',false);
+
+                        echo render_select('customer_advisor[]', $staff, array('staffid', array('firstname', 'lastname')), 'Adviser', $selected, array(), array(), '', false);
+
+                        ?>
 
                         <!-- <div class="form-group contact-gender-option">
                             <label for="client_type"><?php echo _l('document_client_type'); ?></label>

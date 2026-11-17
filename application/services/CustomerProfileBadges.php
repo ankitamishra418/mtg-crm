@@ -15,8 +15,8 @@ class CustomerProfileBadges
     public function __construct($customerId)
     {
         $this->customerId = $customerId;
-        $this->staffId    = get_staff_user_id();
-        $this->CI         = &get_instance();
+        $this->staffId = get_staff_user_id();
+        $this->CI = &get_instance();
     }
 
     public function getBadge($feature)
@@ -28,15 +28,15 @@ class CustomerProfileBadges
                 $badge = [
                     'value' => $count,
                     'color' => '',
-                    'type'  => 'bg-default',
+                    'type' => 'bg-default',
                 ];
             }
         }
 
         $hook = hooks()->apply_filters('customers_profile_tab_badge', [
-            'feature'     => $feature,
+            'feature' => $feature,
             'customer_id' => $this->customerId,
-            'badge'       => $badge,
+            'badge' => $badge,
         ]);
 
         return $hook['badge'];
@@ -167,7 +167,7 @@ class CustomerProfileBadges
     public function tickets()
     {
         if (!is_admin()) {
-            $departments_ids      = [];
+            $departments_ids = [];
             if (get_option('staff_access_only_assigned_departments') == 1) {
                 $this->CI->load->model('departments_model');
                 $staff_deparments_ids = $this->CI->departments_model->get_staff_departments($this->staffId, true);
@@ -253,10 +253,16 @@ class CustomerProfileBadges
 
     public function policies()
     {
+        // $CI = get_instance();
+        // $CI->load->model('Policy_model');
+        // $data = $CI->Policy_model->client_policy($this->customerId);
+        // $policycount = count($data);
+        // return $policycount;
+
         $CI = get_instance();
         $CI->load->model('Policy_model');
         $data = $CI->Policy_model->client_policy($this->customerId);
-        $policycount = count($data);
+        $policycount = is_countable($data) ? count($data) : 0;
         return $policycount;
     }
 }

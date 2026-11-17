@@ -120,6 +120,8 @@ class Payments extends AdminController
         }
 
         $data['title'] = _l('payment_receipt') . ' - ' . format_invoice_number($data['payment']->invoiceid);
+        $this->app_scripts->add('circle-progress-js', 'assets/plugins/jquery-circle-progress/circle-progress.min.js');
+
         $this->load->view('admin/payments/payment', $data);
     }
 

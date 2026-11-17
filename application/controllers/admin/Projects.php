@@ -21,7 +21,7 @@ class Projects extends AdminController
 
         close_setup_menu();
         $data['statuses'] = $this->projects_model->get_project_statuses();
-        $data['title']    = _l('projects');
+        $data['title'] = _l('projects');
         $data['projecttemplates'] = $this->projects_model->fetchprojecttemplate();
         $this->load->view('admin/projects/manage', $data);
     }
@@ -47,7 +47,7 @@ class Projects extends AdminController
         $data['payment_modes'] = $this->payment_modes_model->get('', [], true);
         $this->app->get_table_data('project_expenses', [
             'project_id' => $id,
-            'data'       => $data,
+            'data' => $data,
         ]);
     }
 
@@ -59,7 +59,7 @@ class Projects extends AdminController
             if ($id) {
                 set_alert('success', _l('added_successfully', _l('expense')));
                 echo json_encode([
-                    'url'       => admin_url('projects/view/' . $this->input->post('project_id') . '/?group=project_expenses'),
+                    'url' => admin_url('projects/view/' . $this->input->post('project_id') . '/?group=project_expenses'),
                     'expenseid' => $id,
                 ]);
                 die;
@@ -72,13 +72,13 @@ class Projects extends AdminController
     }
 
     public function project($id = '')
-    { 
+    {
 
         if (!staff_can('edit', 'projects') && !staff_can('create', 'projects')) {
             access_denied('Projects');
         }
         if ($this->input->post()) {
-            $data     = $this->input->post();
+            $data = $this->input->post();
 
             // if(isset($data['policy_number'])){
             //    $policyNumber = $this->projects_model->getAlldata_Rele_to_policyNo($data['policy_number']);
@@ -90,10 +90,10 @@ class Projects extends AdminController
             //    $data['policy_owner'] = $single_array['policy_owner'];
             // }
 
-            $data['created_staff_id']        = get_staff_user_id();
-            
+            $data['created_staff_id'] = get_staff_user_id();
+
             $data['description'] = html_purify($this->input->post('description', false));
-          
+
             if ($id == '') {
                 if (!staff_can('create', 'projects')) {
                     access_denied('Projects');
@@ -120,7 +120,7 @@ class Projects extends AdminController
             }
         }
         if ($id == '') {
-            $title                            = _l('add_new', _l('project_lowercase'));
+            $title = _l('add_new', _l('project_lowercase'));
             $data['auto_select_billing_type'] = $this->projects_model->get_most_used_billing_type();
 
             if ($this->input->get('via_estimate_id')) {
@@ -128,13 +128,13 @@ class Projects extends AdminController
                 $data['estimate'] = $this->estimates_model->get($this->input->get('via_estimate_id'));
             }
         } else {
-            $data['project']                               = $this->projects_model->get($id);
+            $data['project'] = $this->projects_model->get($id);
 
-            $data['project']->settings->available_features = unserialize($data['project']->settings->available_features);   
+            $data['project']->settings->available_features = unserialize($data['project']->settings->available_features);
 
             $data['project_members'] = $this->projects_model->get_project_members($id);
-            $title                   = _l('edit', _l('project_lowercase'));
-           
+            $title = _l('edit', _l('project_lowercase'));
+
         }
         if ($this->input->get('customer_id')) {
             $data['customer_id'] = $this->input->get('customer_id');
@@ -143,29 +143,29 @@ class Projects extends AdminController
         $data['last_project_settings'] = $this->projects_model->get_last_project_settings();
 
         if (count($data['last_project_settings'])) {
-            $key                                          = array_search('available_features', array_column($data['last_project_settings'], 'name'));
+            $key = array_search('available_features', array_column($data['last_project_settings'], 'name'));
             $data['last_project_settings'][$key]['value'] = unserialize($data['last_project_settings'][$key]['value']);
         }
         $data['settings'] = $this->projects_model->get_settings();
         $data['statuses'] = $this->projects_model->get_project_statuses();
-        $data['staff']    = $this->staff_model->get('', ['active' => 1]);
+        $data['staff'] = $this->staff_model->get('', ['active' => 1]);
         $data['title'] = $title;
-        $data['providers']  = $this->projects_model->fetch_providers();
+        $data['providers'] = $this->projects_model->fetch_providers();
         $data['projecttype'] = $this->projects_model->fetchprojecttype();
         $this->load->view('admin/projects/project', $data);
     }
 
     public function gantt()
     {
-        
+
         $data['title'] = _l('project_gant');
 
         $selected_statuses = [];
-        $selectedMember    = null;
-        $data['statuses']  = $this->projects_model->get_project_statuses();
+        $selectedMember = null;
+        $data['statuses'] = $this->projects_model->get_project_statuses();
 
         $appliedStatuses = $this->input->get('status');
-        $appliedMember   = $this->input->get('member');
+        $appliedMember = $this->input->get('member');
 
         $allStatusesIds = [];
         foreach ($data['statuses'] as $status) {
@@ -193,8 +193,8 @@ class Projects extends AdminController
         $data['selected_statuses'] = $selected_statuses;
 
         if (staff_can('view', 'projects')) {
-            $selectedMember          = $appliedMember;
-            $data['selectedMember']  = $selectedMember;
+            $selectedMember = $appliedMember;
+            $data['selectedMember'] = $selectedMember;
             $data['project_members'] = $this->projects_model->get_distinct_projects_members();
         }
 
@@ -202,7 +202,7 @@ class Projects extends AdminController
             'status' => $selected_statuses,
             'member' => $selectedMember,
         ]))->get();
-        
+
 
         $this->load->view('admin/projects/gantt', $data);
     }
@@ -210,7 +210,7 @@ class Projects extends AdminController
     public function view($id)
     {
         // if($this->input->post()){
-       
+
         // print_r($data);
         // exit;
         // }
@@ -224,7 +224,7 @@ class Projects extends AdminController
                 blank_page(_l('project_not_found'));
             }
             $project->settings->available_features = unserialize($project->settings->available_features);
-            $data['statuses']                      = $this->projects_model->get_project_statuses();
+            $data['statuses'] = $this->projects_model->get_project_statuses();
             $group = !$this->input->get('group') ? 'project_overview' : $this->input->get('group');
             // Unable to load the requested file: admin/projects/project_tasks#.php - FIX
             if (strpos($group, '#') !== false) {
@@ -232,34 +232,34 @@ class Projects extends AdminController
             }
 
             $data['tabs'] = get_project_tabs_admin();
-            
-            $data['tab']  = $this->app_tabs->filter_tab($data['tabs'], $group);
+
+            $data['tab'] = $this->app_tabs->filter_tab($data['tabs'], $group);
 
             if (!$data['tab']) {
                 show_404();
             }
             $this->load->model('payment_modes_model');
 
-            $data['payment_modes']              = $this->payment_modes_model->get('', [], true);
-            $data['project']                    = $project;
-            $data['currency']                   = $this->projects_model->get_currency($id);
-            $data['project_total_logged_time']  = $this->projects_model->total_logged_time($id);
-            $data['staff']                      = $this->staff_model->get('', ['active' => 1]);
-            $percent                            = $this->projects_model->calc_progress($id);
-            $data['bodyclass']                  = '';
-            $data['provider']                   = $this->projects_model->fetch_provider($id);
-            $data['policy_number']              = $this->projects_model->policy_number($id);
-            $data['project_type']               = $this->projects_model->project_type($id);
-            $data['adviser']                    = $this->projects_model->getAdviser($project->clientid);
+            $data['payment_modes'] = $this->payment_modes_model->get('', [], true);
+            $data['project'] = $project;
+            $data['currency'] = $this->projects_model->get_currency($id);
+            $data['project_total_logged_time'] = $this->projects_model->total_logged_time($id);
+            $data['staff'] = $this->staff_model->get('', ['active' => 1]);
+            $percent = $this->projects_model->calc_progress($id);
+            $data['bodyclass'] = '';
+            $data['provider'] = $this->projects_model->fetch_provider($id);
+            $data['policy_number'] = $this->projects_model->policy_number($id);
+            $data['project_type'] = $this->projects_model->project_type($id);
+            $data['adviser'] = $this->projects_model->getAdviser($project->clientid);
             // print_r($data['adviser']);
             // exit;
-            $single_array         = $this->projects_model->policydata($id);
-            $data['policydata']= array_merge(...$single_array);
+            $single_array = $this->projects_model->policydata($id);
+            $data['policydata'] = array_merge(...$single_array);
 
 
             // $data['policy_start_date']          = $this->projects_model->policy_start_date($id);
 
-            
+
 
             // echo '<pre>';
             // print_r($data['policydata']);
@@ -268,7 +268,7 @@ class Projects extends AdminController
             // $data['totalPremium']               = $this->projects_model->totalPremium($id);
             // $data['lifeAssured']                = $this->projects_model->lifeAssured($id);
             // $data['policyOwner']                = $this->projects_model->policyOwner($id);
-          
+
             $this->app_scripts->add(
                 'projects-js',
                 base_url($this->app_scripts->core_file('assets/js', 'projects.js')) . '?v=' . $this->app_scripts->core_version(),
@@ -277,28 +277,28 @@ class Projects extends AdminController
             );
 
             if ($group == 'claims') {
-                $data['projectid']              = $id;
-                $data['contacts']               = $this->projects_model->getContact($project->clientid);
-                $data['benefits']               = $this->projects_model->getBenefit();
-                $data['outcome']                = $this->projects_model->fetch_outcome();
-                $data['conditionalgroup']       = $this->projects_model->fetch_conditionalgroup();
-                $data['reasonNoclaim']          = $this->projects_model->fetch_reasonNoclaim();
-                $data['claimDetails']           = $this->projects_model->fetch_claim_saprately($id);
-                $data['claimPaymentDetails']    = $this->projects_model->fetch_claim_payment($id);
+                $data['projectid'] = $id;
+                $data['contacts'] = $this->projects_model->getContact($project->clientid);
+                $data['benefits'] = $this->projects_model->getBenefit();
+                $data['outcome'] = $this->projects_model->fetch_outcome();
+                $data['conditionalgroup'] = $this->projects_model->fetch_conditionalgroup();
+                $data['reasonNoclaim'] = $this->projects_model->fetch_reasonNoclaim();
+                $data['claimDetails'] = $this->projects_model->fetch_claim_saprately($id);
+                $data['claimPaymentDetails'] = $this->projects_model->fetch_claim_payment($id);
             }
 
             if ($group == 'underwriting') {
-                $data['projectid']                  = $id;
-                $data['Notissuepolicy']             = $this->projects_model->fetch_Notissuepolicy();
-                $data['commisionsplit']             = $this->projects_model->fetch_commisionsplit();
-                $data['finalstatus']                = $this->projects_model->fetch_finalstatus();
-                $data['fetchUnderwrittingStatus']   = $this->projects_model->fetchunderwrittingStatus($id);
-                $data['underwritingDetails']        = $this->projects_model->fetchUnderwriting($id);
-                $data['client_resp_project']        = $this->projects_model->client_resp_project($project->clientid);
-                $data['advisers']                    = $this->projects_model->fetchProviders();
-                $data['benefits']                    = $this->projects_model->fetchBenefits();
-                $data['category']                    = $this->projects_model->fetchBenefitCategory();
-                $benfitBeingReplace                 = $this->projects_model->fetchBenefitBeingReplace($id);
+                $data['projectid'] = $id;
+                $data['Notissuepolicy'] = $this->projects_model->fetch_Notissuepolicy();
+                $data['commisionsplit'] = $this->projects_model->fetch_commisionsplit();
+                $data['finalstatus'] = $this->projects_model->fetch_finalstatus();
+                $data['fetchUnderwrittingStatus'] = $this->projects_model->fetchunderwrittingStatus($id);
+                $data['underwritingDetails'] = $this->projects_model->fetchUnderwriting($id);
+                $data['client_resp_project'] = $this->projects_model->client_resp_project($project->clientid);
+                $data['advisers'] = $this->projects_model->fetchProviders();
+                $data['benefits'] = $this->projects_model->fetchBenefits();
+                $data['category'] = $this->projects_model->fetchBenefitCategory();
+                $benfitBeingReplace = $this->projects_model->fetchBenefitBeingReplace($id);
                 $data['benefitBeingReplace']['type'] = $benfitBeingReplace[0]['type'];
                 $data['benefitBeingReplace']['replacement_type'] = $benfitBeingReplace[0]['replacement_type'];
                 $data['benefitBeingReplace']['provider_id'] = unserialize($benfitBeingReplace[0]['provider_id']);
@@ -319,19 +319,19 @@ class Projects extends AdminController
                 $data['benefitBeingReplace']['count'] = $maxCount;
             }
             if ($group == 'cancellations') {
-                $data['projectid']                  = $id;
-                $data['source']                     = $this->projects_model->fetch_source();
-                $data['cancellationOutcome']        = $this->projects_model->fetch_cancellationOutcome();
-                $data['replacebusiness']            = $this->projects_model->fetch_replacebusiness();
-                $data['replaceReason']              = $this->projects_model->fetch_replaceReason();
-                $data['PolicyCommission']           = $this->projects_model->fetch_newPolicyCommission();
-                $data['ReasonforCancellation']      = $this->projects_model->fetch_ReasonforCancellation();
-               // custom for claim_identified crud start
-                $data['claimIdentified']        = $this->projects_model->fetch_ClaimIdentified();
-                 // custom for claim_identified crud end
-                $data['cancellationDetails']        = $this->projects_model->fetchCancellations($id);
-                $data['fetchCancellationStatus']    = $this->projects_model->fetchCancellationStatus();
-                $data['benefitChange']              = $this->projects_model->fetchBenefitChange();
+                $data['projectid'] = $id;
+                $data['source'] = $this->projects_model->fetch_source();
+                $data['cancellationOutcome'] = $this->projects_model->fetch_cancellationOutcome();
+                $data['replacebusiness'] = $this->projects_model->fetch_replacebusiness();
+                $data['replaceReason'] = $this->projects_model->fetch_replaceReason();
+                $data['PolicyCommission'] = $this->projects_model->fetch_newPolicyCommission();
+                $data['ReasonforCancellation'] = $this->projects_model->fetch_ReasonforCancellation();
+                // custom for claim_identified crud start
+                $data['claimIdentified'] = $this->projects_model->fetch_ClaimIdentified();
+                // custom for claim_identified crud end
+                $data['cancellationDetails'] = $this->projects_model->fetchCancellations($id);
+                $data['fetchCancellationStatus'] = $this->projects_model->fetchCancellationStatus();
+                $data['benefitChange'] = $this->projects_model->fetchBenefitChange();
 
             }
 
@@ -342,107 +342,107 @@ class Projects extends AdminController
                 $data['save_Arrears'] = $this->projects_model->fetchsave_Arrears($id);
             }
 
-            if ($group == 'group_compliances'){
+            if ($group == 'group_compliances') {
                 $filter = $this->input->get('filter'); // filter group_compliances  
-               $data['projectid'] = $id;
-               $adviser= $this->projects_model->getAdviser($project->clientid);
-               $progress = $project->progress;
-               $Workfelow_name= $project->name;
+                $data['projectid'] = $id;
+                $adviser = $this->projects_model->getAdviser($project->clientid);
+                $progress = $project->progress;
+                $Workfelow_name = $project->name;
                 // $stages = $this->projects_model->stages();
                 $stages = $this->projects_model->projects_stages($id);
-                  //$stages = [];
-                foreach($stages as $str_data){
-                        $complianceCategory =  $this->projects_model->fetchComplianceCategory($str_data['stage_id']);
-                        //print_r($complianceCategory); exit;
-                        foreach ($complianceCategory as $key => $value) {
-                            $files = $this->projects_model->fetchFilesBasedOnStageCategory($id, $str_data['stage_id'], $value['id']);
-                            if($files){
-                                // echo 'testing';
-                                // echo '<pre>';
-                                // print_r($complianceCategory);
-                            
-                                $combinedArray[] =[
-                                    'pid' => $id,
-                                    'str_id' => $str_data['stage_id'],
-                                    'adviser' =>$adviser,
-                                    'progress' =>$progress,
-                                    'workfelow_name'=> $Workfelow_name,
-                                    'stage' => $str_data['stage_name'],
-                                    'category'=> $value['compliance'],
-                                    // 'category'=> $files[0]['category'],
-                                    'file_id' => $files[0]['id'],
-                                    'file_name_org'=>$files[0]['original_file_name'],
-                                    'file_name'=>$files[0]['file_name'],
-                                    'file_description' =>$files[0]['description'],
-                                    'file_link' => $files[0]['filetype'],
-                                    'updated_date'=> $files[0]['dateadded'],
-                                    'uploaded_by'=> $files[0]['staff_name'],
-                                    'workflow_status' => '',
-                                    'categories_data' => $value['id']
-                                ];
-                             } else{
-                                $combinedArray[] =[
-                                    'pid' => $id,
-                                    'str_id' => $str_data['stage_id'],
-                                    'adviser' =>$adviser,
-                                    'progress' =>$progress,
-                                    'workfelow_name'=> $Workfelow_name,
-                                    'stage' => $str_data['stage_name'],
-                                    'category'=>  $value['compliance'],
-                                    'file_id'=> '',
-                                    'file_name'=>'',
-                                    'file_name_org'=>'',
-                                    // 'category'=> $files['category'],
-                                    'file_description' =>'',
-                                    'file_link' => '',
-                                    'updated_date'=> '',
-                                    'uploaded_by'=> '',
-                                    'workflow_status' => '',
-                                    'categories_data' => $value['id']
-                                ];
-                            }
-                        } 
-                        // exit;
-                        $i++;
-            } 
-            foreach($combinedArray as $val){
-                if ($val['file_id'] == ''){
-                    $combinedfilterArray[] =[
+                //$stages = [];
+                foreach ($stages as $str_data) {
+                    $complianceCategory = $this->projects_model->fetchComplianceCategory($str_data['stage_id']);
+                    //print_r($complianceCategory); exit;
+                    foreach ($complianceCategory as $key => $value) {
+                        $files = $this->projects_model->fetchFilesBasedOnStageCategory($id, $str_data['stage_id'], $value['id']);
+                        if ($files) {
+                            // echo 'testing';
+                            // echo '<pre>';
+                            // print_r($complianceCategory);
+
+                            $combinedArray[] = [
                                 'pid' => $id,
-                                'adviser' =>$val['adviser'],
-                                'progress' =>$val['progress'],
-                                'workfelow_name'=> $val['workfelow_name'],
-                                'stage' => $val['stage'],
-                                'category'=> $val['category'],
-                                'file_name_org'=>'',
-                                'file_name'=>'',
-                                'file_id'=>'',
-                                'file_description' =>'',
-                                'file_link' => '',
-                                'updated_date'=> '',
-                                'uploaded_by'=> '',
+                                'str_id' => $str_data['stage_id'],
+                                'adviser' => $adviser,
+                                'progress' => $progress,
+                                'workfelow_name' => $Workfelow_name,
+                                'stage' => $str_data['stage_name'],
+                                'category' => $value['compliance'],
+                                // 'category'=> $files[0]['category'],
+                                'file_id' => $files[0]['id'],
+                                'file_name_org' => $files[0]['original_file_name'],
+                                'file_name' => $files[0]['file_name'],
+                                'file_description' => $files[0]['description'],
+                                'file_link' => $files[0]['filetype'],
+                                'updated_date' => $files[0]['dateadded'],
+                                'uploaded_by' => $files[0]['staff_name'],
                                 'workflow_status' => '',
-                    ];
-                  }
+                                'categories_data' => $value['id']
+                            ];
+                        } else {
+                            $combinedArray[] = [
+                                'pid' => $id,
+                                'str_id' => $str_data['stage_id'],
+                                'adviser' => $adviser,
+                                'progress' => $progress,
+                                'workfelow_name' => $Workfelow_name,
+                                'stage' => $str_data['stage_name'],
+                                'category' => $value['compliance'],
+                                'file_id' => '',
+                                'file_name' => '',
+                                'file_name_org' => '',
+                                // 'category'=> $files['category'],
+                                'file_description' => '',
+                                'file_link' => '',
+                                'updated_date' => '',
+                                'uploaded_by' => '',
+                                'workflow_status' => '',
+                                'categories_data' => $value['id']
+                            ];
+                        }
+                    }
+                    // exit;
+                    $i++;
                 }
-                if($filter){
-                     $data['combinedArray'] = $combinedfilterArray;
-                     $data['filter'] = 1;
-                }else{
-                $data['combinedArray'] = $combinedArray;
+                foreach ($combinedArray as $val) {
+                    if ($val['file_id'] == '') {
+                        $combinedfilterArray[] = [
+                            'pid' => $id,
+                            'adviser' => $val['adviser'],
+                            'progress' => $val['progress'],
+                            'workfelow_name' => $val['workfelow_name'],
+                            'stage' => $val['stage'],
+                            'category' => $val['category'],
+                            'file_name_org' => '',
+                            'file_name' => '',
+                            'file_id' => '',
+                            'file_description' => '',
+                            'file_link' => '',
+                            'updated_date' => '',
+                            'uploaded_by' => '',
+                            'workflow_status' => '',
+                        ];
+                    }
+                }
+                if ($filter) {
+                    $data['combinedArray'] = $combinedfilterArray;
+                    $data['filter'] = 1;
+                } else {
+                    $data['combinedArray'] = $combinedArray;
                 }
 
-               //echo "<pre>";print_r($combinedArray); exit;
+                //echo "<pre>";print_r($combinedArray); exit;
 
 
 
-        //    echo "<pre>"; print_r($data['combinedArray']);
-          
+                //    echo "<pre>"; print_r($data['combinedArray']);
 
-        //   echo "<pre>"; print_r($filter_array); 
-          //exit;
 
-             //echo "<pre>"; print_r($combinedArray); exit;
+                //   echo "<pre>"; print_r($filter_array); 
+                //exit;
+
+                //echo "<pre>"; print_r($combinedArray); exit;
                 // $combinedArray = [];
                 // $i = 0;
                 // foreach($stages as $stages_data) {
@@ -482,76 +482,76 @@ class Projects extends AdminController
             //             //$category[] = $this->projects_model->fetchFilesData($uniqueStageRow, $uniqueCategoryRow);
             //         }
             //     }
-                // foreach($fileData as $fileDatas){
-                //     $category[] = $this->projects_model->fetch_Group_Stage($stage_id);
-                // }
-                //     $single = array_merge(...$category);
-                // $data['unique_arrayStage'] = array_unique($single, SORT_REGULAR);
+            // foreach($fileData as $fileDatas){
+            //     $category[] = $this->projects_model->fetch_Group_Stage($stage_id);
+            // }
+            //     $single = array_merge(...$category);
+            // $data['unique_arrayStage'] = array_unique($single, SORT_REGULAR);
 
-                // echo '<pre>';
-                // print_r($category);
-                // exit;
-
-
-                //==========================================================================================
-
-                // $filedata = $data['fileData'];
-                // foreach($filedata as $filesdata){
-                //     $stages[] = $this->projects_model->fetchGroupStage($filesdata['compliance_id']);
-                // }
+            // echo '<pre>';
+            // print_r($category);
+            // exit;
 
 
-                // $single = array_merge(...$stages);
-                // $data['unique_arrayStage'] = array_unique($single, SORT_REGULAR);
-                // $unique_array_stage = $data['unique_arrayStage'];
+            //==========================================================================================
 
-                // $i=0;
-                // $j=0;
-                // $cat_group = [];
-                // foreach($unique_array_stage as $unique_array_stages){
-                //     $cat_group[$i] = $this->projects_model->fetchCategory_group($unique_array_stages['id']);
-                //     // $singleCategory[] = array_merge(...$cat_group[$i]);
-                //     $cat_group[$i] = array_unique($cat_group[$i], SORT_REGULAR);
-                //     // $categoryId = $data['unique_arrayCategory'];
-                    
-                //     // print_r($cat_group[0][0]['category_id']) ;
-                //     // exit;
-                  
-                //     foreach($cat_group[$i][$j] as $categoryIds[$i][$j]['category_id']){
-                      
-                //     //    print_r($cat_group[$i][$j]);
-                //         $fetchCategory_groupAllData[$i][$j]= $this->projects_model->fetchCategory_groupAllData($categoryIds[$i][$j]['category_id'],$id);
-                //         $j++;
-                //     }
-                //     $i++;
-                // }
-                // echo '<pre>';
-                // print_r( $fetchCategory_groupAllData );
-                // exit;
-                
-                    
-                // foreach($categoryId as $categoryIds){
-                //     $fetchCategory_groupAllData[] = $this->projects_model->fetchCategory_groupAllData($categoryIds['category_id'],$id);
-                // }
-                
-                // $singleCategory = array_merge(...$fetchCategory_groupAllData);
-                // $data['fetchCategory_groupAllData'] = array_unique($singleCategory, SORT_REGULAR);
-               
+            // $filedata = $data['fileData'];
+            // foreach($filedata as $filesdata){
+            //     $stages[] = $this->projects_model->fetchGroupStage($filesdata['compliance_id']);
+            // }
 
-                // $data['fetchCategory_groupAllData'] = $fetchCategory_groupAllData;
 
-                // foreach($filedata as $filesdata){
-                //     $groupcategory[] = $this->projects_model->fetchGroupcategory($filesdata['compliance_id']);
-                // }
-                // $singleCategory = array_merge(...$groupcategory);
-                // $data['unique_arrayCategory'] = array_unique($singleCategory, SORT_REGULAR);
+            // $single = array_merge(...$stages);
+            // $data['unique_arrayStage'] = array_unique($single, SORT_REGULAR);
+            // $unique_array_stage = $data['unique_arrayStage'];
 
-                // $data['allData'] = array_merge($unique_array_stage,$categoryId,$singleCategory);
+            // $i=0;
+            // $j=0;
+            // $cat_group = [];
+            // foreach($unique_array_stage as $unique_array_stages){
+            //     $cat_group[$i] = $this->projects_model->fetchCategory_group($unique_array_stages['id']);
+            //     // $singleCategory[] = array_merge(...$cat_group[$i]);
+            //     $cat_group[$i] = array_unique($cat_group[$i], SORT_REGULAR);
+            //     // $categoryId = $data['unique_arrayCategory'];
 
-                // echo '<pre>';
-                // print_r( $singleCategory );
-                // exit;
-               
+            //     // print_r($cat_group[0][0]['category_id']) ;
+            //     // exit;
+
+            //     foreach($cat_group[$i][$j] as $categoryIds[$i][$j]['category_id']){
+
+            //     //    print_r($cat_group[$i][$j]);
+            //         $fetchCategory_groupAllData[$i][$j]= $this->projects_model->fetchCategory_groupAllData($categoryIds[$i][$j]['category_id'],$id);
+            //         $j++;
+            //     }
+            //     $i++;
+            // }
+            // echo '<pre>';
+            // print_r( $fetchCategory_groupAllData );
+            // exit;
+
+
+            // foreach($categoryId as $categoryIds){
+            //     $fetchCategory_groupAllData[] = $this->projects_model->fetchCategory_groupAllData($categoryIds['category_id'],$id);
+            // }
+
+            // $singleCategory = array_merge(...$fetchCategory_groupAllData);
+            // $data['fetchCategory_groupAllData'] = array_unique($singleCategory, SORT_REGULAR);
+
+
+            // $data['fetchCategory_groupAllData'] = $fetchCategory_groupAllData;
+
+            // foreach($filedata as $filesdata){
+            //     $groupcategory[] = $this->projects_model->fetchGroupcategory($filesdata['compliance_id']);
+            // }
+            // $singleCategory = array_merge(...$groupcategory);
+            // $data['unique_arrayCategory'] = array_unique($singleCategory, SORT_REGULAR);
+
+            // $data['allData'] = array_merge($unique_array_stage,$categoryId,$singleCategory);
+
+            // echo '<pre>';
+            // print_r( $singleCategory );
+            // exit;
+
             // }
 
 
@@ -574,12 +574,12 @@ class Projects extends AdminController
             //         // $singleCategory[] = array_merge(...$cat_group[$i]);
             //         $cat_group[$i] = array_unique($cat_group[$i], SORT_REGULAR);
             //         // $categoryId = $data['unique_arrayCategory'];
-                    
+
             //         // print_r($cat_group[0][0]['category_id']) ;
             //         // exit;
-                  
+
             //         foreach($cat_group[$i][$j] as $categoryIds[$i][$j]['category_id']){
-                      
+
             //         //    print_r($cat_group[$i][$j]);
             //             $fetchCategory_groupAllData[$i][$j]= $this->projects_model->fetchCategory_groupAllData($categoryIds[$i][$j]['category_id'],$id);
             //             $j++;
@@ -589,15 +589,15 @@ class Projects extends AdminController
             //     // echo '<pre>';
             //     // print_r( $fetchCategory_groupAllData );
             //     // exit;
-                
-                    
+
+
             //     foreach($categoryId as $categoryIds){
             //         $fetchCategory_groupAllData[] = $this->projects_model->fetchCategory_groupAllData($categoryIds['category_id'],$id);
             //     }
-                
+
             //     $singleCategory = array_merge(...$fetchCategory_groupAllData);
             //     $data['fetchCategory_groupAllData'] = array_unique($singleCategory, SORT_REGULAR);
-               
+
 
             //     $data['fetchCategory_groupAllData'] = $fetchCategory_groupAllData;
 
@@ -612,7 +612,7 @@ class Projects extends AdminController
             //     // echo '<pre>';
             //     // print_r( $singleCategory );
             //     // exit;
-               
+
             // }
 
 
@@ -620,7 +620,7 @@ class Projects extends AdminController
             //     $data['projectid'] = $id;
             //     $data['fileData'] = $this->projects_model->fetchFilesData($id);
             //     $filedata = $data['fileData'];
-                
+
             //     foreach($filedata as $filesdata){
             //         $stages[] = $this->projects_model->fetchGroupStage($filesdata['compliance_id']);
             //     }
@@ -643,23 +643,23 @@ class Projects extends AdminController
             //     foreach($categoryId as $categoryIds){
             //         $fetchCategory_groupAllData[] = $this->projects_model->fetchCategory_groupAllData($categoryIds['category_id'],$id);
             //     }
-                
+
             //     $singleCategory = array_merge(...$fetchCategory_groupAllData);
             //     $data['fetchCategory_groupAllData'] = array_unique($singleCategory, SORT_REGULAR);
-               
 
-                // $data['fetchCategory_groupAllData'] = $fetchCategory_groupAllData;
 
-                // foreach($filedata as $filesdata){
-                //     $groupcategory[] = $this->projects_model->fetchGroupcategory($filesdata['compliance_id']);
-                // }
-                // $singleCategory = array_merge(...$groupcategory);
-                // $data['unique_arrayCategory'] = array_unique($singleCategory, SORT_REGULAR);
+            // $data['fetchCategory_groupAllData'] = $fetchCategory_groupAllData;
 
-                // echo '<pre>';
-                // print_r($unique_array_stage);
-                // exit;
-               
+            // foreach($filedata as $filesdata){
+            //     $groupcategory[] = $this->projects_model->fetchGroupcategory($filesdata['compliance_id']);
+            // }
+            // $singleCategory = array_merge(...$groupcategory);
+            // $data['unique_arrayCategory'] = array_unique($singleCategory, SORT_REGULAR);
+
+            // echo '<pre>';
+            // print_r($unique_array_stage);
+            // exit;
+
             // }
 
 
@@ -668,10 +668,10 @@ class Projects extends AdminController
             //     $data['projectid'] = $id;
             //     $data['fileData'] = $this->projects_model->fetchFilesData($id);
             //     $filedata = $data['fileData'];
-                
+
             //     foreach($filedata as $filesdata){
             //         $stages[] = $this->projects_model->fetchGroupStage($filesdata['compliance_id']);
-                   
+
             //     }
             //     $single = array_merge(...$stages);
             //     $data['unique_arrayStage'] = array_unique($single, SORT_REGULAR);
@@ -681,28 +681,28 @@ class Projects extends AdminController
             //     // print_r($unique_array_stage);
             //     // exit;
             // }
-          
+
             if ($group == 'project_overview') {
                 $data['members'] = $this->projects_model->get_project_members($id);
                 foreach ($data['members'] as $key => $member) {
                     $data['members'][$key]['total_logged_time'] = 0;
-                    $member_timesheets                          = $this->tasks_model->get_unique_member_logged_task_ids($member['staff_id'], ' AND task_id IN (SELECT id FROM ' . db_prefix() . 'tasks WHERE rel_type="project" AND rel_id="' . $this->db->escape_str($id) . '")');
+                    $member_timesheets = $this->tasks_model->get_unique_member_logged_task_ids($member['staff_id'], ' AND task_id IN (SELECT id FROM ' . db_prefix() . 'tasks WHERE rel_type="project" AND rel_id="' . $this->db->escape_str($id) . '")');
 
                     foreach ($member_timesheets as $member_task) {
                         $data['members'][$key]['total_logged_time'] += $this->tasks_model->calc_task_total_time($member_task->task_id, ' AND staff_id=' . $member['staff_id']);
                     }
                 }
-                $data['project_total_days']        = round((human_to_unix($data['project']->deadline . ' 00:00') - human_to_unix($data['project']->start_date . ' 00:00')) / 3600 / 24);
-                $data['project_days_left']         = $data['project_total_days'];
+                $data['project_total_days'] = round((human_to_unix($data['project']->deadline . ' 00:00') - human_to_unix($data['project']->start_date . ' 00:00')) / 3600 / 24);
+                $data['project_days_left'] = $data['project_total_days'];
                 $data['project_time_left_percent'] = 100;
                 if ($data['project']->deadline) {
                     if (human_to_unix($data['project']->start_date . ' 00:00') < time() && human_to_unix($data['project']->deadline . ' 00:00') > time()) {
-                        $data['project_days_left']         = round((human_to_unix($data['project']->deadline . ' 00:00') - time()) / 3600 / 24);
+                        $data['project_days_left'] = round((human_to_unix($data['project']->deadline . ' 00:00') - time()) / 3600 / 24);
                         $data['project_time_left_percent'] = $data['project_days_left'] / $data['project_total_days'] * 100;
                         $data['project_time_left_percent'] = round($data['project_time_left_percent'], 2);
                     }
                     if (human_to_unix($data['project']->deadline . ' 00:00') < time()) {
-                        $data['project_days_left']         = 0;
+                        $data['project_days_left'] = 0;
                         $data['project_time_left_percent'] = 0;
                     }
                 }
@@ -720,8 +720,8 @@ class Projects extends AdminController
                 $where = ($__total_where_tasks == '' ? '' : $__total_where_tasks . ' AND ') . 'status != ' . Tasks_model::STATUS_COMPLETE;
 
                 $data['tasks_not_completed'] = total_rows(db_prefix() . 'tasks', $where);
-                $total_tasks                 = total_rows(db_prefix() . 'tasks', $__total_where_tasks);
-                $data['total_tasks']         = $total_tasks;
+                $total_tasks = total_rows(db_prefix() . 'tasks', $__total_where_tasks);
+                $data['total_tasks'] = $total_tasks;
 
                 $where = ($__total_where_tasks == '' ? '' : $__total_where_tasks . ' AND ') . 'status = ' . Tasks_model::STATUS_COMPLETE . ' AND rel_type="project" AND rel_id="' . $id . '"';
 
@@ -730,7 +730,7 @@ class Projects extends AdminController
                 $data['tasks_not_completed_progress'] = ($total_tasks > 0 ? number_format(($data['tasks_completed'] * 100) / $total_tasks, 2) : 0);
                 $data['tasks_not_completed_progress'] = round($data['tasks_not_completed_progress'], 2);
 
-                @$percent_circle        = $percent / 100;
+                @$percent_circle = $percent / 100;
                 $data['percent_circle'] = $percent_circle;
 
                 $data['project_overview_chart'] = (new HoursOverviewChart(
@@ -740,15 +740,15 @@ class Projects extends AdminController
             } elseif ($group == 'project_invoices') {
                 $this->load->model('invoices_model');
 
-                $data['invoiceid']   = '';
-                $data['status']      = '';
+                $data['invoiceid'] = '';
+                $data['status'] = '';
                 $data['custom_view'] = '';
-                $data['invoices_years']       = $this->invoices_model->get_invoices_years();
+                $data['invoices_years'] = $this->invoices_model->get_invoices_years();
                 $data['invoices_sale_agents'] = $this->invoices_model->get_sale_agents();
-                $data['invoices_statuses']    = $this->invoices_model->get_statuses();
+                $data['invoices_statuses'] = $this->invoices_model->get_statuses();
             } elseif ($group == 'project_gantt') {
-                $gantt_type         = (!$this->input->get('gantt_type') ? 'milestones' : $this->input->get('gantt_type'));
-                $taskStatus         = (!$this->input->get('gantt_task_status') ? null : $this->input->get('gantt_task_status'));
+                $gantt_type = (!$this->input->get('gantt_type') ? 'milestones' : $this->input->get('gantt_type'));
+                $taskStatus = (!$this->input->get('gantt_task_status') ? null : $this->input->get('gantt_task_status'));
                 $data['gantt_data'] = (new Gantt($id, $gantt_type))->forTaskStatus($taskStatus)->get();
             } elseif ($group == 'project_milestones') {
                 $data['bodyclass'] .= 'project-milestones ';
@@ -763,9 +763,9 @@ class Projects extends AdminController
             } elseif ($group == 'project_expenses') {
                 $this->load->model('taxes_model');
                 $this->load->model('expenses_model');
-                $data['taxes']              = $this->taxes_model->get();
+                $data['taxes'] = $this->taxes_model->get();
                 $data['expense_categories'] = $this->expenses_model->get_category();
-                $data['currencies']         = $this->currencies_model->get();
+                $data['currencies'] = $this->currencies_model->get();
             } elseif ($group == 'project_activity') {
                 $data['activity'] = $this->projects_model->get_activity($id);
             } elseif ($group == 'project_notes') {
@@ -773,7 +773,7 @@ class Projects extends AdminController
             } elseif ($group == 'project_contracts') {
                 $this->load->model('contracts_model');
                 $data['contract_types'] = $this->contracts_model->get_contract_types();
-                $data['years']          = $this->contracts_model->get_contracts_years();
+                $data['years'] = $this->contracts_model->get_contracts_years();
             } elseif ($group == 'project_estimates') {
                 $this->load->model('estimates_model');
                 $data['estimates_years'] = $this->estimates_model->get_estimates_years();
@@ -793,27 +793,27 @@ class Projects extends AdminController
                 $this->load->model('tickets_model');
                 $data['ticket_assignees'] = $this->tickets_model->get_tickets_assignes_disctinct();
                 $this->load->model('departments_model');
-                $data['staff_deparments_ids']          = $this->departments_model->get_staff_departments(get_staff_user_id(), true);
+                $data['staff_deparments_ids'] = $this->departments_model->get_staff_departments(get_staff_user_id(), true);
                 $data['default_tickets_list_statuses'] = hooks()->apply_filters('default_tickets_list_statuses', [1, 2, 4]);
             } elseif ($group == 'project_timesheets') {
                 // Tasks are used in the timesheet dropdown
                 // Completed tasks are excluded from this list because you can't add timesheet on completed task.
-                $data['tasks']                = $this->projects_model->get_tasks($id, 'status != ' . Tasks_model::STATUS_COMPLETE . ' AND billed=0');
+                $data['tasks'] = $this->projects_model->get_tasks($id, 'status != ' . Tasks_model::STATUS_COMPLETE . ' AND billed=0');
                 $data['timesheets_staff_ids'] = $this->projects_model->get_distinct_tasks_timesheets_staff($id);
             }
 
             // Discussions
             if ($this->input->get('discussion_id')) {
                 $data['discussion_user_profile_image_url'] = staff_profile_image_url(get_staff_user_id());
-                $data['discussion']                        = $this->projects_model->get_discussion($this->input->get('discussion_id'), $id);
-                $data['current_user_is_admin']             = is_admin();
+                $data['discussion'] = $this->projects_model->get_discussion($this->input->get('discussion_id'), $id);
+                $data['current_user_is_admin'] = is_admin();
             }
 
             $data['percent'] = $percent;
 
             $this->app_scripts->add('circle-progress-js', 'assets/plugins/jquery-circle-progress/circle-progress.min.js');
 
-            $other_projects       = [];
+            $other_projects = [];
             $other_projects_where = 'id != ' . $id;
 
             $statuses = $this->projects_model->get_project_statuses();
@@ -832,7 +832,7 @@ class Projects extends AdminController
                 $other_projects_where .= ' AND ' . db_prefix() . 'projects.id IN (SELECT project_id FROM ' . db_prefix() . 'project_members WHERE staff_id=' . get_staff_user_id() . ')';
             }
             $data['other_projects'] = $this->projects_model->get('', $other_projects_where);
-            $data['title']          = $data['project']->name;
+            $data['title'] = $data['project']->name;
             $data['bodyclass'] .= 'project invoices-total-manual estimates-total-manual';
             $data['project_status'] = get_project_status_by_id($project->status);
             $data['project_type'] = $this->projects_model->project_type($id);
@@ -841,14 +841,16 @@ class Projects extends AdminController
             access_denied('Project View');
         }
     }
-  
-    public function projectype(){
+
+    public function projectype()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetchprojecttype();
-        $this->load->view('admin/projects/project_type',$data);
+        $this->load->view('admin/projects/project_type', $data);
     }
 
-    public function saveProjectType(){
+    public function saveProjectType()
+    {
         $data = [
             'project_type' => $this->input->post('projecttype'),
         ];
@@ -857,121 +859,136 @@ class Projects extends AdminController
         redirect(admin_url('projects/projectype'));
     }
 
-    public function deleteProjectType(){
+    public function deleteProjectType()
+    {
         $data = [
-            'is_deleted' =>  1,
+            'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
         $this->load->model('projects_model');
-        $this->projects_model->delete_covertype($data,$id);
+        $this->projects_model->delete_covertype($data, $id);
         redirect(admin_url('projects/projectype'));
     }
 
-    public function projectOutcome(){
+    public function projectOutcome()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_outcome();
         $this->load->view('admin/projects/outcome', $data);
     }
 
-    public function saveprojectOutcome(){
+    public function saveprojectOutcome()
+    {
         $data = [
-        'outcome' => $this->input->post('outcome'),
-    ];
+            'outcome' => $this->input->post('outcome'),
+        ];
         $this->projects_model->saveproject_outcome($data);
         redirect(admin_url('projects/projectOutcome'));
     }
 
-    public function deleteProjectoutcome(){
+    public function deleteProjectoutcome()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_projectOutcome($data,$id);
+        $this->projects_model->delete_projectOutcome($data, $id);
         redirect(admin_url('projects/projectOutcome'));
     }
 
-    public function reasonforCancellation(){
+    public function reasonforCancellation()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_ReasonforCancellation();
         $this->load->view('admin/projects/reason_cancellation', $data);
     }
 
-    public function saveReasonforCancellation(){
+    public function saveReasonforCancellation()
+    {
         $data = [
-        'reason_for_cancelletion' => $this->input->post('reason_for_cancelletion'),
-    ];
+            'reason_for_cancelletion' => $this->input->post('reason_for_cancelletion'),
+        ];
         $this->projects_model->savereasonforCancellation($data);
         redirect(admin_url('projects/reasonforCancellation'));
     }
 
-    public function deleteReasonforCancellation(){
+    public function deleteReasonforCancellation()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_ReasonforCancellation($data,$id);
+        $this->projects_model->delete_ReasonforCancellation($data, $id);
         redirect(admin_url('projects/reasonforCancellation'));
     }
 
 
-    public function reasonNoClaim(){
+    public function reasonNoClaim()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_reasonNoclaim();
         $this->load->view('admin/projects/reason_noclaim', $data);
     }
 
-    public function saveclaimreason(){
-       $data = [
-        'reason_noclaim' => $this->input->post('reason_noclaim'),
-    ];
-       $this->projects_model->saveclaimReason($data);
-       redirect(admin_url('projects/reasonNoClaim'));
+    public function saveclaimreason()
+    {
+        $data = [
+            'reason_noclaim' => $this->input->post('reason_noclaim'),
+        ];
+        $this->projects_model->saveclaimReason($data);
+        redirect(admin_url('projects/reasonNoClaim'));
     }
 
-    public function deleteclaimReason(){
+    public function deleteclaimReason()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_claimreason($data,$id);
+        $this->projects_model->delete_claimreason($data, $id);
         redirect(admin_url('projects/reasonNoClaim'));
     }
 
-    public function conditionalgroup(){
+    public function conditionalgroup()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_conditionalgroup();
         $this->load->view('admin/projects/Condition_Groups', $data);
     }
 
-    public function saveconditionalgroup(){
+    public function saveconditionalgroup()
+    {
         $data = [
-        'condition_qroups' => $this->input->post('condition_qroups'),
-    ];
-       $this->projects_model->saveconditionalGroup($data);
-       redirect(admin_url('projects/conditionalgroup'));
+            'condition_qroups' => $this->input->post('condition_qroups'),
+        ];
+        $this->projects_model->saveconditionalGroup($data);
+        redirect(admin_url('projects/conditionalgroup'));
     }
 
-    public function deleteconditionalgroup(){
+    public function deleteconditionalgroup()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_conditionalgroup($data,$id);
+        $this->projects_model->delete_conditionalgroup($data, $id);
         redirect(admin_url('projects/conditionalgroup'));
     }
 
-    public function finalstatus(){
+    public function finalstatus()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_finalstatus();
         $this->load->view('admin/projects/final_status', $data);
     }
 
-    public function savefinalstatus(){
+    public function savefinalstatus()
+    {
         $data = [
             'final_status' => $this->input->post('final_status'),
         ];
@@ -979,23 +996,26 @@ class Projects extends AdminController
         redirect(admin_url('projects/finalstatus'));
     }
 
-    public function deletefinalstatus(){
+    public function deletefinalstatus()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_finalstatus($data,$id);
+        $this->projects_model->delete_finalstatus($data, $id);
         redirect(admin_url('projects/finalstatus'));
     }
 
-   public function daterequestIssue(){
+    public function daterequestIssue()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_DateIssue();
         $this->load->view('admin/projects/Date_Requested_Issue', $data);
     }
 
-    public function savedateissue(){
+    public function savedateissue()
+    {
         $data = [
             'date_request_Issue' => $this->input->post('date_request_Issue'),
         ];
@@ -1003,23 +1023,26 @@ class Projects extends AdminController
         redirect(admin_url('projects/daterequestIssue'));
     }
 
-    public function deletedateissue(){
+    public function deletedateissue()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_dateIssue($data,$id);
+        $this->projects_model->delete_dateIssue($data, $id);
         redirect(admin_url('projects/daterequestIssue'));
     }
 
-    public function reasonNotissuepolicy(){
+    public function reasonNotissuepolicy()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_Notissuepolicy();
         $this->load->view('admin/projects/reason_notIssuePolicy', $data);
-        }
+    }
 
-    public function saveNotissuepolicy(){
+    public function saveNotissuepolicy()
+    {
         $data = [
             'issue_policy' => $this->input->post('issue_policy'),
         ];
@@ -1027,25 +1050,28 @@ class Projects extends AdminController
         redirect(admin_url('projects/reasonNotissuepolicy'));
     }
 
-    public function deleteNotissuepolicy(){
+    public function deleteNotissuepolicy()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_Notissuepolicy($data,$id);
+        $this->projects_model->delete_Notissuepolicy($data, $id);
         redirect(admin_url('projects/reasonNotissuepolicy'));
     }
 
-   
-    public function source(){
+
+    public function source()
+    {
 
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_source();
         $this->load->view('admin/projects/source', $data);
-        }
+    }
 
-    public function savesource(){
+    public function savesource()
+    {
         $data = [
             'source' => $this->input->post('source'),
         ];
@@ -1053,24 +1079,27 @@ class Projects extends AdminController
         redirect(admin_url('projects/source'));
     }
 
-    public function deletesource(){
+    public function deletesource()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_Source($data,$id);
+        $this->projects_model->delete_Source($data, $id);
         redirect(admin_url('projects/source'));
     }
 
-    public function replaceBusiness(){
+    public function replaceBusiness()
+    {
 
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_replacebusiness();
         $this->load->view('admin/projects/replacement_business', $data);
-        }
+    }
 
-    public function saveReplaceBusiness(){
+    public function saveReplaceBusiness()
+    {
         $data = [
             'replacement_business' => $this->input->post('replacement_business'),
         ];
@@ -1078,23 +1107,26 @@ class Projects extends AdminController
         redirect(admin_url('projects/replaceBusiness'));
     }
 
-    public function deleteReplaceBusiness(){
+    public function deleteReplaceBusiness()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_replacebusiness($data,$id);
+        $this->projects_model->delete_replacebusiness($data, $id);
         redirect(admin_url('projects/replaceBusiness'));
     }
 
-    public function replaceReason(){
+    public function replaceReason()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_replaceReason();
         $this->load->view('admin/projects/replacement_reason', $data);
-        }
+    }
 
-    public function saveReplaceReason(){
+    public function saveReplaceReason()
+    {
         $data = [
             'replacement_reason' => $this->input->post('replacement_reason'),
         ];
@@ -1102,23 +1134,26 @@ class Projects extends AdminController
         redirect(admin_url('projects/replaceReason'));
     }
 
-    public function deleteReplaceReason(){
+    public function deleteReplaceReason()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_replaceReason($data,$id);
+        $this->projects_model->delete_replaceReason($data, $id);
         redirect(admin_url('projects/replaceReason'));
     }
 
-    public function cancellationOutcome(){
+    public function cancellationOutcome()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_cancellationOutcome();
         $this->load->view('admin/projects/cancellation_outcome', $data);
-        }
+    }
 
-    public function savecancellationOutcome(){
+    public function savecancellationOutcome()
+    {
         $data = [
             'outcome_cancellation' => $this->input->post('outcome_cancellation'),
         ];
@@ -1126,13 +1161,14 @@ class Projects extends AdminController
         redirect(admin_url('projects/cancellationOutcome'));
     }
 
-    public function deletecancellationOutcome(){
+    public function deletecancellationOutcome()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_cancellationOutcome($data,$id);
+        $this->projects_model->delete_cancellationOutcome($data, $id);
         redirect(admin_url('projects/cancellationOutcome'));
     }
 
@@ -1151,7 +1187,7 @@ class Projects extends AdminController
     {
         $data = [
             'claim_identified' => $this->input->post('claim_identified'),
-            'is_deleted'       => 0,
+            'is_deleted' => 0,
         ];
 
         $this->projects_model->saveClaimIdentified($data);
@@ -1178,34 +1214,36 @@ class Projects extends AdminController
 
 
 
-public function deleteClaimIdentified()
-{
-    $id = $this->uri->segment(4);
+    public function deleteClaimIdentified()
+    {
+        $id = $this->uri->segment(4);
 
-    if (!$id || !is_numeric($id)) {
-        show_404();
+        if (!$id || !is_numeric($id)) {
+            show_404();
+        }
+
+        $data = [
+            'is_deleted' => 1,
+        ];
+
+        $this->projects_model->deleteClaimIdentified($data, $id);
+
+        set_alert('success', 'Deleted Successfully');
+        redirect(admin_url('projects/claimIdentified'));
     }
-
-    $data = [
-        'is_deleted' => 1,
-    ];
-
-    $this->projects_model->deleteClaimIdentified($data, $id);
-
-    set_alert('success', 'Deleted Successfully');
-    redirect(admin_url('projects/claimIdentified'));
-}
 
 
     // custom for claim_identified crud end
 
-    public function newPolicyCommission(){
+    public function newPolicyCommission()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_newPolicyCommission();
         $this->load->view('admin/projects/newpolicy_commission', $data);
-        }
+    }
 
-    public function savenewPolicyCommission(){
+    public function savenewPolicyCommission()
+    {
         $data = [
             'new_policy_commission' => $this->input->post('new_policy_commission'),
         ];
@@ -1213,23 +1251,26 @@ public function deleteClaimIdentified()
         redirect(admin_url('projects/newPolicyCommission'));
     }
 
-    public function deletenewPolicyCommission(){
+    public function deletenewPolicyCommission()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_newPolicyCommission($data,$id);
+        $this->projects_model->delete_newPolicyCommission($data, $id);
         redirect(admin_url('projects/newPolicyCommission'));
     }
 
-    public function category(){
+    public function category()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetchCategory();
-        $this->load->view('admin/projects/project_category',$data);
+        $this->load->view('admin/projects/project_category', $data);
     }
 
-    public function saveCategory(){
+    public function saveCategory()
+    {
         $data = [
             'category' => $this->input->post('category'),
         ];
@@ -1238,23 +1279,26 @@ public function deleteClaimIdentified()
         redirect(admin_url('projects/category'));
     }
 
-    public function deleteCategory(){
+    public function deleteCategory()
+    {
         $data = [
-            'is_deleted' =>  1,
+            'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
         $this->load->model('projects_model');
-        $this->projects_model->delete_Category($data,$id);
+        $this->projects_model->delete_Category($data, $id);
         redirect(admin_url('projects/category'));
     }
 
-    public function benefitCategory(){
+    public function benefitCategory()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetchBenefitCategory();
-        $this->load->view('admin/projects/benefit_category',$data);
+        $this->load->view('admin/projects/benefit_category', $data);
     }
-    public function saveBenefitCategory(){
+    public function saveBenefitCategory()
+    {
         $data = [
             'category' => $this->input->post('category'),
         ];
@@ -1262,14 +1306,15 @@ public function deleteClaimIdentified()
         $this->projects_model->save_Benefit_Category($data);
         redirect(admin_url('projects/benefitCategory'));
     }
-    public function deleteBenefitCategory(){
+    public function deleteBenefitCategory()
+    {
         $data = [
-            'is_deleted' =>  1,
+            'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
         $this->load->model('projects_model');
-        $this->projects_model->delete_Benefit_Category($data,$id);
+        $this->projects_model->delete_Benefit_Category($data, $id);
         redirect(admin_url('projects/benefitCategory'));
     }
 
@@ -1304,7 +1349,7 @@ public function deleteClaimIdentified()
     public function file($id, $project_id)
     {
         $data['discussion_user_profile_image_url'] = staff_profile_image_url(get_staff_user_id());
-        $data['current_user_is_admin']             = is_admin();
+        $data['current_user_is_admin'] = is_admin();
 
         $data['file'] = $this->projects_model->get_file($id, $project_id);
 
@@ -1326,12 +1371,12 @@ public function deleteClaimIdentified()
     public function add_external_file()
     {
         if ($this->input->post()) {
-            $data                        = [];
-            $data['project_id']          = $this->input->post('project_id');
-            $data['files']               = $this->input->post('files');
-            $data['external']            = $this->input->post('external');
+            $data = [];
+            $data['project_id'] = $this->input->post('project_id');
+            $data['files'] = $this->input->post('files');
+            $data['external'] = $this->input->post('external');
             $data['visible_to_customer'] = ($this->input->post('visible_to_customer') == 'true' ? 1 : 0);
-            $data['staffid']             = get_staff_user_id();
+            $data['staffid'] = get_staff_user_id();
             $this->projects_model->add_external_file($data);
         }
     }
@@ -1421,7 +1466,7 @@ public function deleteClaimIdentified()
                 ]);
             } else {
                 $data = $this->input->post();
-                $id   = $data['id'];
+                $id = $data['id'];
                 unset($data['id']);
                 $success = $this->projects_model->edit_discussion($data, $id);
                 if ($success) {
@@ -1467,14 +1512,14 @@ public function deleteClaimIdentified()
             $success = $this->projects_model->delete_discussion($id);
         }
         $alert_type = 'warning';
-        $message    = _l('project_discussion_failed_to_delete');
+        $message = _l('project_discussion_failed_to_delete');
         if ($success) {
             $alert_type = 'success';
-            $message    = _l('project_discussion_deleted');
+            $message = _l('project_discussion_deleted');
         }
         echo json_encode([
             'alert_type' => $alert_type,
-            'message'    => $message,
+            'message' => $message,
         ]);
     }
 
@@ -1520,10 +1565,10 @@ public function deleteClaimIdentified()
         $data['milestones'] = [];
 
         $data['milestones'][] = [
-            'name'              => _l('milestones_uncategorized'),
-            'id'                => 0,
+            'name' => _l('milestones_uncategorized'),
+            'id' => 0,
             'total_logged_time' => $this->projects_model->calc_milestone_logged_time($data['project_id'], 0),
-            'color'             => null,
+            'color' => null,
         ];
 
         $_milestones = $this->projects_model->get_milestones($data['project_id']);
@@ -1539,10 +1584,10 @@ public function deleteClaimIdentified()
     {
         $milestones_exclude_completed_tasks = $this->input->get('exclude_completed_tasks') && $this->input->get('exclude_completed_tasks') == 'yes';
 
-        $status     = $this->input->get('status');
-        $page       = $this->input->get('page');
+        $status = $this->input->get('status');
+        $page = $this->input->get('page');
         $project_id = $this->input->get('project_id');
-        $where      = [];
+        $where = [];
         if ($milestones_exclude_completed_tasks) {
             $where['status !='] = Tasks_model::STATUS_COMPLETE;
         }
@@ -1583,7 +1628,7 @@ public function deleteClaimIdentified()
                 }
 
                 $data = $this->input->post();
-                $id   = $data['id'];
+                $id = $data['id'];
                 unset($data['id']);
                 $success = $this->projects_model->update_milestone($data, $id);
                 if ($success) {
@@ -1608,12 +1653,12 @@ public function deleteClaimIdentified()
     public function bulk_action_files()
     {
         hooks()->do_action('before_do_bulk_action_for_project_files');
-        $total_deleted       = 0;
+        $total_deleted = 0;
         $hasPermissionDelete = staff_can('delete', 'projects');
         // bulk action for projects currently only have delete button
         if ($this->input->post()) {
             $fVisibility = $this->input->post('visible_to_customer') == 'true' ? 1 : 0;
-            $ids         = $this->input->post('ids');
+            $ids = $this->input->post('ids');
             if (is_array($ids)) {
                 foreach ($ids as $id) {
                     if ($hasPermissionDelete && $this->input->post('mass_delete') && $this->projects_model->remove_file($id)) {
@@ -1674,13 +1719,13 @@ public function deleteClaimIdentified()
 
     public function timesheet_task_assignees($task_id, $project_id, $staff_id = 'undefined')
     {
-        $assignees             = $this->tasks_model->get_task_assignees($task_id);
-        $data                  = '';
-        $has_permission_edit   = staff_can('edit', 'projects');
+        $assignees = $this->tasks_model->get_task_assignees($task_id);
+        $data = '';
+        $has_permission_edit = staff_can('edit', 'projects');
         $has_permission_create = staff_can('edit', 'projects');
         // The second condition if staff member edit their own timesheet
         if ($staff_id == 'undefined' || $staff_id != 'undefined' && (!$has_permission_edit || !$has_permission_create)) {
-            $staff_id     = get_staff_user_id();
+            $staff_id = get_staff_user_id();
             $current_user = true;
         }
         foreach ($assignees as $staff) {
@@ -1745,31 +1790,31 @@ public function deleteClaimIdentified()
         if (staff_can('create', 'projects')) {
 
             // $data_project['created_staff_id'] = get_staff_user_id();
-           
+
             $data_project = $this->input->post();
             // echo '<pre>';
             // print_r($data_project);
             // exit;
             $id = $this->projects_model->copy($project_id, $data_project);
-// ----15-10
+            // ----15-10
             $_data = [
-                'project_id'        => $id,
-                'staff_id'          => get_staff_user_id(),
-                'recieve_date'      => '',
-                'reason_arrears'    => '',
-                'apibeinglapsed'    => '',
-                'advisercontacted'  => '',
-                'arrears_status'    => '',
+                'project_id' => $id,
+                'staff_id' => get_staff_user_id(),
+                'recieve_date' => '',
+                'reason_arrears' => '',
+                'apibeinglapsed' => '',
+                'advisercontacted' => '',
+                'arrears_status' => '',
             ];
             $id_save_Arrears = $this->projects_model->save_Arrears($_data);
-// 15-10
+            // 15-10
 
-             //get project details for make member whose admins exist in this group.
-             $project = $this->projects_model->get($id);
-             $clientId = $project->clientid;
-             $data['staff_id'] = $this->projects_model->getAdmins($clientId);
-             $data['project_id'] = $project->id;
-             $this->projects_model->saveMembers($data);
+            //get project details for make member whose admins exist in this group.
+            $project = $this->projects_model->get($id);
+            $clientId = $project->clientid;
+            $data['staff_id'] = $this->projects_model->getAdmins($clientId);
+            $data['project_id'] = $project->id;
+            $this->projects_model->saveMembers($data);
 
             if ($id) {
                 set_alert('success', _l('project_copied_successfully'));
@@ -1785,13 +1830,13 @@ public function deleteClaimIdentified()
     {
         if (staff_can('create', 'invoices')) {
             $where = [
-                'billed'       => 0,
+                'billed' => 0,
                 'startdate <=' => date('Y-m-d'),
             ];
             if ($billable == 'true') {
                 $where['billable'] = true;
             }
-            $tasks                = $this->projects_model->get_tasks($project_id, $where);
+            $tasks = $this->projects_model->get_tasks($project_id, $where);
             $total_timers_stopped = 0;
             foreach ($tasks as $task) {
                 $this->db->where('task_id', $task['id']);
@@ -1802,12 +1847,12 @@ public function deleteClaimIdentified()
                 $total_timers_stopped += $this->db->affected_rows();
             }
             $message = _l('project_tasks_total_timers_stopped', $total_timers_stopped);
-            $type    = 'success';
+            $type = 'success';
             if ($total_timers_stopped == 0) {
                 $type = 'warning';
             }
             echo json_encode([
-                'type'    => $type,
+                'type' => $type,
                 'message' => $message,
             ]);
         }
@@ -1817,25 +1862,25 @@ public function deleteClaimIdentified()
     {
         if (staff_can('create', 'invoices')) {
             $data['billable_tasks'] = $this->projects_model->get_tasks($project_id, [
-                'billable'     => 1,
-                'billed'       => 0,
+                'billable' => 1,
+                'billed' => 0,
                 'startdate <=' => date('Y-m-d'),
             ]);
 
             $data['not_billable_tasks'] = $this->projects_model->get_tasks($project_id, [
-                'billable'    => 1,
-                'billed'      => 0,
+                'billable' => 1,
+                'billed' => 0,
                 'startdate >' => date('Y-m-d'),
             ]);
 
-            $data['project_id']   = $project_id;
+            $data['project_id'] = $project_id;
             $data['billing_type'] = get_project_billing_type($project_id);
 
             $this->load->model('expenses_model');
             $this->db->where('invoiceid IS NULL');
             $data['expenses'] = $this->expenses_model->get('', [
                 'project_id' => $project_id,
-                'billable'   => 1,
+                'billable' => 1,
             ]);
 
             $this->load->view('admin/projects/project_pre_invoice_settings', $data);
@@ -1845,7 +1890,7 @@ public function deleteClaimIdentified()
     public function get_invoice_project_data()
     {
         if (staff_can('create', 'invoices')) {
-            $type       = $this->input->post('type');
+            $type = $this->input->post('type');
             $project_id = $this->input->post('project_id');
             // Check for all cases
             if ($type == '') {
@@ -1856,8 +1901,8 @@ public function deleteClaimIdentified()
                 'expenses_only !=' => 1,
             ]);
             $this->load->model('taxes_model');
-            $data['taxes']         = $this->taxes_model->get();
-            $data['currencies']    = $this->currencies_model->get();
+            $data['taxes'] = $this->taxes_model->get();
+            $data['currencies'] = $this->currencies_model->get();
             $data['base_currency'] = $this->currencies_model->get_base_currency();
             $this->load->model('invoice_items_model');
 
@@ -1865,32 +1910,32 @@ public function deleteClaimIdentified()
             if (total_rows(db_prefix() . 'items') <= ajax_on_total_items()) {
                 $data['items'] = $this->invoice_items_model->get_grouped();
             } else {
-                $data['items']     = [];
+                $data['items'] = [];
                 $data['ajaxItems'] = true;
             }
 
             $data['items_groups'] = $this->invoice_items_model->get_groups();
-            $data['staff']        = $this->staff_model->get('', ['active' => 1]);
-            $project              = $this->projects_model->get($project_id);
-            $data['project']      = $project;
-            $items                = [];
+            $data['staff'] = $this->staff_model->get('', ['active' => 1]);
+            $project = $this->projects_model->get($project_id);
+            $data['project'] = $project;
+            $items = [];
 
-            $project    = $this->projects_model->get($project_id);
+            $project = $this->projects_model->get($project_id);
             $item['id'] = 0;
 
-            $default_tax     = unserialize(get_option('default_tax'));
+            $default_tax = unserialize(get_option('default_tax'));
             $item['taxname'] = $default_tax;
 
             $tasks = $this->input->post('tasks');
             if ($tasks) {
                 $item['long_description'] = '';
-                $item['qty']              = 0;
-                $item['task_id']          = [];
+                $item['qty'] = 0;
+                $item['task_id'] = [];
                 if ($type == 'single_line') {
                     $item['description'] = $project->name;
                     foreach ($tasks as $task_id) {
                         $task = $this->tasks_model->get($task_id);
-                        $sec  = $this->tasks_model->calc_task_total_time($task_id);
+                        $sec = $this->tasks_model->calc_task_total_time($task_id);
                         $item['long_description'] .= $task->name . ' - ' . seconds_to_time_format(task_timer_round($sec)) . ' ' . _l('hours') . "\r\n";
                         $item['task_id'][] = $task_id;
                         if ($project->billing_type == 2) {
@@ -1901,19 +1946,19 @@ public function deleteClaimIdentified()
                         }
                     }
                     if ($project->billing_type == 1) {
-                        $item['qty']  = 1;
+                        $item['qty'] = 1;
                         $item['rate'] = $project->project_cost;
                     } elseif ($project->billing_type == 2) {
                         $item['rate'] = $project->project_rate_per_hour;
                     }
                     $item['unit'] = '';
-                    $items[]      = $item;
+                    $items[] = $item;
                 } elseif ($type == 'task_per_item') {
                     foreach ($tasks as $task_id) {
-                        $task                     = $this->tasks_model->get($task_id);
-                        $sec                      = $this->tasks_model->calc_task_total_time($task_id);
-                        $item['description']      = $project->name . ' - ' . $task->name;
-                        $item['qty']              = floatVal(sec2qty(task_timer_round($sec)));
+                        $task = $this->tasks_model->get($task_id);
+                        $sec = $this->tasks_model->calc_task_total_time($task_id);
+                        $item['description'] = $project->name . ' - ' . $task->name;
+                        $item['qty'] = floatVal(sec2qty(task_timer_round($sec)));
                         $item['long_description'] = seconds_to_time_format(task_timer_round($sec)) . ' ' . _l('hours');
                         if ($project->billing_type == 2) {
                             $item['rate'] = $project->project_rate_per_hour;
@@ -1921,11 +1966,11 @@ public function deleteClaimIdentified()
                             $item['rate'] = $task->hourly_rate;
                         }
                         $item['task_id'] = $task_id;
-                        $item['unit']    = '';
-                        $items[]         = $item;
+                        $item['unit'] = '';
+                        $items[] = $item;
                     }
                 } elseif ($type == 'timesheets_individualy') {
-                    $timesheets     = $this->projects_model->get_timesheets($project_id, $tasks);
+                    $timesheets = $this->projects_model->get_timesheets($project_id, $tasks);
                     $added_task_ids = [];
                     foreach ($timesheets as $timesheet) {
                         if ($timesheet['task_data']->billed == 0 && $timesheet['task_data']->billable == 1) {
@@ -1936,7 +1981,7 @@ public function deleteClaimIdentified()
 
                             array_push($added_task_ids, $timesheet['task_id']);
 
-                            $item['qty']              = floatVal(sec2qty(task_timer_round($timesheet['total_spent'])));
+                            $item['qty'] = floatVal(sec2qty(task_timer_round($timesheet['total_spent'])));
                             $item['long_description'] = _l('project_invoice_timesheet_start_time', _dt($timesheet['start_time'], true)) . "\r\n" . _l('project_invoice_timesheet_end_time', _dt($timesheet['end_time'], true)) . "\r\n" . _l('project_invoice_timesheet_total_logged_time', seconds_to_time_format(task_timer_round($timesheet['total_spent']))) . ' ' . _l('hours');
 
                             if ($this->input->post('timesheets_include_notes') && $timesheet['note']) {
@@ -1949,7 +1994,7 @@ public function deleteClaimIdentified()
                                 $item['rate'] = $timesheet['task_data']->hourly_rate;
                             }
                             $item['unit'] = '';
-                            $items[]      = $item;
+                            $items[] = $item;
                         }
                     }
                 }
@@ -1964,7 +2009,7 @@ public function deleteClaimIdentified()
                 if (count($tasks) > 0) {
                     $data['qty_hrs_quantity'] = true;
                 }
-                $expenses       = $this->input->post('expenses');
+                $expenses = $this->input->post('expenses');
                 $addExpenseNote = $this->input->post('expenses_add_note');
                 $addExpenseName = $this->input->post('expenses_add_name');
 
@@ -1979,11 +2024,11 @@ public function deleteClaimIdentified()
                 $this->load->model('expenses_model');
                 foreach ($expenses as $expense_id) {
                     // reset item array
-                    $item                     = [];
-                    $item['id']               = 0;
-                    $expense                  = $this->expenses_model->get($expense_id);
-                    $item['expense_id']       = $expense->expenseid;
-                    $item['description']      = _l('item_as_expense') . ' ' . $expense->name;
+                    $item = [];
+                    $item['id'] = 0;
+                    $expense = $this->expenses_model->get($expense_id);
+                    $item['expense_id'] = $expense->expenseid;
+                    $item['description'] = _l('item_as_expense') . ' ' . $expense->name;
                     $item['long_description'] = $expense->description;
 
                     if (in_array($expense_id, $addExpenseNote) && !empty($expense->note)) {
@@ -2003,15 +2048,15 @@ public function deleteClaimIdentified()
                     if ($expense->tax2 != 0) {
                         array_push($item['taxname'], $expense->tax_name2 . '|' . $expense->taxrate2);
                     }
-                    $item['rate']  = $expense->amount;
+                    $item['rate'] = $expense->amount;
                     $item['order'] = 1;
-                    $item['unit']  = '';
-                    $items[]       = $item;
+                    $item['unit'] = '';
+                    $items[] = $item;
                 }
             }
-            $data['customer_id']          = $project->clientid;
+            $data['customer_id'] = $project->clientid;
             $data['invoice_from_project'] = true;
-            $data['add_items']            = $items;
+            $data['add_items'] = $items;
             $this->load->view('admin/projects/invoice_project', $data);
         }
     }
@@ -2020,11 +2065,11 @@ public function deleteClaimIdentified()
     {
         if ($this->input->is_ajax_request()) {
             $selected_milestone = '';
-            $assigned           = '';
+            $assigned = '';
             if ($task_id != '' && $task_id != 'undefined') {
-                $task               = $this->tasks_model->get($task_id);
+                $task = $this->tasks_model->get($task_id);
                 $selected_milestone = $task->milestone;
-                $assigned           = array_map(function ($member) {
+                $assigned = array_map(function ($member) {
                     return $member['assigneeid'];
                 }, $this->tasks_model->get_task_assignees($task_id));
             }
@@ -2040,16 +2085,17 @@ public function deleteClaimIdentified()
             $deadline = get_project_deadline($id);
 
             echo json_encode([
-                'deadline'            => $deadline,
-                'deadline_formatted'  => $deadline ? _d($deadline) : null,
+                'deadline' => $deadline,
+                'deadline_formatted' => $deadline ? _d($deadline) : null,
                 'allow_to_view_tasks' => $allow_to_view_tasks,
-                'billing_type'        => get_project_billing_type($id),
-                'milestones'          => render_select('milestone', $this->projects_model->get_milestones($id), [
+                'billing_type' => get_project_billing_type($id),
+                'milestones' => render_select('milestone', $this->projects_model->get_milestones($id), [
                     'id',
                     'name',
                 ], 'task_milestone', $selected_milestone),
                 'assignees' => render_select('assignees[]', $this->projects_model->get_project_members($id, true), [
-                    'staff_id', ['firstname', 'lastname'],
+                    'staff_id',
+                    ['firstname', 'lastname'],
                 ], 'task_single_assignees', $assigned, ['multiple' => true], [], '', '', false),
             ]);
         }
@@ -2059,9 +2105,9 @@ public function deleteClaimIdentified()
     {
         if (staff_can('create', 'invoices')) {
             $this->load->model('invoices_model');
-            $data               = $this->input->post();
+            $data = $this->input->post();
             $data['project_id'] = $project_id;
-            $invoice_id         = $this->invoices_model->add($data);
+            $invoice_id = $this->invoices_model->add($data);
             if ($invoice_id) {
                 $this->projects_model->log_activity($project_id, 'project_activity_invoiced_project', format_invoice_number($invoice_id));
                 set_alert('success', _l('project_invoiced_successfully'));
@@ -2102,17 +2148,17 @@ public function deleteClaimIdentified()
         $project_id = $this->input->post('projectid');
         $CalimDetails = $this->projects_model->fetch_claim_saprately($project_id);
         $Calim_payment_Details = $this->projects_model->fetch_claim_payment($project_id);
-        if(empty($CalimDetails)){
+        if (empty($CalimDetails)) {
             $data = [
                 'project_id' => $project_id,
                 'staff_id' => get_staff_user_id(),
-                'contact' =>  serialize($this->input->post('contact')),
-                'benefit' =>  $this->input->post('benefit'),
-                'condition' =>  $this->input->post('condition'),
-                'condition_groups' =>  $this->input->post('conditiongroup'),
-                'specialist' =>  $this->input->post('specialist'),
-                'outcome' =>  $this->input->post('outcome'),
-                'reason_noclaim' =>  $this->input->post('reason_noclaim'),
+                'contact' => serialize($this->input->post('contact')),
+                'benefit' => $this->input->post('benefit'),
+                'condition' => $this->input->post('condition'),
+                'condition_groups' => $this->input->post('conditiongroup'),
+                'specialist' => $this->input->post('specialist'),
+                'outcome' => $this->input->post('outcome'),
+                'reason_noclaim' => $this->input->post('reason_noclaim'),
                 'additional_info' => $this->input->post('additional_info'),
             ];
 
@@ -2120,54 +2166,54 @@ public function deleteClaimIdentified()
 
             $arrayCount = count($this->input->post('invoice'));
             $invoice = $this->input->post('invoice');
-            $paymentDate   = $this->input->post('payment_date');
-            $amount   = $this->input->post('amount');
-            for($i=0; $i<$arrayCount; $i++){
+            $paymentDate = $this->input->post('payment_date');
+            $amount = $this->input->post('amount');
+            for ($i = 0; $i < $arrayCount; $i++) {
                 $claimPayment = [
-                    'project_id' =>$project_id,
+                    'project_id' => $project_id,
                     'claim_id' => $lastid,
-                    'Invoice' =>  $invoice[$i],
-                    'payment_date' =>  $paymentDate[$i],
-                    'amount' =>  $amount[$i],
-                    'total_amount' =>  $this->input->post('total_amount'),
+                    'Invoice' => $invoice[$i],
+                    'payment_date' => $paymentDate[$i],
+                    'amount' => $amount[$i],
+                    'total_amount' => $this->input->post('total_amount'),
                 ];
                 $claim_lastid = $this->projects_model->addpaymetClaim($claimPayment);
             }
-            set_alert('success','successfully');
+            set_alert('success', 'successfully');
         }
 
-        if($CalimDetails){
+        if ($CalimDetails) {
             $data = [
                 'project_id' => $project_id,
                 'staff_id' => get_staff_user_id(),
-                'contact' =>  serialize($this->input->post('contact')),
-                'benefit' =>  $this->input->post('benefit'),
-                'condition' =>  $this->input->post('condition'),
-                'condition_groups' =>  $this->input->post('conditiongroup'),
-                'specialist' =>  $this->input->post('specialist'),
-                'outcome' =>  $this->input->post('outcome'),
-                'reason_noclaim' =>  $this->input->post('reason_noclaim'),
+                'contact' => serialize($this->input->post('contact')),
+                'benefit' => $this->input->post('benefit'),
+                'condition' => $this->input->post('condition'),
+                'condition_groups' => $this->input->post('conditiongroup'),
+                'specialist' => $this->input->post('specialist'),
+                'outcome' => $this->input->post('outcome'),
+                'reason_noclaim' => $this->input->post('reason_noclaim'),
                 'additional_info' => $this->input->post('additional_info'),
             ];
             $this->projects_model->update_Claim($data, $CalimDetails[0]['id']);
             $lastid = $CalimDetails[0]['id'];
             $arrayCount = count($this->input->post('invoice'));
             $invoice = $this->input->post('invoice');
-            $paymentDate   = $this->input->post('payment_date');
-            $amount   = $this->input->post('amount');
+            $paymentDate = $this->input->post('payment_date');
+            $amount = $this->input->post('amount');
             $deleteClaimPayment = $this->projects_model->deleteClaimPayment($lastid);
-            for($i=0; $i<$arrayCount; $i++){
+            for ($i = 0; $i < $arrayCount; $i++) {
                 $claimPayment = [
-                    'project_id' =>$project_id,
+                    'project_id' => $project_id,
                     'claim_id' => $lastid,
-                    'Invoice' =>  $invoice[$i],
-                    'payment_date' =>  $paymentDate[$i],
-                    'amount' =>  $amount[$i],
-                    'total_amount' =>  $this->input->post('total_amount'),
+                    'Invoice' => $invoice[$i],
+                    'payment_date' => $paymentDate[$i],
+                    'amount' => $amount[$i],
+                    'total_amount' => $this->input->post('total_amount'),
                 ];
                 $claim_lastid = $this->projects_model->addpaymetClaim($claimPayment);
             }
-            set_alert('success','Updated successfully');
+            set_alert('success', 'Updated successfully');
         }
         redirect(admin_url('projects/view/' . $project_id . '?group=claims'));
     }
@@ -2194,18 +2240,18 @@ public function deleteClaimIdentified()
             $data = [
                 'project_id' => $project_id,
                 'staff_id' => get_staff_user_id(),
-                'final_status' =>  $this->input->post('final_status'),
-                'reason_policynotissued' =>  $this->input->post('reason_policy_notissued'),
-                'requested_api' =>  $this->input->post('requested_api'),
-                'commission_split' =>  $this->input->post('commission_split'),
-                'issue_date' =>  $this->input->post('issue_date'),
+                'final_status' => $this->input->post('final_status'),
+                'reason_policynotissued' => $this->input->post('reason_policy_notissued'),
+                'requested_api' => $this->input->post('requested_api'),
+                'commission_split' => $this->input->post('commission_split'),
+                'issue_date' => $this->input->post('issue_date'),
                 'submitted_api' => $this->input->post('submitted_api'),
                 'related_project_id' => $this->input->post('related_project_id'),
                 'submitted_date' => $this->input->post('submitted_date'),
                 'under_status' => $this->input->post('under_status'),
                 'benefit_cancelled' => $this->input->post('benefit_cancelled'),
             ];
-            if($benefit_cancelled == 'no'){
+            if ($benefit_cancelled == 'no') {
                 $yesdata = [
                     'project_id' => '',
                     'cust_id' => '',
@@ -2217,7 +2263,7 @@ public function deleteClaimIdentified()
                     'benefit_name' => '',
                     'benefit_id' => '',
                     'category' => '',
-                    'requested_to_issue' =>  '',
+                    'requested_to_issue' => '',
                 ];
             } else {
                 $yesdata = [
@@ -2231,27 +2277,27 @@ public function deleteClaimIdentified()
                     'benefit_name' => $benefit_name,
                     'benefit_id' => $benefit_id,
                     'category' => $category,
-                    'requested_to_issue' =>  $this->input->post('issue_date'),
+                    'requested_to_issue' => $this->input->post('issue_date'),
                 ];
             }
-            $this->projects_model->save_underwriting($data ,$yesdata);
-            set_alert('success','successfully');
+            $this->projects_model->save_underwriting($data, $yesdata);
+            set_alert('success', 'successfully');
         } else {
             $data = [
                 'project_id' => $project_id,
                 'staff_id' => get_staff_user_id(),
-                'final_status' =>  $this->input->post('final_status'),
-                'reason_policynotissued' =>  $this->input->post('reason_policy_notissued'),
-                'requested_api' =>  $this->input->post('requested_api'),
-                'commission_split' =>  $this->input->post('commission_split'),
-                'issue_date' =>  $this->input->post('issue_date'),
+                'final_status' => $this->input->post('final_status'),
+                'reason_policynotissued' => $this->input->post('reason_policy_notissued'),
+                'requested_api' => $this->input->post('requested_api'),
+                'commission_split' => $this->input->post('commission_split'),
+                'issue_date' => $this->input->post('issue_date'),
                 'submitted_api' => $this->input->post('submitted_api'),
                 'related_project_id' => $this->input->post('related_project_id'),
                 'submitted_date' => $this->input->post('submitted_date'),
                 'under_status' => $this->input->post('under_status'),
                 'benefit_cancelled' => $this->input->post('benefit_cancelled'),
             ];
-            if($benefit_cancelled == 'no'){
+            if ($benefit_cancelled == 'no') {
                 $yesdata = [
                     'project_id' => '',
                     'cust_id' => '',
@@ -2263,7 +2309,7 @@ public function deleteClaimIdentified()
                     'benefit_name' => '',
                     'benefit_id' => '',
                     'category' => '',
-                    'requested_to_issue' =>  '',
+                    'requested_to_issue' => '',
                 ];
             } else {
                 $yesdata = [
@@ -2277,11 +2323,11 @@ public function deleteClaimIdentified()
                     'benefit_name' => $benefit_name,
                     'benefit_id' => $benefit_id,
                     'category' => $category,
-                    'requested_to_issue' =>  $this->input->post('issue_date'),
+                    'requested_to_issue' => $this->input->post('issue_date'),
                 ];
             }
-            $this->projects_model->update_underwriting($data,$yesdata, $underwritingDetails[0]['id'], $project_id);
-            set_alert('success','Updated successfully');
+            $this->projects_model->update_underwriting($data, $yesdata, $underwritingDetails[0]['id'], $project_id);
+            set_alert('success', 'Updated successfully');
         }
         redirect(admin_url('projects/view/' . $project_id . '?group=underwriting'));
     }
@@ -2294,60 +2340,60 @@ public function deleteClaimIdentified()
             $data = [
                 'project_id' => $project_id,
                 'staff_id' => get_staff_user_id(),
-                'source' =>  $this->input->post('source'),
-                'api_being_cancelled' =>  $this->input->post('api_being_cancelled'),
-                'date_received' =>  $this->input->post('date_received'),
-                'clawback_period' =>  $this->input->post('clawback_period'),
-                'reason_for_cancellation' =>  $this->input->post('reason_for_cancellation'),
+                'source' => $this->input->post('source'),
+                'api_being_cancelled' => $this->input->post('api_being_cancelled'),
+                'date_received' => $this->input->post('date_received'),
+                'clawback_period' => $this->input->post('clawback_period'),
+                'reason_for_cancellation' => $this->input->post('reason_for_cancellation'),
                 'clawback_amount' => $this->input->post('clawback_amount'),
                 'claim_identified' => $this->input->post('claim_Identified'),
                 'outcome_of_cancellation' => $this->input->post('outcome_cancellation'),
                 'replacement_business' => $this->input->post('replacement_business'),
                 'policy_commission' => $this->input->post('policy_commission'),
                 'replacement_reason' => $this->input->post('replacement_reason'),
-                'life_cover'=>$this->input->post('life_cover'),
-                'truma_cover'=>$this->input->post('truma_cover'),
-                'total_and_permanent_disablement_cover'=>$this->input->post('total_and_permanent_disablement_cover'),
-                'monthly_disability_cover'=>$this->input->post('monthly_disability_cover'),
-                'medical_cover'=>$this->input->post('medical_cover'),
-                'whole_life_endowment_cover'=>$this->input->post('whole_life_endowment_cover'),
-                'accidental_death_cover'=>$this->input->post('accidental_death_cover'),
-                'funeral_cover'=>$this->input->post('funeral_cover'),
-                'other'=>$this->input->post('other'),
+                'life_cover' => $this->input->post('life_cover'),
+                'truma_cover' => $this->input->post('truma_cover'),
+                'total_and_permanent_disablement_cover' => $this->input->post('total_and_permanent_disablement_cover'),
+                'monthly_disability_cover' => $this->input->post('monthly_disability_cover'),
+                'medical_cover' => $this->input->post('medical_cover'),
+                'whole_life_endowment_cover' => $this->input->post('whole_life_endowment_cover'),
+                'accidental_death_cover' => $this->input->post('accidental_death_cover'),
+                'funeral_cover' => $this->input->post('funeral_cover'),
+                'other' => $this->input->post('other'),
                 'cancel_status' => $this->input->post('cancel_status'),
-                'number_of_days_calculation_c_p'            =>  $this->input->post('number_of_days_calculation_c_p'),
+                'number_of_days_calculation_c_p' => $this->input->post('number_of_days_calculation_c_p'),
             ];
             $this->projects_model->save_cancellations($data);
-            set_alert('success','successfully');
+            set_alert('success', 'successfully');
         } else {
             $data = [
                 'project_id' => $project_id,
                 'staff_id' => get_staff_user_id(),
-                'source' =>  $this->input->post('source'),
-                'api_being_cancelled' =>  $this->input->post('api_being_cancelled'),
-                'date_received' =>  $this->input->post('date_received'),
-                'clawback_period' =>  $this->input->post('clawback_period'),
-                'reason_for_cancellation' =>  $this->input->post('reason_for_cancellation'),
+                'source' => $this->input->post('source'),
+                'api_being_cancelled' => $this->input->post('api_being_cancelled'),
+                'date_received' => $this->input->post('date_received'),
+                'clawback_period' => $this->input->post('clawback_period'),
+                'reason_for_cancellation' => $this->input->post('reason_for_cancellation'),
                 'clawback_amount' => $this->input->post('clawback_amount'),
                 'claim_identified' => $this->input->post('claim_Identified'),
                 'outcome_of_cancellation' => $this->input->post('outcome_cancellation'),
                 'replacement_business' => $this->input->post('replacement_business'),
                 'policy_commission' => $this->input->post('policy_commission'),
                 'replacement_reason' => $this->input->post('replacement_reason'),
-                'truma_cover'=>$this->input->post('life_cover'),
-                'life_cover'=>$this->input->post('truma_cover'),
-                'total_and_permanent_disablement_cover'=>$this->input->post('total_and_permanent_disablement_cover'),
-                'monthly_disability_cover'=>$this->input->post('monthly_disability_cover'),
-                'medical_cover'=>$this->input->post('medical_cover'),
-                'whole_life_endowment_cover'=>$this->input->post('whole_life_endowment_cover'),
-                'accidental_death_cover'=>$this->input->post('accidental_death_cover'),
-                'funeral_cover'=>$this->input->post('funeral_cover'),
-                'other'=>$this->input->post('other'),
+                'truma_cover' => $this->input->post('life_cover'),
+                'life_cover' => $this->input->post('truma_cover'),
+                'total_and_permanent_disablement_cover' => $this->input->post('total_and_permanent_disablement_cover'),
+                'monthly_disability_cover' => $this->input->post('monthly_disability_cover'),
+                'medical_cover' => $this->input->post('medical_cover'),
+                'whole_life_endowment_cover' => $this->input->post('whole_life_endowment_cover'),
+                'accidental_death_cover' => $this->input->post('accidental_death_cover'),
+                'funeral_cover' => $this->input->post('funeral_cover'),
+                'other' => $this->input->post('other'),
                 'cancel_status' => $this->input->post('cancel_status'),
-                'number_of_days_calculation_c_p'            =>  $this->input->post('number_of_days_calculation_c_p'),
+                'number_of_days_calculation_c_p' => $this->input->post('number_of_days_calculation_c_p'),
             ];
             $this->projects_model->update_cancellations($data, $cancellationDetails[0]['id']);
-            set_alert('success','Updated successfully');
+            set_alert('success', 'Updated successfully');
         }
         redirect(admin_url('projects/view/' . $project_id . '?group=cancellations'));
     }
@@ -2371,9 +2417,9 @@ public function deleteClaimIdentified()
         $data['category_id'] = $this->input->post('id');
         $file_id = $this->input->post('file_id');
         $data['category_name'] = $this->projects_model->getCategory_Name($data['category_id']);
-        $this->projects_model->saveupdatecat($data,$file_id,);
+        $this->projects_model->saveupdatecat($data, $file_id, );
     }
-    
+
     // public function discription()
     // {
     //     $data['description'] = $this->input->post('description');
@@ -2381,12 +2427,12 @@ public function deleteClaimIdentified()
     //     $this->projects_model->savediscription($data,$file_id);
     // }
     public function addprojecttemplate()
-    {   
+    {
         $data['data'] = $this->projects_model->fetchprojecttemplate();
-        $this->load->view('admin/policy/projecttemplate',$data);
+        $this->load->view('admin/policy/projecttemplate', $data);
     }
     public function saveprojecttemplate()
-    {    
+    {
         $data = [
             'template_id' => $this->input->post('ptemplateid'),
             'template_name' => $this->input->post('ptemplatename'),
@@ -2397,21 +2443,23 @@ public function deleteClaimIdentified()
     public function deleteprojecttemplate()
     {
         $data = [
-            'is_deleted' =>  1,
+            'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_projecttemplate($data,$id);
+        $this->projects_model->delete_projecttemplate($data, $id);
         redirect(admin_url('projects/addprojecttemplate'));
     }
 
-    public function commisionsplit(){
+    public function commisionsplit()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_commisionsplit();
         $this->load->view('admin/projects/commission_split', $data);
-        }
+    }
 
-    public function savecommisionsplit(){
+    public function savecommisionsplit()
+    {
         $data = [
             'commission_split' => $this->input->post('commission_split'),
         ];
@@ -2419,35 +2467,38 @@ public function deleteClaimIdentified()
         redirect(admin_url('projects/commisionsplit'));
     }
 
-    public function deletecommisionsplit(){
+    public function deletecommisionsplit()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_Commisionsplit($data,$id);
+        $this->projects_model->delete_Commisionsplit($data, $id);
         redirect(admin_url('projects/commisionsplit'));
     }
 
     // public function addCompliences(){
-      
+
     //     $this->load->model('projects_model');
     //     $data['complience']     = $this->projects_model->fetchComplience();
     //     $data['stages']         = $this->projects_model->fetchstage();
     //     $this->load->view('admin/projects/compliences', $data);
     // }
 
-    public function addCompliences(){
-      
-        $data['complience']     = $this->projects_model->fetchComplience();
-        $data['stages']         = $this->projects_model->fetchstage();
+    public function addCompliences()
+    {
+
+        $data['complience'] = $this->projects_model->fetchComplience();
+        $data['stages'] = $this->projects_model->fetchstage();
         // echo '<pre>';
         // print_r($data['complience']);
         // exit;
         $this->load->view('admin/projects/compliences', $data);
     }
 
-    public function saveCompliance(){
+    public function saveCompliance()
+    {
         $data = [
             'compliance' => $this->input->post('compliance'),
             'stage' => $this->input->post('stage'),
@@ -2457,14 +2508,15 @@ public function deleteClaimIdentified()
         redirect(admin_url('projects/addCompliences'));
     }
 
-    
 
-    public function deleteCompliance(){
+
+    public function deleteCompliance()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
-     
+
         set_alert('success', 'Deleted Successfully');
         $this->projects_model->deleteComplianceData($data, $id);
         redirect(admin_url('projects/addCompliences'));
@@ -2493,12 +2545,19 @@ public function deleteClaimIdentified()
     // }
 
 
-    public function reasonForArrears(){
+    public function reasonForArreas()
+    {
+        $this->reasonForArrears();
+    }
+
+    public function reasonForArrears()
+    {
         $data['data'] = $this->projects_model->fetch_reasonForArreas();
         $this->load->view('admin/projects/reason_arreas', $data);
-        }
+    }
 
-    public function savereasonForArreas(){
+    public function savereasonForArreas()
+    {
         $data = [
             'reason_arrears' => $this->input->post('reason_arrears'),
         ];
@@ -2506,23 +2565,27 @@ public function deleteClaimIdentified()
         redirect(admin_url('projects/reasonForArreas'));
     }
 
-    public function deletereasonForArreas(){
+    public function deletereasonForArreas()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_reasonForArreas($data,$id);
+        $this->projects_model->delete_reasonForArreas($data, $id);
         redirect(admin_url('projects/reasonForArreas'));
     }
 
-    public function arreasStatus(){
+
+    public function arreasStatus()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetch_arreasStatus();
         $this->load->view('admin/projects/arreasStatus', $data);
-        }
+    }
 
-    public function savearreasStatus(){
+    public function savearreasStatus()
+    {
         $data = [
             'arrears_status' => $this->input->post('arrears_status'),
         ];
@@ -2530,13 +2593,14 @@ public function deleteClaimIdentified()
         redirect(admin_url('projects/arreasStatus'));
     }
 
-    public function deleteArreasStatus(){
+    public function deleteArreasStatus()
+    {
         $data = [
             'is_deleted' => 1,
         ];
         $id = $this->uri->segment(4);
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->delete_ArreasStatus($data,$id);
+        $this->projects_model->delete_ArreasStatus($data, $id);
         redirect(admin_url('projects/arreasStatus'));
     }
 
@@ -2544,33 +2608,33 @@ public function deleteClaimIdentified()
     {
         $project_id = $this->input->post('projectid');
         $save_Arrears = $this->projects_model->fetchsave_Arrears($project_id);
-        if(empty($save_Arrears)){
+        if (empty($save_Arrears)) {
             $data = [
                 'project_id' => $project_id,
                 'staff_id' => get_staff_user_id(),
-                'recieve_date'=> $this->input->post('recieve_date'),
-                'reason_arrears'=> $this->input->post('reason_arrears'),
-                'apibeinglapsed'=> $this->input->post('apibeinglapsed'),
-                'advisercontacted'=> $this->input->post('advisercontacted'),
-                'arrears_status'=> $this->input->post('arrears_status'),
-                'clawback'=> $this->input->post('clawback'),
+                'recieve_date' => $this->input->post('recieve_date'),
+                'reason_arrears' => $this->input->post('reason_arrears'),
+                'apibeinglapsed' => $this->input->post('apibeinglapsed'),
+                'advisercontacted' => $this->input->post('advisercontacted'),
+                'arrears_status' => $this->input->post('arrears_status'),
+                'clawback' => $this->input->post('clawback'),
             ];
             $this->projects_model->save_Arrears($data);
-            set_alert('success','successfully');
-        } else{
+            set_alert('success', 'successfully');
+        } else {
             $data = [
                 'project_id' => $project_id,
                 'staff_id' => get_staff_user_id(),
-                'recieve_date'=> $this->input->post('recieve_date'),
-                'reason_arrears'=> $this->input->post('reason_arrears'),
-                'apibeinglapsed'=> $this->input->post('apibeinglapsed'),
-                'advisercontacted'=> $this->input->post('advisercontacted'),
-                'arrears_status'=> $this->input->post('arrears_status'),
-                'clawback'=> $this->input->post('clawback'),
+                'recieve_date' => $this->input->post('recieve_date'),
+                'reason_arrears' => $this->input->post('reason_arrears'),
+                'apibeinglapsed' => $this->input->post('apibeinglapsed'),
+                'advisercontacted' => $this->input->post('advisercontacted'),
+                'arrears_status' => $this->input->post('arrears_status'),
+                'clawback' => $this->input->post('clawback'),
             ];
 
             $this->projects_model->update_Arrears($data, $save_Arrears[0]['id']);
-            set_alert('success','Updated successfully');
+            set_alert('success', 'Updated successfully');
         }
         redirect(admin_url('projects/view/' . $project_id . '?group=arrears'));
     }
@@ -2600,20 +2664,23 @@ public function deleteClaimIdentified()
     //     redirect(admin_url('projects/commisionsplit'));
     // }
 
-    public function underwrittingStatus(){
+    public function underwrittingStatus()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetchunderwrittingStatus();
         $this->load->view('admin/projects/underwritting_status', $data);
     }
 
-    public function saveUnderwrittingStatus(){
+    public function saveUnderwrittingStatus()
+    {
         $data['under_status'] = $this->input->post('under_status');
-        
+
         $this->projects_model->save_UnderwrittingStatus($data);
-        redirect (admin_url('projects/underwrittingStatus'));
+        redirect(admin_url('projects/underwrittingStatus'));
     }
 
-    public function deteleunderwrittingStatus(){
+    public function deteleunderwrittingStatus()
+    {
         $id = $this->uri->segment(4);
         $data = [
             'is_deleted' => 1,
@@ -2621,49 +2688,51 @@ public function deleteClaimIdentified()
         // print_r($data);
         // exit;
         set_alert('success', 'Deleted Successfully');
-        $this->projects_model->daleteunderwrittingStatus($id , $data);
-        redirect (admin_url('projects/underwrittingStatus'));
+        $this->projects_model->daleteunderwrittingStatus($id, $data);
+        redirect(admin_url('projects/underwrittingStatus'));
     }
 
-    public function cancellationStatus(){
+    public function cancellationStatus()
+    {
         $this->load->model('projects_model');
         $data['data'] = $this->projects_model->fetchCancellationStatus();
         $this->load->view('admin/projects/cancellation_status', $data);
     }
 
-    public function saveCancellationStatus(){
+    public function saveCancellationStatus()
+    {
         $data['cancel_status'] = $this->input->post('cancel_status');
         $this->projects_model->save_Cancellation_status($data);
         redirect(admin_url('projects/cancellationStatus'));
     }
 
-    public function deleteCancellationStatus(){
+    public function deleteCancellationStatus()
+    {
         $id = $this->uri->segment(4);
         $data = [
             'is_deleted' => 1,
         ];
-        set_alert('success' , 'Deleted Successfully' );
-        $this->projects_model->dalete_CancellationStatus($id , $data);
+        set_alert('success', 'Deleted Successfully');
+        $this->projects_model->dalete_CancellationStatus($id, $data);
         redirect(admin_url('projects/cancellationStatus'));
     }
 
-    public function benefitsBeingChange()
+    public function benefitsBeingChange_141126()
     {
         $id = $this->uri->segment(4);
-        if(!$id){
-        if(!$id){
-                $this->projects_model->save_benefitsBeingChange($id= '' , $this->input->post());
-                }
-                $data['data'] =  $this->projects_model->fetchBenefitChange();
-                $this->load->view('admin/projects/benefit_being_change', $data);
+        if (!$id) {
+            if (!$id) {
+                $this->projects_model->save_benefitsBeingChange($id = '', $this->input->post());
             }
-            else{
-            if($id){
+            $data['data'] = $this->projects_model->fetchBenefitChange();
+            $this->load->view('admin/projects/benefit_being_change', $data);
+        } else {
+            if ($id) {
                 $data = [
                     'is_deleted' => 1,
                 ];
-                $result = $this->projects_model->save_benefitsBeingChange($id , $data);
-                if($result==yes){
+                $result = $this->projects_model->save_benefitsBeingChange($id, $data);
+                if ($result == 'yes') {
                     set_alert('success', 'Deleted Successfully');
                 }
 
@@ -2672,43 +2741,93 @@ public function deleteClaimIdentified()
         }
     }
 
-    public function Stage()
+    public function benefitsBeingChange()
     {
         $id = $this->uri->segment(4);
-        if(!$id){
-        if(!$id){
-                $this->projects_model->save_stage($id= '' , $this->input->post());
-                }
-                $data['data'] =  $this->projects_model->fetchstage();
-                $this->load->view('admin/projects/stage', $data);
+        if (!$id) {
+            if ($this->input->post()) {
+                $this->projects_model->save_benefitsBeingChange('', $this->input->post());
+                set_alert('success', 'Saved Successfully');
+                redirect(admin_url('projects/benefitsBeingChange'));
             }
-            else{
-            if($id){
-                $data = [
-                    'is_deleted' => 1,
-                ];
-                $result = $this->projects_model->save_stage($id , $data);
-                if($result==yes){
-                    set_alert('success', 'Deleted Successfully');
-                }
+            $data['data'] = $this->projects_model->fetchBenefitChange();
+            $this->load->view('admin/projects/benefit_being_change', $data);
+        } else {
+            $data = [
+                'is_deleted' => 1,
+            ];
+            $result = $this->projects_model->save_benefitsBeingChange($id, $data);
+            if ($result == 'yes') {
+                set_alert('success', 'Deleted Successfully');
+            }
 
-                redirect(admin_url('projects/Stage'));
-            }
+            redirect(admin_url('projects/benefitsBeingChange'));
         }
     }
-    public function filetr(){
-        $project_id = $this->input->post('project_id');
-        $url_redirect = $this->input->post('url_redirect');
-       if($url_redirect ==1){
-        redirect(admin_url('projects/view/' . $project_id . '?group=group_compliances'));
-       }
-       redirect(admin_url('projects/view/' . $project_id . '?group=group_compliances&&filter=filter'));
+
+
+    public function Stage()
+    {
+        // $id = $this->uri->segment(4);
+        // if (!$id) {
+        //     if (!$id) {
+        //         $this->projects_model->save_stage($id = '', $this->input->post());
+        //     }
+        //     $data['data'] = $this->projects_model->fetchstage();
+        //     $this->load->view('admin/projects/stage', $data);
+        // } else {
+        //     if ($id) {
+        //         $data = [
+        //             'is_deleted' => 1,
+        //         ];
+        //         $result = $this->projects_model->save_stage($id, $data);
+        //         if ($result == 'yes') {
+        //             set_alert('success', 'Deleted Successfully');
+        //         }
+
+        //         redirect(admin_url('projects/Stage'));
+        //     }
+        // }
+
+        $id = $this->uri->segment(4);
+        if (!$id) {
+            if ($this->input->post()) {
+                $this->projects_model->save_stage('', $this->input->post());
+                set_alert('success', 'Saved Successfully');
+                redirect(admin_url('projects/Stage'));
+            }
+            $data['data'] = $this->projects_model->fetchstage();
+            $this->load->view('admin/projects/stage', $data);
+        } else {
+            $data = [
+                'is_deleted' => 1,
+            ];
+            $result = $this->projects_model->save_stage($id, $data);
+            if ($result == 'yes') {
+                set_alert('success', 'Deleted Successfully');
+            }
+            redirect(admin_url('projects/Stage'));
+        }
+
     }
 
-    public function getCalculate(){
-      
-        $cancellation_date   = $this->input->post('cancellation_date'); 
-        $policy_start_date   = $this->input->post('policy_start_date');
+
+    
+    public function filetr()
+    {
+        $project_id = $this->input->post('project_id');
+        $url_redirect = $this->input->post('url_redirect');
+        if ($url_redirect == 1) {
+            redirect(admin_url('projects/view/' . $project_id . '?group=group_compliances'));
+        }
+        redirect(admin_url('projects/view/' . $project_id . '?group=group_compliances&&filter=filter'));
+    }
+
+    public function getCalculate()
+    {
+
+        $cancellation_date = $this->input->post('cancellation_date');
+        $policy_start_date = $this->input->post('policy_start_date');
         $datetime1 = strtotime($cancellation_date);
         $datetime2 = strtotime($policy_start_date);
 
@@ -2716,9 +2835,10 @@ public function deleteClaimIdentified()
         $days = $secs / 86400;
         echo $days;
     }
-    public function getdateCalculate(){
-        $recieve_date   = $this->input->post('recieve_date');
-        $policy_start_date   = $this->input->post('policy_start_date');
+    public function getdateCalculate()
+    {
+        $recieve_date = $this->input->post('recieve_date');
+        $policy_start_date = $this->input->post('policy_start_date');
         $datetime1 = strtotime($recieve_date);
         $datetime2 = strtotime($policy_start_date);
         $secs = $datetime1 - $datetime2;// == <seconds between the two times>
@@ -2728,25 +2848,27 @@ public function deleteClaimIdentified()
 
 
 
-    public function updateCompliance(){
+    public function updateCompliance()
+    {
         $complianId = $this->input->post('id');
-        if($complianId){
-           $dadada =  $this->projects_model->getstageId($complianId);
-           $compliance_name =  $this->projects_model->compliance_name($complianId);
+        if ($complianId) {
+            $dadada = $this->projects_model->getstageId($complianId);
+            $compliance_name = $this->projects_model->compliance_name($complianId);
         }
         $data = [
-            'compliance_id'     => $complianId,
-            'stage_id'          => $dadada[0]['stage'],
-            'compliance_name'   => $compliance_name,
+            'compliance_id' => $complianId,
+            'stage_id' => $dadada[0]['stage'],
+            'compliance_name' => $compliance_name,
         ];
-       
+
         $file_id = $this->input->post('file_id');
         $this->projects_model->updateCompliancez($data, $file_id);
     }
 
-    public function report_arears(){
+    public function report_arears()
+    {
         // if($this->input->post('projectType') == '' && $this->input->post('adviser') == '' && $this->input->post('provider') == '' && $this->input->post('status') == '' && $this->input->post('member') == '' && $this->input->post('arrears_status') == ''){
-            
+
 
 
         //     // if (has_permission('customers', '', 'view')) {
@@ -2777,7 +2899,7 @@ public function deleteClaimIdentified()
         //     $get_project_data['status']         = $this->projects_model->providers_detail();
         //     $get_project_data['arrears_status'] = $this->projects_model->arrears_status_detail();
         //     $get_project_data['member']         = $this->projects_model->fetchadvisordata();
-           
+
         //     $apibeinglapsed = $get_project_data['data'];
         //     $lapsed_api_total = 0;
         //     foreach($apibeinglapsed as $apibeinglapseds){
@@ -2802,68 +2924,69 @@ public function deleteClaimIdentified()
         //     $this->session->set_userdata($filter);
         // }
         // else{
-            // $get_project_data['adviser']        = $this->projects_model->fetchadvisordata();
-            // $get_project_data['projectType']    = $this->projects_model->project_type_data();
-            // $get_project_data['provider']       = $this->projects_model->providers_detail();
-            // $get_project_data['status']         = $this->projects_model->providers_detail();
-            // $get_project_data['arrears_status'] = $this->projects_model->arrears_status_detail();
-            // $get_project_data['member']         = $this->projects_model->fetchadvisordata();
-            $filter = [
-                'projectType'    => $this->input->post('projectType'),
-                'adviser'        => $this->input->post('adviser'),
-                'provider'       => $this->input->post('provider'),
-                'status'         => $this->input->post('status'),
-                'member'         => $this->input->post('member'),
-                'arrears_status' => $this->input->post('arrears_status'),
-            ];
-           
-            $this->session->set_userdata($filter);
+        // $get_project_data['adviser']        = $this->projects_model->fetchadvisordata();
+        // $get_project_data['projectType']    = $this->projects_model->project_type_data();
+        // $get_project_data['provider']       = $this->projects_model->providers_detail();
+        // $get_project_data['status']         = $this->projects_model->providers_detail();
+        // $get_project_data['arrears_status'] = $this->projects_model->arrears_status_detail();
+        // $get_project_data['member']         = $this->projects_model->fetchadvisordata();
+        $filter = [
+            'projectType' => $this->input->post('projectType'),
+            'adviser' => $this->input->post('adviser'),
+            'provider' => $this->input->post('provider'),
+            'status' => $this->input->post('status'),
+            'member' => $this->input->post('member'),
+            'arrears_status' => $this->input->post('arrears_status'),
+        ];
 
-            // if(!is_admin()) {
-            //     $cleck_is_admin = 0;
-            //     $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter, $cleck_is_admin);
-            // }
-            // if (!has_permission('customers', '', 'view')) {
-            //     if (!is_customer_admin($id)) {
-            //         $cleck_is_admin = 0;
-            //         $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter, $cleck_is_admin);
-            //     }
-            // }else{
-            //     $cleck_is_admin = 1;
-            //     $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter, $cleck_is_admin);
+        $this->session->set_userdata($filter);
 
-            // }
+        // if(!is_admin()) {
+        //     $cleck_is_admin = 0;
+        //     $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter, $cleck_is_admin);
+        // }
+        // if (!has_permission('customers', '', 'view')) {
+        //     if (!is_customer_admin($id)) {
+        //         $cleck_is_admin = 0;
+        //         $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter, $cleck_is_admin);
+        //     }
+        // }else{
+        //     $cleck_is_admin = 1;
+        //     $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter, $cleck_is_admin);
 
-            // // $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter);
-            // $apibeinglapsed           = $get_project_data['data'];
-            // $lapsed_api_total         = 0;
-            // foreach($apibeinglapsed as $apibeinglapseds){
-            //     $apibeing_lapsed = $apibeinglapseds['lapsed_api'];
-            //     $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
-            //     if($dollerData == '$'){
-            //         $numericdata = substr(trim($apibeing_lapsed),1);
-            //         $lapsed_api_total += str_replace(",", "", $numericdata);
-            //     }
-            // }
-            // $lapsed_Api_total                     = '$'.number_format($lapsed_api_total ,2).'';
-            // $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
+        // }
+
+        // // $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter);
+        // $apibeinglapsed           = $get_project_data['data'];
+        // $lapsed_api_total         = 0;
+        // foreach($apibeinglapsed as $apibeinglapseds){
+        //     $apibeing_lapsed = $apibeinglapseds['lapsed_api'];
+        //     $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
+        //     if($dollerData == '$'){
+        //         $numericdata = substr(trim($apibeing_lapsed),1);
+        //         $lapsed_api_total += str_replace(",", "", $numericdata);
+        //     }
+        // }
+        // $lapsed_Api_total                     = '$'.number_format($lapsed_api_total ,2).'';
+        // $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
         // }
         $this->load->view('admin/projects/workflow_report/report_arrears');
     }
-    public function report_arears_data(){
-        if($this->input->post('projectType') == '' && $this->input->post('adviser') == '' && $this->input->post('provider') == '' && $this->input->post('status') == '' && $this->input->post('member') == '' && $this->input->post('arrears_status') == ''){
-            
+    public function report_arears_data()
+    {
+        if ($this->input->post('projectType') == '' && $this->input->post('adviser') == '' && $this->input->post('provider') == '' && $this->input->post('status') == '' && $this->input->post('member') == '' && $this->input->post('arrears_status') == '') {
+
 
 
             // if (has_permission('customers', '', 'view')) {
             //     if (!is_customer_admin($id)) {
-                    // $get_project_data['data'] = $this->projects_model->get_project_data();
+            // $get_project_data['data'] = $this->projects_model->get_project_data();
             //     }
             // }else{
             //     $get_project_data['data'] = "";
             // }
 
-            if(!is_admin()) {
+            if (!is_admin()) {
                 $get_project_data['data'] = $this->projects_model->get_project_arrears_data();
 
             }
@@ -2872,61 +2995,60 @@ public function deleteClaimIdentified()
                     $get_project_data['data'] = $this->projects_model->get_project_arrears_data();
 
                 }
-            }else{
+            } else {
                 $get_project_data['data'] = $this->projects_model->get_project_data();
             }
 
 
-            $get_project_data['adviser']        = $this->projects_model->fetchadvisordata();
-            $get_project_data['projectType']    = $this->projects_model->project_type_data();
-            $get_project_data['provider']       = $this->projects_model->providers_detail();
-            $get_project_data['status']         = $this->projects_model->providers_detail();
+            $get_project_data['adviser'] = $this->projects_model->fetchadvisordata();
+            $get_project_data['projectType'] = $this->projects_model->project_type_data();
+            $get_project_data['provider'] = $this->projects_model->providers_detail();
+            $get_project_data['status'] = $this->projects_model->providers_detail();
             $get_project_data['arrears_status'] = $this->projects_model->arrears_status_detail();
-            $get_project_data['member']         = $this->projects_model->fetchadvisordata();
-           
+            $get_project_data['member'] = $this->projects_model->fetchadvisordata();
+
             $apibeinglapsed = $get_project_data['data'];
             $lapsed_api_total = 0;
-            foreach($apibeinglapsed as $apibeinglapseds){
+            foreach ($apibeinglapsed as $apibeinglapseds) {
                 $apibeing_lapsed = $apibeinglapseds['lapsed_api'];
-                $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
-                if($dollerData == '$'){
-                    $numericdata = substr(trim($apibeing_lapsed),1);
+                $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+                if ($dollerData == '$') {
+                    $numericdata = substr(trim($apibeing_lapsed), 1);
                     $lapsed_api_total += str_replace(",", "", $numericdata);
                 }
             }
-            $lapsed_Api_total                     = '$'.number_format($lapsed_api_total ,2).'';
+            $lapsed_Api_total = '$' . number_format($lapsed_api_total, 2) . '';
             $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
 
             $filter = [
-                'projectType'    => "",
-                'adviser'        => "",
-                'provider'       => "",
-                'status'         => "",
-                'member'         => "",
+                'projectType' => "",
+                'adviser' => "",
+                'provider' => "",
+                'status' => "",
+                'member' => "",
                 'arrears_status' => "",
             ];
             $this->session->set_userdata($filter);
-           
-        }
-        else{
-            $get_project_data['adviser']        = $this->projects_model->fetchadvisordata();
-            $get_project_data['projectType']    = $this->projects_model->project_type_data();
-            $get_project_data['provider']       = $this->projects_model->providers_detail();
-            $get_project_data['status']         = $this->projects_model->providers_detail();
+
+        } else {
+            $get_project_data['adviser'] = $this->projects_model->fetchadvisordata();
+            $get_project_data['projectType'] = $this->projects_model->project_type_data();
+            $get_project_data['provider'] = $this->projects_model->providers_detail();
+            $get_project_data['status'] = $this->projects_model->providers_detail();
             $get_project_data['arrears_status'] = $this->projects_model->arrears_status_detail();
-            $get_project_data['member']         = $this->projects_model->fetchadvisordata();
+            $get_project_data['member'] = $this->projects_model->fetchadvisordata();
             $filter = [
-                'projectType'    => $this->input->post('projectType'),
-                'adviser'        => $this->input->post('adviser'),
-                'provider'       => $this->input->post('provider'),
-                'status'         => $this->input->post('status'),
-                'member'         => $this->input->post('member'),
+                'projectType' => $this->input->post('projectType'),
+                'adviser' => $this->input->post('adviser'),
+                'provider' => $this->input->post('provider'),
+                'status' => $this->input->post('status'),
+                'member' => $this->input->post('member'),
                 'arrears_status' => $this->input->post('arrears_status'),
             ];
-           
+
             $this->session->set_userdata($filter);
 
-            if(!is_admin()) {
+            if (!is_admin()) {
                 $cleck_is_admin = 0;
                 $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter, $cleck_is_admin);
             }
@@ -2935,26 +3057,26 @@ public function deleteClaimIdentified()
                     $cleck_is_admin = 0;
                     $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter, $cleck_is_admin);
                 }
-            }else{
+            } else {
                 $cleck_is_admin = 1;
                 $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter, $cleck_is_admin);
 
             }
 
             // $get_project_data['data'] = $this->projects_model->get_filtered_project_data($filter);
-            $apibeinglapsed           = $get_project_data['data'];
-            $lapsed_api_total         = 0;
-            foreach($apibeinglapsed as $apibeinglapseds){
+            $apibeinglapsed = $get_project_data['data'];
+            $lapsed_api_total = 0;
+            foreach ($apibeinglapsed as $apibeinglapseds) {
                 $apibeing_lapsed = $apibeinglapseds['lapsed_api'];
-                $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
-                if($dollerData == '$'){
-                    $numericdata = substr(trim($apibeing_lapsed),1);
+                $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+                if ($dollerData == '$') {
+                    $numericdata = substr(trim($apibeing_lapsed), 1);
                     $lapsed_api_total += str_replace(",", "", $numericdata);
                 }
             }
-            $lapsed_Api_total                     = '$'.number_format($lapsed_api_total ,2).'';
+            $lapsed_Api_total = '$' . number_format($lapsed_api_total, 2) . '';
             $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
-           
+
         }
         echo json_encode($get_project_data);
         exit;
@@ -2963,9 +3085,10 @@ public function deleteClaimIdentified()
 
     //multiselect add =====================================================================
 
-    public function report_underwriting(){
+    public function report_underwriting()
+    {
         // if($this->input->post('projectType') == '' && $this->input->post('adviser') == '' && $this->input->post('provider') == '' && $this->input->post('status') == '' && $this->input->post('member') == '' && $this->input->post('under_status') == ''){
-          
+
 
         //     if(!is_admin()) {
         //         $cleck_is_admin = 0;
@@ -3010,59 +3133,60 @@ public function deleteClaimIdentified()
         //     $this->session->set_userdata($filter);
         // }
         // else{
-            // $get_project_data['adviser']      = $this->projects_model->fetchadvisordata();
-            // $get_project_data['projectType']  = $this->projects_model->project_type_data();
-            // $get_project_data['provider']     = $this->projects_model->providers_detail();
-            // $get_project_data['status']       = $this->projects_model->providers_detail();
-            // $get_project_data['under_status'] = $this->projects_model->underwriting_status_detail();
-            // $get_project_data['member']       = $this->projects_model->fetchadvisordata();
-            $filter = [
-                'projectType'  => $this->input->post('projectType'),
-                'adviser'      => $this->input->post('adviser'),
-                'provider'     => $this->input->post('provider'),
-                'status'       => $this->input->post('status'),
-                'member'       => $this->input->post('member'),
-                'under_status' => $this->input->post('under_status'),
-            ];
-            // print_r($filter);
-            // exit;
-            $this->session->set_userdata($filter);
+        // $get_project_data['adviser']      = $this->projects_model->fetchadvisordata();
+        // $get_project_data['projectType']  = $this->projects_model->project_type_data();
+        // $get_project_data['provider']     = $this->projects_model->providers_detail();
+        // $get_project_data['status']       = $this->projects_model->providers_detail();
+        // $get_project_data['under_status'] = $this->projects_model->underwriting_status_detail();
+        // $get_project_data['member']       = $this->projects_model->fetchadvisordata();
+        $filter = [
+            'projectType' => $this->input->post('projectType'),
+            'adviser' => $this->input->post('adviser'),
+            'provider' => $this->input->post('provider'),
+            'status' => $this->input->post('status'),
+            'member' => $this->input->post('member'),
+            'under_status' => $this->input->post('under_status'),
+        ];
+        // print_r($filter);
+        // exit;
+        $this->session->set_userdata($filter);
 
-            // if(!is_admin()) {
-            //     $cleck_is_admin = 0;
-            //     $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter , $cleck_is_admin);
-            // }
-            // if (!has_permission('customers', '', 'view')) {
-            //     if (!is_customer_admin($id)) {
-            //         $cleck_is_admin = 0;
-            //         $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter , $cleck_is_admin);
-            //     }
-            // }else{
-            //     $cleck_is_admin = 1;
-            //     $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter , $cleck_is_admin);
-            // }
+        // if(!is_admin()) {
+        //     $cleck_is_admin = 0;
+        //     $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter , $cleck_is_admin);
+        // }
+        // if (!has_permission('customers', '', 'view')) {
+        //     if (!is_customer_admin($id)) {
+        //         $cleck_is_admin = 0;
+        //         $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter , $cleck_is_admin);
+        //     }
+        // }else{
+        //     $cleck_is_admin = 1;
+        //     $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter , $cleck_is_admin);
+        // }
 
-            // $apibeinglapsed           = $get_project_data['data'];
-            // $lapsed_api_total         = 0;
-            // foreach($apibeinglapsed as $apibeinglapseds){
-            //     $apibeing_lapsed = $apibeinglapseds['subbmited_api'];
-            //     $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
-            //     if($dollerData == '$'){
-            //         $numericdata = substr(trim($apibeing_lapsed),1);
-            //         $lapsed_api_total += str_replace(",", "", $numericdata);
-            //     }
-            // }
-            // $lapsed_Api_total                     
-            // = '$'.number_format($lapsed_api_total ,2).'';
-            // $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
+        // $apibeinglapsed           = $get_project_data['data'];
+        // $lapsed_api_total         = 0;
+        // foreach($apibeinglapsed as $apibeinglapseds){
+        //     $apibeing_lapsed = $apibeinglapseds['subbmited_api'];
+        //     $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
+        //     if($dollerData == '$'){
+        //         $numericdata = substr(trim($apibeing_lapsed),1);
+        //         $lapsed_api_total += str_replace(",", "", $numericdata);
+        //     }
+        // }
+        // $lapsed_Api_total                     
+        // = '$'.number_format($lapsed_api_total ,2).'';
+        // $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
         // }
         $this->load->view('admin/projects/workflow_report/report_underwriting');
     }
-    public function report_underwriting_data(){
-        if($this->input->post('projectType') == '' && $this->input->post('adviser') == '' && $this->input->post('provider') == '' && $this->input->post('status') == '' && $this->input->post('member') == '' && $this->input->post('under_status') == ''){
-          
+    public function report_underwriting_data()
+    {
+        if ($this->input->post('projectType') == '' && $this->input->post('adviser') == '' && $this->input->post('provider') == '' && $this->input->post('status') == '' && $this->input->post('member') == '' && $this->input->post('under_status') == '') {
 
-            if(!is_admin()) {
+
+            if (!is_admin()) {
                 $cleck_is_admin = 0;
                 $get_project_data['data'] = $this->projects_model->get_underwriting_project_data($cleck_is_admin);
             }
@@ -3071,97 +3195,97 @@ public function deleteClaimIdentified()
                     $cleck_is_admin = 0;
                     $get_project_data['data'] = $this->projects_model->get_underwriting_project_data($cleck_is_admin);
                 }
-            }else{
+            } else {
                 $cleck_is_admin = 1;
                 $get_project_data['data'] = $this->projects_model->get_underwriting_project_data($cleck_is_admin);
             }
 
-            $get_project_data['adviser']      = $this->projects_model->fetchadvisordata();
-            $get_project_data['projectType']  = $this->projects_model->project_type_data();
-            $get_project_data['provider']     = $this->projects_model->providers_detail();
-            $get_project_data['status']       = $this->projects_model->providers_detail();
+            $get_project_data['adviser'] = $this->projects_model->fetchadvisordata();
+            $get_project_data['projectType'] = $this->projects_model->project_type_data();
+            $get_project_data['provider'] = $this->projects_model->providers_detail();
+            $get_project_data['status'] = $this->projects_model->providers_detail();
             $get_project_data['under_status'] = $this->projects_model->underwriting_status_detail();
-            $get_project_data['member']       = $this->projects_model->fetchadvisordata();
-            $apibeinglapsed                   = $get_project_data['data'];
+            $get_project_data['member'] = $this->projects_model->fetchadvisordata();
+            $apibeinglapsed = $get_project_data['data'];
             $submitted_api_total = 0;
-            foreach($apibeinglapsed as $apibeinglapseds){
+            foreach ($apibeinglapsed as $apibeinglapseds) {
                 $apibeing_lapsed = $apibeinglapseds['subbmited_api'];
-                $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
-                if($dollerData == '$'){
-                    $numericdata = substr(trim($apibeing_lapsed),1);
+                $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+                if ($dollerData == '$') {
+                    $numericdata = substr(trim($apibeing_lapsed), 1);
                     $lapsed_api_total += str_replace(",", "", $numericdata);
                 }
             }
-            $lapsed_Api_total                     = '$'.number_format($lapsed_api_total ,2).'';
+            $lapsed_Api_total = '$' . number_format($lapsed_api_total, 2) . '';
             $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
             $filter = [
-                'projectType'  => "",
-                'adviser'      => "",
-                'provider'     => "",
-                'status'       => "",
-                'member'       => "",
+                'projectType' => "",
+                'adviser' => "",
+                'provider' => "",
+                'status' => "",
+                'member' => "",
                 'under_status' => "",
             ];
             $this->session->set_userdata($filter);
-            
-        }
-        else{
-            $get_project_data['adviser']      = $this->projects_model->fetchadvisordata();
-            $get_project_data['projectType']  = $this->projects_model->project_type_data();
-            $get_project_data['provider']     = $this->projects_model->providers_detail();
-            $get_project_data['status']       = $this->projects_model->providers_detail();
+
+        } else {
+            $get_project_data['adviser'] = $this->projects_model->fetchadvisordata();
+            $get_project_data['projectType'] = $this->projects_model->project_type_data();
+            $get_project_data['provider'] = $this->projects_model->providers_detail();
+            $get_project_data['status'] = $this->projects_model->providers_detail();
             $get_project_data['under_status'] = $this->projects_model->underwriting_status_detail();
-            $get_project_data['member']       = $this->projects_model->fetchadvisordata();
+            $get_project_data['member'] = $this->projects_model->fetchadvisordata();
             $filter = [
-                'projectType'  => $this->input->post('projectType'),
-                'adviser'      => $this->input->post('adviser'),
-                'provider'     => $this->input->post('provider'),
-                'status'       => $this->input->post('status'),
-                'member'       => $this->input->post('member'),
+                'projectType' => $this->input->post('projectType'),
+                'adviser' => $this->input->post('adviser'),
+                'provider' => $this->input->post('provider'),
+                'status' => $this->input->post('status'),
+                'member' => $this->input->post('member'),
                 'under_status' => $this->input->post('under_status'),
             ];
             // print_r($filter);
             // exit;
             $this->session->set_userdata($filter);
 
-            if(!is_admin()) {
+            if (!is_admin()) {
                 $cleck_is_admin = 0;
-                $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter , $cleck_is_admin);
+                $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter, $cleck_is_admin);
             }
             if (!has_permission('customers', '', 'view')) {
                 if (!is_customer_admin($id)) {
                     $cleck_is_admin = 0;
-                    $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter , $cleck_is_admin);
+                    $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter, $cleck_is_admin);
                 }
-            }else{
+            } else {
                 $cleck_is_admin = 1;
-                $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter , $cleck_is_admin);
+                $get_project_data['data'] = $this->projects_model->get_filtered_underwriting_project_data($filter, $cleck_is_admin);
             }
 
-            $apibeinglapsed           = $get_project_data['data'];
-            $lapsed_api_total         = 0;
-            foreach($apibeinglapsed as $apibeinglapseds){
+            $apibeinglapsed = $get_project_data['data'];
+            $lapsed_api_total = 0;
+            foreach ($apibeinglapsed as $apibeinglapseds) {
                 $apibeing_lapsed = $apibeinglapseds['subbmited_api'];
-                $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
-                if($dollerData == '$'){
-                    $numericdata = substr(trim($apibeing_lapsed),1);
+                $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+                if ($dollerData == '$') {
+                    $numericdata = substr(trim($apibeing_lapsed), 1);
                     $lapsed_api_total += str_replace(",", "", $numericdata);
                 }
             }
-            $lapsed_Api_total                     
-            = '$'.number_format($lapsed_api_total ,2).'';
+            $lapsed_Api_total
+                = '$' . number_format($lapsed_api_total, 2) . '';
             $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
-            
+
         }
         echo json_encode($get_project_data);
         exit;
     }
     //multiselect add =====================================================================
 
-    public function report_adviser(){
+    public function report_adviser()
+    {
 
         // if($this->input->post('projectType') == '' && $this->input->post('adviser') == '' && $this->input->post('provider') == '' && $this->input->post('status') == '' && $this->input->post('member') == '' && $this->input->post('under_status') == ''){
-          
+
         //     if(!is_admin()) {
         //         $cleck_is_admin = 0;
         //         $get_project_data['data'] = $this->projects_model->get_adviser_project_data($cleck_is_admin);
@@ -3207,57 +3331,58 @@ public function deleteClaimIdentified()
         //     $this->session->set_userdata($filter);
         // }
         // else{
-            // $get_project_data['adviser']      = $this->projects_model->fetchadvisordata();
-            // $get_project_data['projectType']  = $this->projects_model->project_type_data();
-            // $get_project_data['provider']     = $this->projects_model->providers_detail();
-            // $get_project_data['status']       = $this->projects_model->providers_detail();
-            // $get_project_data['under_status'] = $this->projects_model->underwriting_status_detail();
-            // $get_project_data['member']       = $this->projects_model->fetchadvisordata();
-            $filter = [
-                'projectType'  => $this->input->post('projectType'),
-                'adviser'      => $this->input->post('adviser'),
-                'provider'     => $this->input->post('provider'),
-                'status'       => $this->input->post('status'),
-                'member'       => $this->input->post('member'),
-                'under_status' => $this->input->post('under_status'),
-            ];
-            $this->session->set_userdata($filter);
+        // $get_project_data['adviser']      = $this->projects_model->fetchadvisordata();
+        // $get_project_data['projectType']  = $this->projects_model->project_type_data();
+        // $get_project_data['provider']     = $this->projects_model->providers_detail();
+        // $get_project_data['status']       = $this->projects_model->providers_detail();
+        // $get_project_data['under_status'] = $this->projects_model->underwriting_status_detail();
+        // $get_project_data['member']       = $this->projects_model->fetchadvisordata();
+        $filter = [
+            'projectType' => $this->input->post('projectType'),
+            'adviser' => $this->input->post('adviser'),
+            'provider' => $this->input->post('provider'),
+            'status' => $this->input->post('status'),
+            'member' => $this->input->post('member'),
+            'under_status' => $this->input->post('under_status'),
+        ];
+        $this->session->set_userdata($filter);
 
-            // if(!is_admin()) {
-            //     $cleck_is_admin = 0;
-            //     $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter , $cleck_is_admin);
-            // }
-            // if (!has_permission('customers', '', 'view')) {
-            //     if (!is_customer_admin($id)) {
-            //         $cleck_is_admin = 0;
-            //         $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter , $cleck_is_admin);
-            //     }
-            // }else{
-            //     $cleck_is_admin = 1;
-            //     $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter , $cleck_is_admin);
-            // }
+        // if(!is_admin()) {
+        //     $cleck_is_admin = 0;
+        //     $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter , $cleck_is_admin);
+        // }
+        // if (!has_permission('customers', '', 'view')) {
+        //     if (!is_customer_admin($id)) {
+        //         $cleck_is_admin = 0;
+        //         $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter , $cleck_is_admin);
+        //     }
+        // }else{
+        //     $cleck_is_admin = 1;
+        //     $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter , $cleck_is_admin);
+        // }
 
-            // $apibeinglapsed           = $get_project_data['data'];
-            // $lapsed_api_total         = 0;
-            // foreach($apibeinglapsed as $apibeinglapseds){
-            //     $apibeing_lapsed = $apibeinglapseds['subbmited_api'];
-            //     $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
-            //     if($dollerData == '$'){
-            //         $numericdata = substr(trim($apibeing_lapsed),1);
-            //         $lapsed_api_total += str_replace(",", "", $numericdata);
-            //     }
-            // }
-            // $lapsed_Api_total                     
-            // = '$'.number_format($lapsed_api_total ,2).'';
-            // $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
+        // $apibeinglapsed           = $get_project_data['data'];
+        // $lapsed_api_total         = 0;
+        // foreach($apibeinglapsed as $apibeinglapseds){
+        //     $apibeing_lapsed = $apibeinglapseds['subbmited_api'];
+        //     $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
+        //     if($dollerData == '$'){
+        //         $numericdata = substr(trim($apibeing_lapsed),1);
+        //         $lapsed_api_total += str_replace(",", "", $numericdata);
+        //     }
+        // }
+        // $lapsed_Api_total                     
+        // = '$'.number_format($lapsed_api_total ,2).'';
+        // $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
         // }
         $this->load->view('admin/projects/workflow_report/report_adviser');
     }
-    public function report_adviser_data(){
+    public function report_adviser_data()
+    {
 
-        if($this->input->post('projectType') == '' && $this->input->post('adviser') == '' && $this->input->post('provider') == '' && $this->input->post('status') == '' && $this->input->post('member') == '' && $this->input->post('under_status') == ''){
-          
-            if(!is_admin()) {
+        if ($this->input->post('projectType') == '' && $this->input->post('adviser') == '' && $this->input->post('provider') == '' && $this->input->post('status') == '' && $this->input->post('member') == '' && $this->input->post('under_status') == '') {
+
+            if (!is_admin()) {
                 $cleck_is_admin = 0;
                 $get_project_data['data'] = $this->projects_model->get_adviser_project_data($cleck_is_admin);
             }
@@ -3266,107 +3391,108 @@ public function deleteClaimIdentified()
                     $cleck_is_admin = 0;
                     $get_project_data['data'] = $this->projects_model->get_adviser_project_data($cleck_is_admin);
                 }
-            }else{
+            } else {
                 $cleck_is_admin = 1;
                 //$get_project_data['data'] = $this->projects_model->get_adviser_project_data($cleck_is_admin);
             }
 
-            $get_project_data['adviser']      = $this->projects_model->fetchadvisordata();
-            $get_project_data['projectType']  = $this->projects_model->project_type_data();
+            $get_project_data['adviser'] = $this->projects_model->fetchadvisordata();
+            $get_project_data['projectType'] = $this->projects_model->project_type_data();
             // print_r($get_project_data['projectType']);
             // exit;
-            $get_project_data['provider']     = $this->projects_model->providers_detail();
-            $get_project_data['status']       = $this->projects_model->providers_detail();
+            $get_project_data['provider'] = $this->projects_model->providers_detail();
+            $get_project_data['status'] = $this->projects_model->providers_detail();
             $get_project_data['under_status'] = $this->projects_model->underwriting_status_detail();
-            $get_project_data['member']       = $this->projects_model->fetchadvisordata();
-            $apibeinglapsed                   = $get_project_data['data'];
+            $get_project_data['member'] = $this->projects_model->fetchadvisordata();
+            $apibeinglapsed = $get_project_data['data'];
             $submitted_api_total = 0;
-            foreach($apibeinglapsed as $apibeinglapseds){
+            foreach ($apibeinglapsed as $apibeinglapseds) {
                 $apibeing_lapsed = $apibeinglapseds['subbmited_api'];
-                $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
-                if($dollerData == '$'){
-                    $numericdata = substr(trim($apibeing_lapsed),1);
+                $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+                if ($dollerData == '$') {
+                    $numericdata = substr(trim($apibeing_lapsed), 1);
                     $lapsed_api_total += str_replace(",", "", $numericdata);
                 }
             }
-            $lapsed_Api_total                     = '$'.number_format($lapsed_api_total ,2).'';
+            $lapsed_Api_total = '$' . number_format($lapsed_api_total, 2) . '';
             $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
             $filter = [
-                'projectType'  => "",
-                'adviser'      => "",
-                'provider'     => "",
-                'status'       => "",
-                'member'       => "",
+                'projectType' => "",
+                'adviser' => "",
+                'provider' => "",
+                'status' => "",
+                'member' => "",
                 'under_status' => "",
             ];
             $this->session->set_userdata($filter);
-           
-        }
-        else{
-            $get_project_data['adviser']      = $this->projects_model->fetchadvisordata();
-            $get_project_data['projectType']  = $this->projects_model->project_type_data();
-            $get_project_data['provider']     = $this->projects_model->providers_detail();
-            $get_project_data['status']       = $this->projects_model->providers_detail();
+
+        } else {
+            $get_project_data['adviser'] = $this->projects_model->fetchadvisordata();
+            $get_project_data['projectType'] = $this->projects_model->project_type_data();
+            $get_project_data['provider'] = $this->projects_model->providers_detail();
+            $get_project_data['status'] = $this->projects_model->providers_detail();
             $get_project_data['under_status'] = $this->projects_model->underwriting_status_detail();
-            $get_project_data['member']       = $this->projects_model->fetchadvisordata();
+            $get_project_data['member'] = $this->projects_model->fetchadvisordata();
             $filter = [
-                'projectType'  => $this->input->post('projectType'),
-                'adviser'      => $this->input->post('adviser'),
-                'provider'     => $this->input->post('provider'),
-                'status'       => $this->input->post('status'),
-                'member'       => $this->input->post('member'),
+                'projectType' => $this->input->post('projectType'),
+                'adviser' => $this->input->post('adviser'),
+                'provider' => $this->input->post('provider'),
+                'status' => $this->input->post('status'),
+                'member' => $this->input->post('member'),
                 'under_status' => $this->input->post('under_status'),
             ];
             $this->session->set_userdata($filter);
 
-            if(!is_admin()) {
+            if (!is_admin()) {
                 $cleck_is_admin = 0;
-                $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter , $cleck_is_admin);
+                $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter, $cleck_is_admin);
             }
             if (!has_permission('customers', '', 'view')) {
                 if (!is_customer_admin($id)) {
                     $cleck_is_admin = 0;
-                    $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter , $cleck_is_admin);
+                    $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter, $cleck_is_admin);
                 }
-            }else{
+            } else {
                 $cleck_is_admin = 1;
-                $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter , $cleck_is_admin);
+                $get_project_data['data'] = $this->projects_model->get_filtered_adviser_project_data($filter, $cleck_is_admin);
             }
 
-            $apibeinglapsed           = $get_project_data['data'];
-            $lapsed_api_total         = 0;
-            foreach($apibeinglapsed as $apibeinglapseds){
+            $apibeinglapsed = $get_project_data['data'];
+            $lapsed_api_total = 0;
+            foreach ($apibeinglapsed as $apibeinglapseds) {
                 $apibeing_lapsed = $apibeinglapseds['subbmited_api'];
-                $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
-                if($dollerData == '$'){
-                    $numericdata = substr(trim($apibeing_lapsed),1);
+                $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+                if ($dollerData == '$') {
+                    $numericdata = substr(trim($apibeing_lapsed), 1);
                     $lapsed_api_total += str_replace(",", "", $numericdata);
                 }
             }
-            $lapsed_Api_total                     
-            = '$'.number_format($lapsed_api_total ,2).'';
+            $lapsed_Api_total
+                = '$' . number_format($lapsed_api_total, 2) . '';
             $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
-            
+
         }
         echo json_encode($get_project_data);
         exit;
     }
-    public function activity_report(){
-            $filter = [
-                'projectType'  => $this->input->post('projectType'),
-                'adviser'      => $this->input->post('adviser'),
-                'provider'     => $this->input->post('provider'),
-                'status'       => $this->input->post('status'),
-                'member'       => $this->input->post('member'),
-                'under_status' => $this->input->post('under_status'),
-            ];
-            $this->session->set_userdata($filter);
+    public function activity_report()
+    {
+        $filter = [
+            'projectType' => $this->input->post('projectType'),
+            'adviser' => $this->input->post('adviser'),
+            'provider' => $this->input->post('provider'),
+            'status' => $this->input->post('status'),
+            'member' => $this->input->post('member'),
+            'under_status' => $this->input->post('under_status'),
+        ];
+        $this->session->set_userdata($filter);
         $this->load->view('admin/projects/workflow_report/activity_report');
     }
-    public function activity_report_data(){
-        if($this->input->post('projectType') == '' && $this->input->post('adviser') == '' && $this->input->post('provider') == '' && $this->input->post('status') == '' && $this->input->post('member') == '' && $this->input->post('under_status') == ''){
-          
-            if(!is_admin()) {
+    public function activity_report_data()
+    {
+        if ($this->input->post('projectType') == '' && $this->input->post('adviser') == '' && $this->input->post('provider') == '' && $this->input->post('status') == '' && $this->input->post('member') == '' && $this->input->post('under_status') == '') {
+
+            if (!is_admin()) {
                 $cleck_is_admin = 0;
                 $get_project_data['data'] = $this->projects_model->get_activity_report_data($cleck_is_admin);
             }
@@ -3375,98 +3501,98 @@ public function deleteClaimIdentified()
                     $cleck_is_admin = 0;
                     $get_project_data['data'] = $this->projects_model->get_activity_report_data($cleck_is_admin);
                 }
-            }else{
+            } else {
                 $cleck_is_admin = 1;
                 // $get_project_data['data'] = $this->projects_model->get_activity_report_data($cleck_is_admin);
             }
 
-            $get_project_data['adviser']      = $this->projects_model->fetchadvisordata();
-            $get_project_data['projectType']  = $this->projects_model->project_type_data();
+            $get_project_data['adviser'] = $this->projects_model->fetchadvisordata();
+            $get_project_data['projectType'] = $this->projects_model->project_type_data();
             // print_r($get_project_data['projectType']);
             // exit;
-            $get_project_data['provider']     = $this->projects_model->providers_detail();
-            $get_project_data['status']       = $this->projects_model->providers_detail();
+            $get_project_data['provider'] = $this->projects_model->providers_detail();
+            $get_project_data['status'] = $this->projects_model->providers_detail();
             $get_project_data['under_status'] = $this->projects_model->underwriting_status_detail();
-            $get_project_data['member']       = $this->projects_model->fetchadvisordata();
-            $apibeinglapsed                   = $get_project_data['data'];
+            $get_project_data['member'] = $this->projects_model->fetchadvisordata();
+            $apibeinglapsed = $get_project_data['data'];
             $submitted_api_total = 0;
-            foreach($apibeinglapsed as $apibeinglapseds){
+            foreach ($apibeinglapsed as $apibeinglapseds) {
                 $apibeing_lapsed = $apibeinglapseds['subbmited_api'];
-                $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
-                if($dollerData == '$'){
-                    $numericdata = substr(trim($apibeing_lapsed),1);
+                $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+                if ($dollerData == '$') {
+                    $numericdata = substr(trim($apibeing_lapsed), 1);
                     $lapsed_api_total += str_replace(",", "", $numericdata);
                 }
             }
-            $lapsed_Api_total                     = '$'.number_format($lapsed_api_total ,2).'';
+            $lapsed_Api_total = '$' . number_format($lapsed_api_total, 2) . '';
             $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
             $filter = [
-                'projectType'  => "",
-                'adviser'      => "",
-                'provider'     => "",
-                'status'       => "",
-                'member'       => "",
+                'projectType' => "",
+                'adviser' => "",
+                'provider' => "",
+                'status' => "",
+                'member' => "",
                 'under_status' => "",
             ];
             $this->session->set_userdata($filter);
-           
-        }
-        else{
-            $get_project_data['adviser']      = $this->projects_model->fetchadvisordata();
-            $get_project_data['projectType']  = $this->projects_model->project_type_data();
-            $get_project_data['provider']     = $this->projects_model->providers_detail();
-            $get_project_data['status']       = $this->projects_model->providers_detail();
+
+        } else {
+            $get_project_data['adviser'] = $this->projects_model->fetchadvisordata();
+            $get_project_data['projectType'] = $this->projects_model->project_type_data();
+            $get_project_data['provider'] = $this->projects_model->providers_detail();
+            $get_project_data['status'] = $this->projects_model->providers_detail();
             $get_project_data['under_status'] = $this->projects_model->underwriting_status_detail();
-            $get_project_data['member']       = $this->projects_model->fetchadvisordata();
+            $get_project_data['member'] = $this->projects_model->fetchadvisordata();
             $filter = [
-                'projectType'  => $this->input->post('projectType'),
-                'adviser'      => $this->input->post('adviser'),
-                'provider'     => $this->input->post('provider'),
-                'status'       => $this->input->post('status'),
-                'member'       => $this->input->post('member'),
+                'projectType' => $this->input->post('projectType'),
+                'adviser' => $this->input->post('adviser'),
+                'provider' => $this->input->post('provider'),
+                'status' => $this->input->post('status'),
+                'member' => $this->input->post('member'),
                 'under_status' => $this->input->post('under_status'),
             ];
             $this->session->set_userdata($filter);
 
-            if(!is_admin()) {
+            if (!is_admin()) {
                 $cleck_is_admin = 0;
-                $get_project_data['data'] = $this->projects_model->get_filtered_activity_report_data($filter , $cleck_is_admin);
+                $get_project_data['data'] = $this->projects_model->get_filtered_activity_report_data($filter, $cleck_is_admin);
             }
             if (!has_permission('customers', '', 'view')) {
                 if (!is_customer_admin($id)) {
                     $cleck_is_admin = 0;
-                    $get_project_data['data'] = $this->projects_model->get_filtered_activity_report_data($filter , $cleck_is_admin);
+                    $get_project_data['data'] = $this->projects_model->get_filtered_activity_report_data($filter, $cleck_is_admin);
                 }
-            }else{
+            } else {
                 $cleck_is_admin = 1;
-                $get_project_data['data'] = $this->projects_model->get_filtered_activity_report_data($filter , $cleck_is_admin);
+                $get_project_data['data'] = $this->projects_model->get_filtered_activity_report_data($filter, $cleck_is_admin);
             }
 
-            $apibeinglapsed           = $get_project_data['data'];
-            $lapsed_api_total         = 0;
-            foreach($apibeinglapsed as $apibeinglapseds){
+            $apibeinglapsed = $get_project_data['data'];
+            $lapsed_api_total = 0;
+            foreach ($apibeinglapsed as $apibeinglapseds) {
                 $apibeing_lapsed = $apibeinglapseds['subbmited_api'];
-                $dollerData      = mb_substr(trim($apibeing_lapsed), 0, 1);
-                if($dollerData == '$'){
-                    $numericdata = substr(trim($apibeing_lapsed),1);
+                $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+                if ($dollerData == '$') {
+                    $numericdata = substr(trim($apibeing_lapsed), 1);
                     $lapsed_api_total += str_replace(",", "", $numericdata);
                 }
             }
-            $lapsed_Api_total                     
-            = '$'.number_format($lapsed_api_total ,2).'';
+            $lapsed_Api_total
+                = '$' . number_format($lapsed_api_total, 2) . '';
             $get_project_data['lapsed_api_total'] = $lapsed_Api_total;
-            
+
         }
         echo json_encode($get_project_data);
         exit;
     }
-    public function report_underwriting_by_adviser(){
-       
+    public function report_underwriting_by_adviser()
+    {
+
         // if($this->input->post('provider') == ''){
         //     if(!is_admin()) {
         //         $cleck_is_admin = 0;
         //         $get_project_data = $this->projects_model->get_underwriting_by_adviser_project_data($cleck_is_admin);
-              
+
         //     }
         //     if (!has_permission('customers', '', 'view')) {
         //         if (!is_customer_admin($id)) {
@@ -3485,12 +3611,12 @@ public function deleteClaimIdentified()
         //         $adviserName = $get_project_datas['adviser'];
         //         $adviserId = $get_project_datas['adviser_id'];
 
-                
-                
+
+
         //         if ($get_project_datas['adviser'] != '' && $get_project_datas['adviser_id'] != 0) {
-                    
+
         //             foreach($get_project_datas['adviser_data'] as $getprojectDatas){
-                    
+
         //                 $submitted_api_1 = 0;
         //                 $submitted_api_2 = 0;
         //                 $submitted_api_3 = 0;
@@ -3571,144 +3697,145 @@ public function deleteClaimIdentified()
         //                 }
 
         //                 $result[$innerKey][$subKey] += $subValue;
-                        
+
         //             }
         //         }
         //     }
 
         //     $get_project_data['amountPerAdviser'] = $result;
         //     $get_project_data['provider']         = $this->projects_model->providers_detail();
-            
+
         //     $filter = [
         //         'provider'     => "",
         //     ];
         //     $this->session->set_userdata($filter);
         // }
         // else{
-            $filter = [
-                'provider'     => $this->input->post('provider'),
-            ];
-            $this->session->set_userdata($filter);
+        $filter = [
+            'provider' => $this->input->post('provider'),
+        ];
+        $this->session->set_userdata($filter);
 
-            // if(!is_admin()) {
-            //     $cleck_is_admin = 0;
-            //     $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($filter , $cleck_is_admin);
-            // }
-            // if (!has_permission('customers', '', 'view')) {
-            //     if (!is_customer_admin($id)) {
-            //         $cleck_is_admin = 0;
-            //         $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($filter , $cleck_is_admin);
-            //     }
-            // }else{
-            //     $cleck_is_admin = 1;
-            //     $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($cleck_is_admin, $filter);
-            // }
-            // $amountPerAdviser = [];
-            // $i = 0;
-            // $uniqueAdviserNames = [];
-            // foreach($get_project_data as $get_project_datas) {
+        // if(!is_admin()) {
+        //     $cleck_is_admin = 0;
+        //     $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($filter , $cleck_is_admin);
+        // }
+        // if (!has_permission('customers', '', 'view')) {
+        //     if (!is_customer_admin($id)) {
+        //         $cleck_is_admin = 0;
+        //         $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($filter , $cleck_is_admin);
+        //     }
+        // }else{
+        //     $cleck_is_admin = 1;
+        //     $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($cleck_is_admin, $filter);
+        // }
+        // $amountPerAdviser = [];
+        // $i = 0;
+        // $uniqueAdviserNames = [];
+        // foreach($get_project_data as $get_project_datas) {
 
-            //     $adviserName = $get_project_datas['adviser'];
-            //     $adviserId = $get_project_datas['adviser_id'];
-                
-            //     if ($get_project_datas['adviser'] != '' && $get_project_datas['adviser_id'] != 0) {
-                   
-            //         foreach($get_project_datas['adviser_data'] as $getprojectDatas){
-                    
-            //             $submitted_api_1 = 0;
-            //             $submitted_api_2 = 0;
-            //             $submitted_api_3 = 0;
+        //     $adviserName = $get_project_datas['adviser'];
+        //     $adviserId = $get_project_datas['adviser_id'];
 
-            //             if (!empty($getprojectDatas['name'])) {
+        //     if ($get_project_datas['adviser'] != '' && $get_project_datas['adviser_id'] != 0) {
 
-            //                 foreach($getprojectDatas['name'] as $getprojectData_by_names){
+        //         foreach($get_project_datas['adviser_data'] as $getprojectDatas){
 
-            //                     // In Progress
-            //                     if($getprojectData_by_names['under_status'] == 1) {
-            //                         $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
-            //                         $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
-            //                         if($dollerData == '$'){
-            //                             $numericdata = substr(trim($apibeing_lapsed),1);
-            //                             $sum_numeric_data = trim(str_replace(",", "", $numericdata));
-            //                             $toAdd = $sum_numeric_data;
-            //                         }
-            //                         else {
-            //                             $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
-            //                             $toAdd = $sum_numeric_data;
-            //                         }
-            //                         $submitted_api_1 = $submitted_api_1 + $toAdd;
-            //                     }
+        //             $submitted_api_1 = 0;
+        //             $submitted_api_2 = 0;
+        //             $submitted_api_3 = 0;
 
-            //                     // Out Of Terms
-            //                     if($getprojectData_by_names['under_status'] == 2) {
-            //                         $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
-            //                         $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
-            //                         if($dollerData == '$'){
-            //                             $numericdata = substr(trim($apibeing_lapsed),1);
-            //                             $sum_numeric_data = trim(str_replace(",", "", $numericdata));
-            //                             $toAdd = $sum_numeric_data;
-            //                         }
-            //                         else {
-            //                             $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
-            //                             $toAdd = $sum_numeric_data;
-            //                         }
-            //                         $submitted_api_2 = $submitted_api_2 + $toAdd;
-            //                     }
+        //             if (!empty($getprojectDatas['name'])) {
 
-            //                     // Requested To Issue
-            //                     if($getprojectData_by_names['under_status'] == 3) {
-            //                         $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
-            //                         $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
-            //                         if($dollerData == '$'){
-            //                             $numericdata = substr(trim($apibeing_lapsed),1);
-            //                             $sum_numeric_data = trim(str_replace(",", "", $numericdata));
-            //                             $toAdd = $sum_numeric_data;
-            //                         }
-            //                         else {
-            //                             $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
-            //                             $toAdd = $sum_numeric_data;
-            //                         }
-            //                         $submitted_api_3 = $submitted_api_3 + $toAdd;
-            //                     }
-            //                 }
+        //                 foreach($getprojectDatas['name'] as $getprojectData_by_names){
 
-            //                 $amountPerAdviser[$i][$get_project_datas['adviser']][1] = $submitted_api_1;
-            //                 $amountPerAdviser[$i][$get_project_datas['adviser']][2] = $submitted_api_2;
-            //                 $amountPerAdviser[$i][$get_project_datas['adviser']][3] = $submitted_api_3;
-            //             }
-            //             $i++;
-            //         }
-            //     }
-            // }
+        //                     // In Progress
+        //                     if($getprojectData_by_names['under_status'] == 1) {
+        //                         $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
+        //                         $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+        //                         if($dollerData == '$'){
+        //                             $numericdata = substr(trim($apibeing_lapsed),1);
+        //                             $sum_numeric_data = trim(str_replace(",", "", $numericdata));
+        //                             $toAdd = $sum_numeric_data;
+        //                         }
+        //                         else {
+        //                             $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
+        //                             $toAdd = $sum_numeric_data;
+        //                         }
+        //                         $submitted_api_1 = $submitted_api_1 + $toAdd;
+        //                     }
 
-            // $result = array();
+        //                     // Out Of Terms
+        //                     if($getprojectData_by_names['under_status'] == 2) {
+        //                         $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
+        //                         $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+        //                         if($dollerData == '$'){
+        //                             $numericdata = substr(trim($apibeing_lapsed),1);
+        //                             $sum_numeric_data = trim(str_replace(",", "", $numericdata));
+        //                             $toAdd = $sum_numeric_data;
+        //                         }
+        //                         else {
+        //                             $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
+        //                             $toAdd = $sum_numeric_data;
+        //                         }
+        //                         $submitted_api_2 = $submitted_api_2 + $toAdd;
+        //                     }
 
-            // foreach ($amountPerAdviser as $key => $innerArray) {
-            //     foreach ($innerArray as $innerKey => $innerValues) {
-            //         if (!isset($result[$innerKey])) {
-            //             $result[$innerKey] = array();
-            //         }
-            //         foreach ($innerValues as $subKey => $subValue) {
-            //             if (!isset($result[$innerKey][$subKey])) {
-            //                 $result[$innerKey][$subKey] = 0;
-            //             }
-            //             $result[$innerKey][$subKey] += $subValue;
-            //         }
-            //     }
-            // }
-               
-            // $get_project_data['amountPerAdviser'] = $result;
-            // $get_project_data['provider']         = $this->projects_model->providers_detail();
+        //                     // Requested To Issue
+        //                     if($getprojectData_by_names['under_status'] == 3) {
+        //                         $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
+        //                         $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+        //                         if($dollerData == '$'){
+        //                             $numericdata = substr(trim($apibeing_lapsed),1);
+        //                             $sum_numeric_data = trim(str_replace(",", "", $numericdata));
+        //                             $toAdd = $sum_numeric_data;
+        //                         }
+        //                         else {
+        //                             $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
+        //                             $toAdd = $sum_numeric_data;
+        //                         }
+        //                         $submitted_api_3 = $submitted_api_3 + $toAdd;
+        //                     }
+        //                 }
+
+        //                 $amountPerAdviser[$i][$get_project_datas['adviser']][1] = $submitted_api_1;
+        //                 $amountPerAdviser[$i][$get_project_datas['adviser']][2] = $submitted_api_2;
+        //                 $amountPerAdviser[$i][$get_project_datas['adviser']][3] = $submitted_api_3;
+        //             }
+        //             $i++;
+        //         }
+        //     }
+        // }
+
+        // $result = array();
+
+        // foreach ($amountPerAdviser as $key => $innerArray) {
+        //     foreach ($innerArray as $innerKey => $innerValues) {
+        //         if (!isset($result[$innerKey])) {
+        //             $result[$innerKey] = array();
+        //         }
+        //         foreach ($innerValues as $subKey => $subValue) {
+        //             if (!isset($result[$innerKey][$subKey])) {
+        //                 $result[$innerKey][$subKey] = 0;
+        //             }
+        //             $result[$innerKey][$subKey] += $subValue;
+        //         }
+        //     }
+        // }
+
+        // $get_project_data['amountPerAdviser'] = $result;
+        // $get_project_data['provider']         = $this->projects_model->providers_detail();
         // }
         $this->load->view('admin/projects/workflow_report/report_underwriting_by_adviser');
     }
-    public function report_underwriting_by_adviser_data(){
+    public function report_underwriting_by_adviser_data()
+    {
 
         // $id = get_staff_user_id();
-       
-        if($this->input->post('provider') == ''){
 
-            if(!is_admin()) {
+        if ($this->input->post('provider') == '') {
+
+            if (!is_admin()) {
                 $cleck_is_admin = 0;
                 $get_project_data = $this->projects_model->get_underwriting_by_adviser_project_data($cleck_is_admin);
             }
@@ -3717,170 +3844,43 @@ public function deleteClaimIdentified()
                     $cleck_is_admin = 0;
                     $get_project_data = $this->projects_model->get_underwriting_by_adviser_project_data($cleck_is_admin);
                 }
-            }else{
+            } else {
                 $cleck_is_admin = 1;
                 $get_project_data = $this->projects_model->get_underwriting_by_adviser_project_data($cleck_is_admin);
             }
-         
-        
+
+
             $amountPerAdviser = [];
             $i = 0;
             $uniqueAdviserNames = [];
-            foreach($get_project_data as $get_project_datas) {
+            foreach ($get_project_data as $get_project_datas) {
 
                 $adviserName = $get_project_datas['adviser'];
                 $adviserId = $get_project_datas['adviser_id'];
 
-                
-                
+
+
                 if ($get_project_datas['adviser'] != '' && $get_project_datas['adviser_id'] != 0) {
-                    
-                    foreach($get_project_datas['adviser_data'] as $getprojectDatas){
-                    
+
+                    foreach ($get_project_datas['adviser_data'] as $getprojectDatas) {
+
                         $submitted_api_1 = 0;
                         $submitted_api_2 = 0;
                         $submitted_api_3 = 0;
 
                         if (!empty($getprojectDatas['name'])) {
 
-                            foreach($getprojectDatas['name'] as $getprojectData_by_names){
+                            foreach ($getprojectDatas['name'] as $getprojectData_by_names) {
 
                                 // In Progress
-                                if($getprojectData_by_names['under_status'] == 1) {
+                                if ($getprojectData_by_names['under_status'] == 1) {
                                     $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
                                     $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
-                                    if($dollerData == '$'){
-                                        $numericdata = substr(trim($apibeing_lapsed),1);
+                                    if ($dollerData == '$') {
+                                        $numericdata = substr(trim($apibeing_lapsed), 1);
                                         $sum_numeric_data = trim(str_replace(",", "", $numericdata));
                                         $toAdd = $sum_numeric_data;
-                                    }
-                                    else {
-                                        $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
-                                        $toAdd = $sum_numeric_data;
-                                    }
-                             $submitted_api_1 = $submitted_api_1 + $toAdd;
-                                }
-
-                                // Out Of Terms
-                                if($getprojectData_by_names['under_status'] == 2) {
-                                    $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
-                                    $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
-                                    if($dollerData == '$'){
-                                        $numericdata = substr(trim($apibeing_lapsed),1);
-                                        $sum_numeric_data = trim(str_replace(",", "", $numericdata));
-                                        $toAdd = $sum_numeric_data;
-                                    }
-                                    else {
-                                        $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
-                                        $toAdd = $sum_numeric_data;
-                                    }
-                                    $submitted_api_2 = $submitted_api_2 + $toAdd;
-                                }
-
-                                // Requested To Issue
-                                if($getprojectData_by_names['under_status'] == 3) {
-                                    $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
-                                    $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
-                                    if($dollerData == '$'){
-                                        $numericdata = substr(trim($apibeing_lapsed),1);
-                                        $sum_numeric_data = trim(str_replace(",", "", $numericdata));
-                                        $toAdd = $sum_numeric_data;
-                                    }
-                                    else {
-                                        $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
-                                        $toAdd = $sum_numeric_data;
-                                    }
-                                    $submitted_api_3 = $submitted_api_3 + $toAdd;
-                                }
-                            }
-                            
-                            $amountPerAdviser[$i][$get_project_datas['adviser']][1] = $submitted_api_1;
-                            $amountPerAdviser[$i][$get_project_datas['adviser']][2] = $submitted_api_2;
-                            $amountPerAdviser[$i][$get_project_datas['adviser']][3] = $submitted_api_3;
-                        }
-                        $i++;
-                        
-                    }
-                }
-            }
-
-            $result = array();
-
-            foreach ($amountPerAdviser as $key => $innerArray) {
-                foreach ($innerArray as $innerKey => $innerValues) {
-                    if (!isset($result[$innerKey])) {
-                        $result[$innerKey] = array();
-                    }
-                   
-                    foreach ($innerValues as $subKey => $subValue) {
-                        if (!isset($result[$innerKey][$subKey])) {
-                            $result[$innerKey][$subKey] = 0;
-                        }
-                        // $result[$innerKey][$subKey] += $subValue;
-                        $result[$innerKey][$subKey] = $subValue;
-                        
-                    }
-                }
-            }
-           
-            $get_project_data['amountPerAdviser'] = $result;
-            $get_project_data['provider']         = $this->projects_model->providers_detail();
-            
-            $filter = [
-                'provider'     => "",
-            ];
-            $this->session->set_userdata($filter);
-            
-        }
-        else{
-            $filter = [
-                'provider'     => $this->input->post('provider'),
-            ];
-            $this->session->set_userdata($filter);
-
-            if(!is_admin()) {
-                $cleck_is_admin = 0;
-                $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($filter , $cleck_is_admin);
-            }
-            if (!has_permission('customers', '', 'view')) {
-                if (!is_customer_admin($id)) {
-                    $cleck_is_admin = 0;
-                    $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($filter , $cleck_is_admin);
-                }
-            }else{
-                $cleck_is_admin = 1;
-                $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($cleck_is_admin, $filter);
-            }
-            $amountPerAdviser = [];
-            $i = 0;
-            $uniqueAdviserNames = [];
-            foreach($get_project_data as $get_project_datas) {
-
-                $adviserName = $get_project_datas['adviser'];
-                $adviserId = $get_project_datas['adviser_id'];
-                
-                if ($get_project_datas['adviser'] != '' && $get_project_datas['adviser_id'] != 0) {
-                   
-                    foreach($get_project_datas['adviser_data'] as $getprojectDatas){
-                    
-                        $submitted_api_1 = 0;
-                        $submitted_api_2 = 0;
-                        $submitted_api_3 = 0;
-
-                        if (!empty($getprojectDatas['name'])) {
-
-                            foreach($getprojectDatas['name'] as $getprojectData_by_names){
-
-                                // In Progress
-                                if($getprojectData_by_names['under_status'] == 1) {
-                                    $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
-                                    $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
-                                    if($dollerData == '$'){
-                                        $numericdata = substr(trim($apibeing_lapsed),1);
-                                        $sum_numeric_data = trim(str_replace(",", "", $numericdata));
-                                        $toAdd = $sum_numeric_data;
-                                    }
-                                    else {
+                                    } else {
                                         $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
                                         $toAdd = $sum_numeric_data;
                                     }
@@ -3888,15 +3888,14 @@ public function deleteClaimIdentified()
                                 }
 
                                 // Out Of Terms
-                                if($getprojectData_by_names['under_status'] == 2) {
+                                if ($getprojectData_by_names['under_status'] == 2) {
                                     $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
                                     $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
-                                    if($dollerData == '$'){
-                                        $numericdata = substr(trim($apibeing_lapsed),1);
+                                    if ($dollerData == '$') {
+                                        $numericdata = substr(trim($apibeing_lapsed), 1);
                                         $sum_numeric_data = trim(str_replace(",", "", $numericdata));
                                         $toAdd = $sum_numeric_data;
-                                    }
-                                    else {
+                                    } else {
                                         $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
                                         $toAdd = $sum_numeric_data;
                                     }
@@ -3904,15 +3903,136 @@ public function deleteClaimIdentified()
                                 }
 
                                 // Requested To Issue
-                                if($getprojectData_by_names['under_status'] == 3) {
+                                if ($getprojectData_by_names['under_status'] == 3) {
                                     $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
                                     $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
-                                    if($dollerData == '$'){
-                                        $numericdata = substr(trim($apibeing_lapsed),1);
+                                    if ($dollerData == '$') {
+                                        $numericdata = substr(trim($apibeing_lapsed), 1);
                                         $sum_numeric_data = trim(str_replace(",", "", $numericdata));
                                         $toAdd = $sum_numeric_data;
+                                    } else {
+                                        $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
+                                        $toAdd = $sum_numeric_data;
                                     }
-                                    else {
+                                    $submitted_api_3 = $submitted_api_3 + $toAdd;
+                                }
+                            }
+
+                            $amountPerAdviser[$i][$get_project_datas['adviser']][1] = $submitted_api_1;
+                            $amountPerAdviser[$i][$get_project_datas['adviser']][2] = $submitted_api_2;
+                            $amountPerAdviser[$i][$get_project_datas['adviser']][3] = $submitted_api_3;
+                        }
+                        $i++;
+
+                    }
+                }
+            }
+
+            $result = array();
+
+            foreach ($amountPerAdviser as $key => $innerArray) {
+                foreach ($innerArray as $innerKey => $innerValues) {
+                    if (!isset($result[$innerKey])) {
+                        $result[$innerKey] = array();
+                    }
+
+                    foreach ($innerValues as $subKey => $subValue) {
+                        if (!isset($result[$innerKey][$subKey])) {
+                            $result[$innerKey][$subKey] = 0;
+                        }
+                        // $result[$innerKey][$subKey] += $subValue;
+                        $result[$innerKey][$subKey] = $subValue;
+
+                    }
+                }
+            }
+
+            $get_project_data['amountPerAdviser'] = $result;
+            $get_project_data['provider'] = $this->projects_model->providers_detail();
+
+            $filter = [
+                'provider' => "",
+            ];
+            $this->session->set_userdata($filter);
+
+        } else {
+            $filter = [
+                'provider' => $this->input->post('provider'),
+            ];
+            $this->session->set_userdata($filter);
+
+            if (!is_admin()) {
+                $cleck_is_admin = 0;
+                $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($filter, $cleck_is_admin);
+            }
+            if (!has_permission('customers', '', 'view')) {
+                if (!is_customer_admin($id)) {
+                    $cleck_is_admin = 0;
+                    $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($filter, $cleck_is_admin);
+                }
+            } else {
+                $cleck_is_admin = 1;
+                $get_project_data = $this->projects_model->filter_get_underwriting_by_adviser_project_data($cleck_is_admin, $filter);
+            }
+            $amountPerAdviser = [];
+            $i = 0;
+            $uniqueAdviserNames = [];
+            foreach ($get_project_data as $get_project_datas) {
+
+                $adviserName = $get_project_datas['adviser'];
+                $adviserId = $get_project_datas['adviser_id'];
+
+                if ($get_project_datas['adviser'] != '' && $get_project_datas['adviser_id'] != 0) {
+
+                    foreach ($get_project_datas['adviser_data'] as $getprojectDatas) {
+
+                        $submitted_api_1 = 0;
+                        $submitted_api_2 = 0;
+                        $submitted_api_3 = 0;
+
+                        if (!empty($getprojectDatas['name'])) {
+
+                            foreach ($getprojectDatas['name'] as $getprojectData_by_names) {
+
+                                // In Progress
+                                if ($getprojectData_by_names['under_status'] == 1) {
+                                    $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
+                                    $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+                                    if ($dollerData == '$') {
+                                        $numericdata = substr(trim($apibeing_lapsed), 1);
+                                        $sum_numeric_data = trim(str_replace(",", "", $numericdata));
+                                        $toAdd = $sum_numeric_data;
+                                    } else {
+                                        $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
+                                        $toAdd = $sum_numeric_data;
+                                    }
+                                    $submitted_api_1 = $submitted_api_1 + $toAdd;
+                                }
+
+                                // Out Of Terms
+                                if ($getprojectData_by_names['under_status'] == 2) {
+                                    $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
+                                    $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+                                    if ($dollerData == '$') {
+                                        $numericdata = substr(trim($apibeing_lapsed), 1);
+                                        $sum_numeric_data = trim(str_replace(",", "", $numericdata));
+                                        $toAdd = $sum_numeric_data;
+                                    } else {
+                                        $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
+                                        $toAdd = $sum_numeric_data;
+                                    }
+                                    $submitted_api_2 = $submitted_api_2 + $toAdd;
+                                }
+
+                                // Requested To Issue
+                                if ($getprojectData_by_names['under_status'] == 3) {
+                                    $apibeing_lapsed = $getprojectData_by_names['submitted_api'];
+                                    $dollerData = mb_substr(trim($apibeing_lapsed), 0, 1);
+                                    if ($dollerData == '$') {
+                                        $numericdata = substr(trim($apibeing_lapsed), 1);
+                                        $sum_numeric_data = trim(str_replace(",", "", $numericdata));
+                                        $toAdd = $sum_numeric_data;
+                                    } else {
                                         $sum_numeric_data = trim(str_replace(",", "", $apibeing_lapsed));
                                         $toAdd = $sum_numeric_data;
                                     }
@@ -3945,12 +4065,15 @@ public function deleteClaimIdentified()
                     }
                 }
             }
-               
+
             $get_project_data['amountPerAdviser'] = $result;
-            $get_project_data['provider']         = $this->projects_model->providers_detail();
-           
+            $get_project_data['provider'] = $this->projects_model->providers_detail();
+
         }
         echo json_encode($get_project_data);
         exit;
     }
+
+
+
 }

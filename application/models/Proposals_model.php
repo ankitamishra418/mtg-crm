@@ -66,8 +66,8 @@ class Proposals_model extends App_Model
         $data['address'] = nl2br($data['address']);
 
         $data['datecreated'] = date('Y-m-d H:i:s');
-        $data['addedfrom']   = get_staff_user_id();
-        $data['hash']        = app_generate_hash();
+        $data['addedfrom'] = get_staff_user_id();
+        $data['hash'] = app_generate_hash();
 
         if (empty($data['rel_type'])) {
             unset($data['rel_type']);
@@ -94,11 +94,11 @@ class Proposals_model extends App_Model
         }
 
         $hook = hooks()->apply_filters('before_create_proposal', [
-            'data'  => $data,
+            'data' => $data,
             'items' => $items,
         ]);
 
-        $data  = $hook['data'];
+        $data = $hook['data'];
         $items = $hook['items'];
 
         $this->db->insert(db_prefix() . 'proposals', $data);
@@ -110,7 +110,7 @@ class Proposals_model extends App_Model
                 $completedStatus = $this->estimate_request_model->get_status_by_flag('completed');
                 $this->estimate_request_model->update_request_status([
                     'requestid' => $estimateRequestID,
-                    'status'    => $completedStatus->id,
+                    'status' => $completedStatus->id,
                 ]);
             }
 
@@ -130,10 +130,10 @@ class Proposals_model extends App_Model
             if ($proposal->assigned != 0) {
                 if ($proposal->assigned != get_staff_user_id()) {
                     $notified = add_notification([
-                        'description'     => 'not_proposal_assigned_to_you',
-                        'touserid'        => $proposal->assigned,
-                        'fromuserid'      => get_staff_user_id(),
-                        'link'            => 'proposals/list_proposals/' . $insert_id,
+                        'description' => 'not_proposal_assigned_to_you',
+                        'touserid' => $proposal->assigned,
+                        'fromuserid' => get_staff_user_id(),
+                        'link' => 'proposals/list_proposals/' . $insert_id,
                         'additional_data' => serialize([
                             $proposal->subject,
                         ]),
@@ -184,11 +184,11 @@ class Proposals_model extends App_Model
         $save_and_send = isset($data['save_and_send']);
 
         if (empty($data['rel_type'])) {
-            $data['rel_id']   = null;
+            $data['rel_id'] = null;
             $data['rel_type'] = '';
         } else {
             if (empty($data['rel_id'])) {
-                $data['rel_id']   = null;
+                $data['rel_id'] = null;
                 $data['rel_type'] = '';
             }
         }
@@ -223,16 +223,16 @@ class Proposals_model extends App_Model
         $data['address'] = nl2br($data['address']);
 
         $hook = hooks()->apply_filters('before_proposal_updated', [
-            'data'          => $data,
-            'items'         => $items,
-            'newitems'      => $newitems,
+            'data' => $data,
+            'items' => $items,
+            'newitems' => $newitems,
             'removed_items' => isset($data['removed_items']) ? $data['removed_items'] : [],
         ], $id);
 
-        $data                  = $hook['data'];
+        $data = $hook['data'];
         $data['removed_items'] = $hook['removed_items'];
-        $newitems              = $hook['newitems'];
-        $items                 = $hook['items'];
+        $newitems = $hook['newitems'];
+        $items = $hook['items'];
 
         // Delete items checked to be removed from database
         foreach ($data['removed_items'] as $remove_item_id) {
@@ -251,10 +251,10 @@ class Proposals_model extends App_Model
             if ($current_proposal->assigned != $proposal_now->assigned) {
                 if ($proposal_now->assigned != get_staff_user_id()) {
                     $notified = add_notification([
-                        'description'     => 'not_proposal_assigned_to_you',
-                        'touserid'        => $proposal_now->assigned,
-                        'fromuserid'      => get_staff_user_id(),
-                        'link'            => 'proposals/list_proposals/' . $id,
+                        'description' => 'not_proposal_assigned_to_you',
+                        'touserid' => $proposal_now->assigned,
+                        'fromuserid' => get_staff_user_id(),
+                        'link' => 'proposals/list_proposals/' . $id,
                         'additional_data' => serialize([
                             $proposal_now->subject,
                         ]),
@@ -282,7 +282,7 @@ class Proposals_model extends App_Model
                     $affectedRows++;
                 }
             } else {
-                $item_taxes        = get_proposal_item_taxes($item['itemid']);
+                $item_taxes = get_proposal_item_taxes($item['itemid']);
                 $_item_taxes_names = [];
                 foreach ($item_taxes as $_item_tax) {
                     array_push($_item_taxes_names, $_item_tax['taxname']);
@@ -291,7 +291,7 @@ class Proposals_model extends App_Model
                 foreach ($_item_taxes_names as $_item_tax) {
                     if (!in_array($_item_tax, $item['taxname'])) {
                         $this->db->where('id', $item_taxes[$i]['id'])
-                        ->delete(db_prefix() . 'item_tax');
+                            ->delete(db_prefix() . 'item_tax');
                         if ($this->db->affected_rows() > 0) {
                             $affectedRows++;
                         }
@@ -350,8 +350,8 @@ class Proposals_model extends App_Model
             $this->db->where(db_prefix() . 'proposals.id', $id);
             $proposal = $this->db->get()->row();
             if ($proposal) {
-                $proposal->attachments                           = $this->get_attachments($id);
-                $proposal->items                                 = get_items_by_type('proposal', $id);
+                $proposal->attachments = $this->get_attachments($id);
+                $proposal->items = get_items_by_type('proposal', $id);
                 $proposal->visible_attachments_to_customer_found = false;
                 foreach ($proposal->attachments as $attachment) {
                     if ($attachment['visible_to_customer'] == 1) {
@@ -377,7 +377,8 @@ class Proposals_model extends App_Model
         return $this->db->get()->result_array();
     }
 
-    public function getProposalStatus($id){
+    public function getProposalStatus($id)
+    {
         $this->db->select('status');
         $this->db->from('tblproposals_status');
         $this->db->where('id', $id);
@@ -386,10 +387,11 @@ class Proposals_model extends App_Model
         $result = $query->row();
         return $result->status;
     }
-    public function getOutcomeCategory($id){
+    public function getOutcomeCategory($id)
+    {
         $this->db->select('outcome_category');
         $this->db->from('tbloutcome_category');
-        $this->db->where('id',$id);
+        $this->db->where('id', $id);
         $query = $this->db->get();
         $result = $query->row();
         return $result->outcome_category;
@@ -446,7 +448,7 @@ class Proposals_model extends App_Model
     public function delete_attachment($id)
     {
         $attachment = $this->get_attachments('', $id);
-        $deleted    = false;
+        $deleted = false;
         if ($attachment) {
             if (empty($attachment->external)) {
                 unlink(get_upload_path_by_type('proposal') . $attachment->rel_id . '/' . $attachment->file_name);
@@ -505,14 +507,14 @@ class Proposals_model extends App_Model
                 $this->db->where('staffid', $proposal->addedfrom);
                 $this->db->or_where('staffid', $proposal->assigned);
                 $staff_proposal = $this->db->get(db_prefix() . 'staff')->result_array();
-                $notifiedUsers  = [];
+                $notifiedUsers = [];
                 foreach ($staff_proposal as $member) {
                     $notified = add_notification([
-                        'description'     => 'not_proposal_comment_from_client',
-                        'touserid'        => $member['staffid'],
-                        'fromcompany'     => 1,
-                        'fromuserid'      => 0,
-                        'link'            => 'proposals/list_proposals/' . $data['proposalid'],
+                        'description' => 'not_proposal_comment_from_client',
+                        'touserid' => $member['staffid'],
+                        'fromcompany' => 1,
+                        'fromuserid' => 0,
+                        'link' => 'proposals/list_proposals/' . $data['proposalid'],
                         'additional_data' => serialize([
                             $proposal->subject,
                         ]),
@@ -522,7 +524,7 @@ class Proposals_model extends App_Model
                         array_push($notifiedUsers, $member['staffid']);
                     }
 
-                    $template     = mail_template('proposal_comment_to_staff', $proposal->id, $member['email']);
+                    $template = mail_template('proposal_comment_to_staff', $proposal->id, $member['email']);
                     $merge_fields = $template->get_merge_fields();
                     $template->send();
                     // Send email/sms to admin that client commented
@@ -531,7 +533,7 @@ class Proposals_model extends App_Model
                 pusher_trigger_notification($notifiedUsers);
             } else {
                 // Send email/sms to client that admin commented
-                $template     = mail_template('proposal_comment_to_customer', $proposal);
+                $template = mail_template('proposal_comment_to_customer', $proposal);
                 $merge_fields = $template->get_merge_fields();
                 $template->send();
                 $this->app_sms->trigger(SMS_TRIGGER_PROPOSAL_NEW_COMMENT_TO_CUSTOMER, $proposal->phone, $merge_fields);
@@ -607,8 +609,8 @@ class Proposals_model extends App_Model
      */
     public function copy($id)
     {
-        $this->copy      = true;
-        $proposal        = $this->get($id, [], true);
+        $this->copy = true;
+        $proposal = $this->get($id, [], true);
         $not_copy_fields = [
             'addedfrom',
             'id',
@@ -626,7 +628,7 @@ class Proposals_model extends App_Model
             'acceptance_date',
             'acceptance_ip',
         ];
-        $fields      = $this->db->list_fields(db_prefix() . 'proposals');
+        $fields = $this->db->list_fields(db_prefix() . 'proposals');
         $insert_data = [];
         foreach ($fields as $field) {
             if (!in_array($field, $not_copy_fields)) {
@@ -634,37 +636,37 @@ class Proposals_model extends App_Model
             }
         }
 
-        $insert_data['addedfrom']   = get_staff_user_id();
+        $insert_data['addedfrom'] = get_staff_user_id();
         $insert_data['datecreated'] = date('Y-m-d H:i:s');
-        $insert_data['date']        = _d(date('Y-m-d'));
-        $insert_data['status']      = 6;
-        $insert_data['hash']        = app_generate_hash();
+        $insert_data['date'] = _d(date('Y-m-d'));
+        $insert_data['status'] = 6;
+        $insert_data['hash'] = app_generate_hash();
 
         // in case open till is expired set new 7 days starting from current date
         if ($insert_data['open_till'] && get_option('proposal_due_after') != 0) {
             $insert_data['open_till'] = _d(date('Y-m-d', strtotime('+' . get_option('proposal_due_after') . ' DAY', strtotime(date('Y-m-d')))));
         } elseif ($insert_data['open_till']) {
-            $dDate                    = new DateTime(date('Y-m-d'));
-            $dOpenTill                = new DateTime($insert_data['open_till']);
-            $dDiff                    = $dDate->diff($dOpenTill);
+            $dDate = new DateTime(date('Y-m-d'));
+            $dOpenTill = new DateTime($insert_data['open_till']);
+            $dDiff = $dDate->diff($dOpenTill);
             $insert_data['open_till'] = _d($dDate->modify('+ ' . $dDiff->days . ' DAY')->format('Y-m-d'));
         }
 
         $insert_data['newitems'] = [];
-        $custom_fields_items     = get_custom_fields('items');
-        $key                     = 1;
+        $custom_fields_items = get_custom_fields('items');
+        $key = 1;
         foreach ($proposal->items as $item) {
-            $insert_data['newitems'][$key]['description']      = $item['description'];
+            $insert_data['newitems'][$key]['description'] = $item['description'];
             $insert_data['newitems'][$key]['long_description'] = clear_textarea_breaks($item['long_description']);
-            $insert_data['newitems'][$key]['qty']              = $item['qty'];
-            $insert_data['newitems'][$key]['unit']             = $item['unit'];
-            $insert_data['newitems'][$key]['taxname']          = [];
-            $taxes                                             = get_proposal_item_taxes($item['id']);
+            $insert_data['newitems'][$key]['qty'] = $item['qty'];
+            $insert_data['newitems'][$key]['unit'] = $item['unit'];
+            $insert_data['newitems'][$key]['taxname'] = [];
+            $taxes = get_proposal_item_taxes($item['id']);
             foreach ($taxes as $tax) {
                 // tax name is in format TAX1|10.00
                 array_push($insert_data['newitems'][$key]['taxname'], $tax['taxname']);
             }
-            $insert_data['newitems'][$key]['rate']  = $item['rate'];
+            $insert_data['newitems'][$key]['rate'] = $item['rate'];
             $insert_data['newitems'][$key]['order'] = $item['item_order'];
             foreach ($custom_fields_items as $cf) {
                 $insert_data['newitems'][$key]['custom_fields']['items'][$cf['id']] = get_custom_field_value($item['id'], $cf['id'], 'items', false);
@@ -686,10 +688,10 @@ class Proposals_model extends App_Model
                     continue;
                 }
                 $this->db->insert(db_prefix() . 'customfieldsvalues', [
-                    'relid'   => $id,
+                    'relid' => $id,
                     'fieldid' => $field['id'],
                     'fieldto' => 'proposal',
-                    'value'   => $value,
+                    'value' => $value,
                 ]);
             }
 
@@ -728,7 +730,7 @@ class Proposals_model extends App_Model
                     $message = 'not_proposal_proposal_declined';
                 } elseif ($status == 3) {
                     $message = 'not_proposal_proposal_accepted';
-                // Accepted
+                    // Accepted
                 } else {
                     $revert = true;
                 }
@@ -746,17 +748,17 @@ class Proposals_model extends App_Model
                 $this->db->where('staffid', $original_proposal->addedfrom);
                 $this->db->or_where('staffid', $original_proposal->assigned);
                 $staff_proposal = $this->db->get(db_prefix() . 'staff')->result_array();
-                $notifiedUsers  = [];
+                $notifiedUsers = [];
                 foreach ($staff_proposal as $member) {
                     $notified = add_notification([
-                            'fromcompany'     => true,
-                            'touserid'        => $member['staffid'],
-                            'description'     => $message,
-                            'link'            => 'proposals/list_proposals/' . $id,
-                            'additional_data' => serialize([
-                                format_proposal_number($id),
-                            ]),
-                        ]);
+                        'fromcompany' => true,
+                        'touserid' => $member['staffid'],
+                        'description' => $message,
+                        'link' => 'proposals/list_proposals/' . $id,
+                        'additional_data' => serialize([
+                            format_proposal_number($id),
+                        ]),
+                    ]);
                     if ($notified) {
                         array_push($notifiedUsers, $member['staffid']);
                     }
@@ -894,26 +896,26 @@ class Proposals_model extends App_Model
             $primary_contact_id = get_primary_contact_user_id($rel_id);
 
             if ($primary_contact_id) {
-                $contact     = $this->clients_model->get_contact($primary_contact_id);
+                $contact = $this->clients_model->get_contact($primary_contact_id);
                 $data->email = $contact->email;
             }
 
-            $data->phone            = $_data->phonenumber;
+            $data->phone = $_data->phonenumber;
             $data->is_using_company = false;
             if (isset($contact)) {
                 $data->to = $contact->firstname . ' ' . $contact->lastname;
             } else {
                 if (!empty($_data->company)) {
-                    $data->to               = $_data->company;
+                    $data->to = $_data->company;
                     $data->is_using_company = true;
                 }
             }
             $data->company = $_data->company;
             $data->address = clear_textarea_breaks($_data->address);
-            $data->zip     = $_data->zip;
+            $data->zip = $_data->zip;
             $data->country = $_data->country;
-            $data->state   = $_data->state;
-            $data->city    = $_data->city;
+            $data->state = $_data->state;
+            $data->city = $_data->city;
 
             $default_currency = $this->clients_model->get_customer_default_currency($rel_id);
             if ($default_currency != 0) {
@@ -921,7 +923,7 @@ class Proposals_model extends App_Model
             }
         } elseif ($rel_type = 'lead') {
             $this->db->where('id', $rel_id);
-            $_data       = $this->db->get(db_prefix() . 'leads')->row();
+            $_data = $this->db->get(db_prefix() . 'leads')->row();
             $data->phone = $_data->phonenumber;
 
             $data->is_using_company = false;
@@ -929,17 +931,17 @@ class Proposals_model extends App_Model
             if (empty($_data->company)) {
                 $data->to = $_data->name;
             } else {
-                $data->to               = $_data->company;
+                $data->to = $_data->company;
                 $data->is_using_company = true;
             }
 
             $data->company = $_data->company;
             $data->address = $_data->address;
-            $data->email   = $_data->email;
-            $data->zip     = $_data->zip;
+            $data->email = $_data->email;
+            $data->zip = $_data->zip;
             $data->country = $_data->country;
-            $data->state   = $_data->state;
-            $data->city    = $_data->city;
+            $data->state = $_data->state;
+            $data->city = $_data->city;
         }
 
         return $data;
@@ -962,7 +964,7 @@ class Proposals_model extends App_Model
             'is_expiry_notified' => 1,
         ]);
 
-        $template     = mail_template('proposal_expiration_reminder', $proposal);
+        $template = mail_template('proposal_expiration_reminder', $proposal);
         $merge_fields = $template->get_merge_fields();
 
         $template->send();
@@ -1019,169 +1021,233 @@ class Proposals_model extends App_Model
     }
 
     //productType
-public function save_productType($id, $data){
-    if(!$id){
-        $this->db->insert('tblproposals_product_type' , $data);
-        return $this->db->insert_id();
-    }
-    if($id){
-        $this->db->where('id',$id);
-        $result = $this->db->update('tblproposals_product_type' ,$data);
-        if($result){
-            return yes ;
-        }
-        else{
-            return no;
-        }
-    }
-}
+    public function save_productType($id, $data)
+    {
+        // if (!$id) {
+        //     $this->db->insert('tblproposals_product_type', $data);
+        //     return $this->db->insert_id();
+        // }
+        // if ($id) {
+        //     $this->db->where('id', $id);
+        //     $result = $this->db->update('tblproposals_product_type', $data);
+        //     if ($result) {
+        //         return yes;
+        //     } else {
+        //         return no;
+        //     }
+        // }
 
-public function fetchproductType(){
-    $this->db->select('*');
-    $this->db->where('is_deleted' , 0);
-    $this->db->from('tblproposals_product_type');
-    $result = $this->db->get();
-    return $result->result_array();
-}
+        if (empty($data) || !is_array($data)) {
+            return false;
+        }
 
+        if (!$id) {
+            $this->db->insert('tblproposals_product_type', $data);
+            return $this->db->insert_id();
+        }
+        if ($id) {
+            $this->db->where('id', $id);
+            $result = $this->db->update('tblproposals_product_type', $data);
+            if ($result) {
+                return 'yes';
+            } else {
+                return 'no';
+            }
+        }
+    }
+
+    public function fetchproductType()
+    {
+        // $this->db->select('*');
+        // $this->db->where('is_deleted', 0);
+        // $this->db->from('tblproposals_product_type');
+        // $result = $this->db->get();
+        // return $result->result_array();
+        $this->db->select('*');
+        $this->db->where('is_deleted', 0);
+        $this->db->from('tblproposals_product_type');
+        $result = $this->db->get();
+        return $result->result_array();
+    }
+
+    //Complaint Against
 //Complaint Against
-public function save_complaintAgainst($id, $data){
-    if(!$id){
-        $this->db->insert('tblproposals_complaint' , $data);
-        return $this->db->insert_id();
-    }
-    if($id){
-        $this->db->where('id',$id);
-        $result = $this->db->update('tblproposals_complaint' ,$data);
-        if($result){
-            return yes ;
-        }
-        else{
-            return no;
-        }
-    }
-}
+    public function save_complaintAgainst($id, $data)
+    {
+        // if (empty($data) || !is_array($data)) {
+        //     return false;
+        // }
 
-public function fetchcomplaintAgainst(){
-    $this->db->select('*');
-    $this->db->where('is_deleted' , 0);
-    $this->db->from('tblproposals_complaint');
-    $result = $this->db->get();
-    return $result->result_array();
-}
-//Medium
-public function save_medium($id, $data){
-    if(!$id){
-        $this->db->insert('tblproposals_medium' , $data);
-        return $this->db->insert_id();
-    }
-    if($id){
-        $this->db->where('id',$id);
-        $result = $this->db->update('tblproposals_medium' ,$data);
-        if($result){
-            return yes ;
-        }
-        else{
-            return no;
-        }
-    }
-}
+        // if (!$id) {
+        //     $this->db->insert('tblproposals_complaint', $data);
+        //     return $this->db->insert_id();
+        // }
 
-public function fetchmedium(){
-    $this->db->select('*');
-    $this->db->where('is_deleted' , 0);
-    $this->db->from('tblproposals_medium');
-    $result = $this->db->get();
-    return $result->result_array();
-}
-// Status
-public function save_status($id, $data){
-    if(!$id){
-        $this->db->insert('tblproposals_status' , $data);
-        return $this->db->insert_id();
-    }
-    if($id){
-        $this->db->where('id',$id);
-        $result = $this->db->update('tblproposals_status' ,$data);
-        if($result){
-            return yes ;
-        }
-        else{
-            return no;
-        }
-    }
-}
+        // if ($id) {
+        //     $this->db->where('id', $id);
+        //     $result = $this->db->update('tblproposals_complaint', $data);
+        //     if ($result) {
+        //         return 'yes';
+        //     } else {
+        //         return 'no';
+        //     }
+        // }
 
-public function fetchstatus(){
-    $this->db->select('*');
-    $this->db->where('is_deleted' , 0);
-    $this->db->from('tblproposals_status');
-    $result = $this->db->get();
-    return $result->result_array();
-}
+        if (empty($data) || !is_array($data)) {
+            return false;
+        }
 
-// public function fetchindividuals(){
+        if (!$id) {
+            $this->db->insert('tblproposals_complaint', $data);
+            return $this->db->insert_id();
+        }
+
+        if ($id) {
+            $this->db->where('id', $id);
+            $result = $this->db->update('tblproposals_complaint', $data);
+            if ($result) {
+                return 'yes';
+            } else {
+                return 'no';
+            }
+        }
+    }
+
+
+    public function fetchcomplaintAgainst()
+    {
+        $this->db->select('*');
+        $this->db->where('is_deleted', 0);
+        $this->db->from('tblproposals_complaint');
+        $result = $this->db->get();
+        return $result->result_array();
+    }
+    //Medium
+    public function save_medium($id, $data)
+    {
+        // Added check to ensure $data is not empty and is an array
+        if (empty($data) || !is_array($data)) {
+            return false;
+        }
+
+        if (!$id) {
+            $this->db->insert('tblproposals_medium', $data);
+            return $this->db->insert_id();
+        }
+        if ($id) {
+            $this->db->where('id', $id);
+            $result = $this->db->update('tblproposals_medium', $data);
+            if ($result) {
+                return yes;
+            } else {
+                return no;
+            }
+        }
+    }
+
+    public function fetchmedium()
+    {
+        $this->db->select('*');
+        $this->db->where('is_deleted', 0);
+        $this->db->from('tblproposals_medium');
+        $result = $this->db->get();
+        return $result->result_array();
+    }
+    // Status
+    public function save_status($id, $data)
+    {
+        if (empty($data) || !is_array($data)) {
+            return false;
+        }
+        if (!$id) {
+            $this->db->insert('tblproposals_status', $data);
+            return $this->db->insert_id();
+        }
+        if ($id) {
+            $this->db->where('id', $id);
+            $result = $this->db->update('tblproposals_status', $data);
+            if ($result) {
+                return yes;
+            } else {
+                return no;
+            }
+        }
+    }
+
+    public function fetchstatus()
+    {
+        $this->db->select('*');
+        $this->db->where('is_deleted', 0);
+        $this->db->from('tblproposals_status');
+        $result = $this->db->get();
+        return $result->result_array();
+    }
+
+    // public function fetchindividuals(){
 //     $this->db->select('firstname,lastname,id');
 //     $this->db->from('tblcontacts');
 //     $result = $this->db->get();
 //     return $result->result_array();
 // }
 
-public function fetchindividuals(){
-    $this->db->select('firstname,lastname,id,userid');
-    $this->db->from('tblcontacts');
-    $result = $this->db->get();
-    $query_data = $result->result_array();
-    $i=0;
-    foreach($query_data as $query_datas){
-        $queryData[$i] = [
-            'firstname'   => $query_datas['firstname'],
-            'lastname'    => $query_datas['lastname'],
-            'client_name' => $this->proposals_model->related_name_client($query_datas['userid']),
-            'id'          => $query_datas['id'],
-            'userid'          => $query_datas['userid'],
-        ];
-        $i++;
+    public function fetchindividuals()
+    {
+        $this->db->select('firstname,lastname,id,userid');
+        $this->db->from('tblcontacts');
+        $result = $this->db->get();
+        $query_data = $result->result_array();
+        $i = 0;
+        foreach ($query_data as $query_datas) {
+            $queryData[$i] = [
+                'firstname' => $query_datas['firstname'],
+                'lastname' => $query_datas['lastname'],
+                'client_name' => $this->proposals_model->related_name_client($query_datas['userid']),
+                'id' => $query_datas['id'],
+                'userid' => $query_datas['userid'],
+            ];
+            $i++;
+        }
+
+        // echo"<pre>";
+        // print_r($queryData);
+        // exit;
+
+        return $queryData;
+    }
+    public function related_name_client($id)
+    {
+        $this->db->select('company');
+        $this->db->from('tblclients');
+        $this->db->where('userid', $id);
+        $query = $this->db->get();
+        $customer = $query->row();
+        $customer = $customer->company;
+        return $customer;
     }
 
-    // echo"<pre>";
-    // print_r($queryData);
-    // exit;
-   
-    return $queryData;
-}
-public function related_name_client($id)
-{
-    $this->db->select('company');
-    $this->db->from('tblclients');
-    $this->db->where('userid', $id);
-    $query = $this->db->get();
-    $customer = $query->row();
-    $customer = $customer->company;
-    return $customer;
-}
-
-public function fetchcomplaints_category(){
-    $this->db->select('*');
-    $this->db->where('is_deleted' , 0);
-    $this->db->from('tblcomplaint_category');
-    $query = $this->db->get();
-    return $query->result_array();
-}
-
-public function save_complaints_category($id,$data){
-    if(!$id){
-        $this->db->insert('tblcomplaint_category',$data);
-        return $this->db->insert_id();
+    public function fetchcomplaints_category()
+    {
+        $this->db->select('*');
+        $this->db->where('is_deleted', 0);
+        $this->db->from('tblcomplaint_category');
+        $query = $this->db->get();
+        return $query->result_array();
     }
-    else{
-        $this->db->where('id',$id);
-        return $result = $this->db->update('tblcomplaint_category' ,$data);
+
+    public function save_complaints_category($id, $data)
+    {
+        if (!$id) {
+            $this->db->insert('tblcomplaint_category', $data);
+            return $this->db->insert_id();
+        } else {
+            $this->db->where('id', $id);
+            return $result = $this->db->update('tblcomplaint_category', $data);
+        }
     }
-}
 
 
-    public function get_complainant_id($complain_id){
+    public function get_complainant_id($complain_id)
+    {
         $this->db->select('complainant');
         $this->db->from('tblproposals');
         $this->db->where('id', $complain_id);
@@ -1189,7 +1255,8 @@ public function save_complaints_category($id,$data){
         $customer = $query->row();
         return $customer->complainant;
     }
-    public function get_user_id($individual_id){
+    public function get_user_id($individual_id)
+    {
         $this->db->select('userid');
         $this->db->from('tblcontacts');
         $this->db->where('id', $individual_id);
@@ -1198,7 +1265,8 @@ public function save_complaints_category($id,$data){
         return $userid->userid;
     }
 
-    public function fetch_client_group($individual_id){
+    public function fetch_client_group($individual_id)
+    {
         $this->db->select('userid');
         $this->db->from('tblcontacts');
         $this->db->where('id', $individual_id);
@@ -1218,7 +1286,8 @@ public function save_complaints_category($id,$data){
         return $customer;
     }
 
-    public function fetch_complaint_taken_by($staff_id){
+    public function fetch_complaint_taken_by($staff_id)
+    {
         $this->db->select('firstname,lastname');
         $this->db->from('tblstaff');
         $this->db->where('staffid', $staff_id);
@@ -1226,10 +1295,11 @@ public function save_complaints_category($id,$data){
         $result = $query->row();
         $firstname = $result->firstname;
         $lastname = $result->lastname;
-        $name =  $firstname . ' ' . $lastname;
+        $name = $firstname . ' ' . $lastname;
         return $name;
     }
-    public function fetch_medium_name($medium_id){
+    public function fetch_medium_name($medium_id)
+    {
         $this->db->select('medium');
         $this->db->from('tblproposals_medium');
         $this->db->where('id', $medium_id);
@@ -1238,7 +1308,8 @@ public function save_complaints_category($id,$data){
         $medium_name = $result->medium;
         return $medium_name;
     }
-    public function fetch_product_type($product_type_id){
+    public function fetch_product_type($product_type_id)
+    {
         $this->db->select('product_type');
         $this->db->from('tblproposals_product_type');
         $this->db->where('id', $product_type_id);
@@ -1247,7 +1318,8 @@ public function save_complaints_category($id,$data){
         $product_type_name = $result->product_type;
         return $product_type_name;
     }
-    public function fetch_complaints_category($complaints_category_id){
+    public function fetch_complaints_category($complaints_category_id)
+    {
         $this->db->select('complaints_category');
         $this->db->from('tblcomplaint_category');
         $this->db->where('id', $complaints_category_id);
@@ -1257,7 +1329,8 @@ public function save_complaints_category($id,$data){
         return $complaints_category_name;
     }
 
-    public function status_name_text($status_id){
+    public function status_name_text($status_id)
+    {
         $this->db->select('status');
         $this->db->from('tblproposals_status');
         $this->db->where('id', $status_id);
@@ -1269,7 +1342,8 @@ public function save_complaints_category($id,$data){
 
     //outcome category
     //added 22feb
-    public function get_rel_id($contact_id){
+    public function get_rel_id($contact_id)
+    {
         $this->db->select('userid');
         $this->db->from('tblcontacts');
         $this->db->where('id', $contact_id);
@@ -1280,57 +1354,53 @@ public function save_complaints_category($id,$data){
     public function fetchoutcome_category()
     {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tbloutcome_category');
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    public function save_outcome_category($id,$data)
+    public function save_outcome_category($id, $data)
     {
-        if(!$id)
-        {
-            $this->db->insert('tbloutcome_category',$data);
+        if (!$id) {
+            $this->db->insert('tbloutcome_category', $data);
             return $this->db->insert_id();
-        }
-        else
-        {
-            $this->db->where('id',$id);
-            return $result = $this->db->update('tbloutcome_category' ,$data);
+        } else {
+            $this->db->where('id', $id);
+            return $result = $this->db->update('tbloutcome_category', $data);
         }
     }
 
     public function fetchbusiness_type()
     {
         $this->db->select('*');
-        $this->db->where('is_deleted' , 0);
+        $this->db->where('is_deleted', 0);
         $this->db->from('tblbusiness_type');
         $query = $this->db->get();
         return $query->result_array();
     }
-    public function save_business_type($id,$data)
+    public function save_business_type($id, $data)
     {
-        if(!$id)
-        {
-            $this->db->insert('tblbusiness_type',$data);
+        if (!$id) {
+            $this->db->insert('tblbusiness_type', $data);
             return $this->db->insert_id();
-        }
-        else
-        {
-            $this->db->where('id',$id);
-            return $result = $this->db->update('tblbusiness_type' ,$data);
+        } else {
+            $this->db->where('id', $id);
+            return $result = $this->db->update('tblbusiness_type', $data);
         }
     }
 
-    public function fetchoutcome_categories($id){
+    public function fetchoutcome_categories($id)
+    {
         $this->db->select('outcome_category');
-        $this->db->where('id' , $id);
+        $this->db->where('id', $id);
         $this->db->from('tbloutcome_category');
         $query = $this->db->get();
         return $query->result_array();
     }
 
-    public function getClientId($company) {
+    public function getClientId($company)
+    {
         $this->db->select('userid');
         $this->db->from('tblclients');
         $this->db->where('company', $company);
