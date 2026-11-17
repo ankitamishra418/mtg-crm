@@ -1,0 +1,6 @@
+application/logs/*
+!application/logs/index.html
+application/vendor/
+kraftors/vendor/
+backups/
+media/public/
